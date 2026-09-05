@@ -2,9 +2,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Textkritische Synopse zum Jeremiabuch</title><style>
 :root{--bg:#fbfaf7;--fg:#1a1a1a;--rule:#d8d4cb;--mut:#6b665c;
- --plus:#c8102e;--minus:#1d6fb8;--var:#8a6d1f;--mark:#5b8c5a;--panel:#fff}
+ --plus:#c8102e;--minus:#1d6fb8;--var:#8a6d1f;--mark:#5b8c5a;--panel:#fff;
+ --sup:#7a5ea8}
 @media(prefers-color-scheme:dark){:root{--bg:#14150f;--fg:#e8e6df;--rule:#39372f;
- --mut:#9a958a;--plus:#ff8b8b;--minus:#7cb8f0;--var:#dcc07a;--mark:#93c191;--panel:#1c1d16}}
+ --mut:#9a958a;--plus:#ff8b8b;--minus:#7cb8f0;--var:#dcc07a;--mark:#93c191;
+ --panel:#1c1d16;--sup:#b9a2e0}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
  font:15px/1.55 "Iowan Old Style",Palatino,Georgia,serif}
@@ -42,6 +44,7 @@ tr:hover{background:var(--panel)}
 .hl .minus{color:var(--minus)}
 .hl .mtvar,.hl .ogvar{color:var(--var)}
 .hl .scope{border-bottom:1px dotted var(--mark)}
+.sup{color:var(--sup);border-bottom:1px dashed var(--sup)}
 .notes{font-size:.8rem;color:var(--mut);padding:.1rem .5rem .4rem 1.6rem}
 .notes .n{margin-right:.9rem;white-space:nowrap}
 .notes .heb{direction:rtl;unicode-bidi:isolate;font-size:1rem}
@@ -82,7 +85,7 @@ tr:hover{background:var(--panel)}
 <label><input type="checkbox" data-c="hide-notes"> Apparat</label>
 <label><input type="checkbox" data-c="hide-grk"> Griechisch</label>
 </div>
-<h1>Textkritische Synopse zum Jeremiabuch</h1><div class="sub">53 Kapitelseiten · 1378 Verse · 880 gegen BHSA bestätigt (64%)</div>
+<h1>Textkritische Synopse zum Jeremiabuch</h1><div class="sub">53 Kapitelseiten · 1394 Verse · 893 gegen BHSA bestätigt (64%)</div>
 <nav><a href="jer01.html">Jeremia 1</a></nav></header>
 <main><div class="note-b">
 <b>Was hier steht.</b> Stipps Synopse stellt das Jeremiabuch Kolon für Kolon in
@@ -91,36 +94,49 @@ alexandrinischen Vorlage. Sie ist als PDF in der BibleWorks-Schrift BWHEBB
 gesetzt, in der Hebräisch als ASCII in <i>visueller</i> Reihenfolge kodiert ist;
 diese Seiten geben denselben Text in Unicode.
 <br><br>
-<b>Was geprüft ist.</b> Die masoretische Spalte ist der BHS-Text und lässt sich
-gegen BHSA prüfen. Die Umschrift selbst stimmt zu 97,9&nbsp;% wortgenau mit BHSA
-überein; die Abweichungen sind überwiegend Ketiv-Formen und Stipps eigene
-Lesarten. Auf Versebene trägt jeder Vers ein Zeichen: <span class="badge ok">BHSA
-✓</span> heißt, dass die masoretische Spalte die Konsonanten von BHSA vollständig
-und in der richtigen Reihenfolge wiedergibt.
+<b>Was geprüft und was berichtigt ist.</b> Die masoretische Spalte ist der
+BHS-Text; sie allein hat eine Prüfinstanz, und sie wird gegen BHSA nicht nur
+geprüft, sondern auch berichtigt. Die Umschrift stimmt zu 97,9&nbsp;% wortgenau
+mit BHSA überein. Auf Versebene trägt jeder Vers ein Zeichen. <span class="badge
+ok">BHSA ✓</span> heißt, dass die Spalte den Vers Wort für Wort so wiedergibt wie
+BHSA — 893 von 1.394 Versen. <span class="badge fix">BHSA ✎</span> heißt, dass
+sie berichtigt wurde: <b>+n</b> Wörter aus BHSA <span class="sup">ergänzt</span>,
+<b>−n</b> Wörter getilgt, die BHSA in diesem Vers nicht hat. Ein ergänztes Wort
+steht in der Farbe dieses Satzes und in der Punktation von BHSA, ist also als
+Wort der Datenbank und nicht als Stipps Druck erkennbar. So kommt auch die
+Wortfolge in Ordnung: 1.385 der 1.394 Verse geben jetzt die Konsonanten von BHSA
+genau wieder, die neun übrigen drucken das Qere, das BHSA ebenfalls führt.
 <br><br>
 <b>Wortinformationen.</b> Jedes hebräische Wort trägt beim Überfahren mit der
 Maus seine BHSA-Analyse: <i>lex, sp, vt, vs, ps, nu, gn</i> und das vokalisierte
 Lexem. Die Einheit ist das graphische Wort, deshalb zeigt הַדָּבָר zwei Einträge,
-הַ als Artikel und דָּבָר als Nomen. In der masoretischen Spalte sind 92&nbsp;% der
+הַ als Artikel und דָּבָר als Nomen. In der masoretischen Spalte sind 98,3&nbsp;% der
 Wörter an einen BHSA-Knoten <i>dieses Verses</i> gebunden; in der
-alexandrinischen gilt das für den gemeinsamen Text (82&nbsp;%), während eine
+alexandrinischen gilt das für den gemeinsamen Text (83,5&nbsp;%), während eine
 eigentliche alexandrinische Lesart keinen Knoten haben kann und, wenn ihre Form
 im ganzen Alten Testament eindeutig ist, aus einem Formenindex gedeutet wird —
 im Fenster entsprechend gekennzeichnet.
 <br><br>
 <b>Ketiv/Qere.</b> Wörter mit abweichender Lesart tragen ein hochgestelltes
-<sup class="kq">K</sup>; das Fenster nennt beide Formen. BHSA verzeichnet 193
-solche Wörter in Jeremia, von denen 134 in einem zugeordneten Wort stehen und
-daher markiert werden können. Die Markierung steht nur in der masoretischen Spalte,
+<sup class="kq">K</sup>; das Fenster nennt beide Formen. BHSA verzeichnet 194
+solche Wörter in Jeremia und 2 Könige 25, und seit der Berichtigung sind alle 194
+markiert. Die Markierung steht nur in der masoretischen Spalte,
 weil das Qere ein Apparat dieses Textes ist — die alexandrinische Spalte ist eine
 Rückübersetzung und kennt keine masoretische Lesetradition.
 <br><br>
-<b>Was nicht geprüft ist.</b> Stipp setzt seinen Fußnotenapparat im selben
-Einzug wie den Text, sodass auf einem Teil der Zeilen ein Lemma oder eine
-zitierte Lesart als Text gelesen wird. Diese Verse tragen <span class="badge
-no">BHSA ?</span>. Der griechische Text ist Stipps eigener, unrückübersetzter;
-für ihn gibt es hier keine Prüfinstanz.
-</div><div class="idx"><a href="jer01.html">Jeremia 1 <span style="color:var(--mut)">(19 Verse, 10✓)</span></a><a href="jer02.html">Jeremia 2 <span style="color:var(--mut)">(37 Verse, 20✓)</span></a><a href="jer03.html">Jeremia 3 <span style="color:var(--mut)">(25 Verse, 13✓)</span></a><a href="jer04.html">Jeremia 4 <span style="color:var(--mut)">(31 Verse, 21✓)</span></a><a href="jer05.html">Jeremia 5 <span style="color:var(--mut)">(31 Verse, 22✓)</span></a><a href="jer06.html">Jeremia 6 <span style="color:var(--mut)">(30 Verse, 21✓)</span></a><a href="jer07.html">Jeremia 7 <span style="color:var(--mut)">(34 Verse, 28✓)</span></a><a href="jer08.html">Jeremia 8 <span style="color:var(--mut)">(23 Verse, 18✓)</span></a><a href="jer09.html">Jeremia 9 <span style="color:var(--mut)">(25 Verse, 18✓)</span></a><a href="jer10.html">Jeremia 10 <span style="color:var(--mut)">(25 Verse, 17✓)</span></a><a href="jer11.html">Jeremia 11 <span style="color:var(--mut)">(23 Verse, 13✓)</span></a><a href="jer12.html">Jeremia 12 <span style="color:var(--mut)">(17 Verse, 13✓)</span></a><a href="jer13.html">Jeremia 13 <span style="color:var(--mut)">(26 Verse, 18✓)</span></a><a href="jer14.html">Jeremia 14 <span style="color:var(--mut)">(22 Verse, 16✓)</span></a><a href="jer15.html">Jeremia 15 <span style="color:var(--mut)">(21 Verse, 13✓)</span></a><a href="jer16.html">Jeremia 16 <span style="color:var(--mut)">(20 Verse, 14✓)</span></a><a href="jer17.html">Jeremia 17 <span style="color:var(--mut)">(23 Verse, 16✓)</span></a><a href="jer18.html">Jeremia 18 <span style="color:var(--mut)">(23 Verse, 13✓)</span></a><a href="jer19.html">Jeremia 19 <span style="color:var(--mut)">(15 Verse, 11✓)</span></a><a href="jer20.html">Jeremia 20 <span style="color:var(--mut)">(18 Verse, 14✓)</span></a><a href="jer21.html">Jeremia 21 <span style="color:var(--mut)">(14 Verse, 9✓)</span></a><a href="jer22.html">Jeremia 22 <span style="color:var(--mut)">(28 Verse, 18✓)</span></a><a href="jer23.html">Jeremia 23 <span style="color:var(--mut)">(38 Verse, 24✓)</span></a><a href="jer24.html">Jeremia 24 <span style="color:var(--mut)">(10 Verse, 6✓)</span></a><a href="jer25.html">Jeremia 25 <span style="color:var(--mut)">(38 Verse, 21✓)</span></a><a href="jer26.html">Jeremia 26 <span style="color:var(--mut)">(24 Verse, 16✓)</span></a><a href="jer27.html">Jeremia 27 <span style="color:var(--mut)">(21 Verse, 15✓)</span></a><a href="jer28.html">Jeremia 28 <span style="color:var(--mut)">(15 Verse, 8✓)</span></a><a href="jer29.html">Jeremia 29 <span style="color:var(--mut)">(32 Verse, 19✓)</span></a><a href="jer30.html">Jeremia 30 <span style="color:var(--mut)">(24 Verse, 15✓)</span></a><a href="jer31.html">Jeremia 31 <span style="color:var(--mut)">(40 Verse, 22✓)</span></a><a href="jer32.html">Jeremia 32 <span style="color:var(--mut)">(44 Verse, 35✓)</span></a><a href="jer33.html">Jeremia 33 <span style="color:var(--mut)">(25 Verse, 16✓)</span></a><a href="jer34.html">Jeremia 34 <span style="color:var(--mut)">(22 Verse, 11✓)</span></a><a href="jer35.html">Jeremia 35 <span style="color:var(--mut)">(19 Verse, 12✓)</span></a><a href="jer36.html">Jeremia 36 <span style="color:var(--mut)">(32 Verse, 21✓)</span></a><a href="jer37.html">Jeremia 37 <span style="color:var(--mut)">(21 Verse, 10✓)</span></a><a href="jer38.html">Jeremia 38 <span style="color:var(--mut)">(28 Verse, 18✓)</span></a><a href="jer39.html">Jeremia 39 <span style="color:var(--mut)">(18 Verse, 15✓)</span></a><a href="jer40.html">Jeremia 40 <span style="color:var(--mut)">(16 Verse, 11✓)</span></a><a href="jer41.html">Jeremia 41 <span style="color:var(--mut)">(18 Verse, 12✓)</span></a><a href="jer42.html">Jeremia 42 <span style="color:var(--mut)">(22 Verse, 18✓)</span></a><a href="jer43.html">Jeremia 43 <span style="color:var(--mut)">(13 Verse, 3✓)</span></a><a href="jer44.html">Jeremia 44 <span style="color:var(--mut)">(29 Verse, 14✓)</span></a><a href="jer45.html">Jeremia 45 <span style="color:var(--mut)">(5 Verse, 3✓)</span></a><a href="jer46.html">Jeremia 46 <span style="color:var(--mut)">(28 Verse, 20✓)</span></a><a href="jer47.html">Jeremia 47 <span style="color:var(--mut)">(7 Verse, 5✓)</span></a><a href="jer48.html">Jeremia 48 <span style="color:var(--mut)">(47 Verse, 32✓)</span></a><a href="jer49.html">Jeremia 49 <span style="color:var(--mut)">(39 Verse, 22✓)</span></a><a href="jer50.html">Jeremia 50 <span style="color:var(--mut)">(46 Verse, 31✓)</span></a><a href="jer51.html">Jeremia 51 <span style="color:var(--mut)">(64 Verse, 49✓)</span></a><a href="jer52.html">Jeremia 52 <span style="color:var(--mut)">(33 Verse, 20✓)</span></a><a href="2kings25.html">2 Könige 25 <span style="color:var(--mut)">(30 Verse)</span></a></div></main>
+<b>Woher die Fehler kommen und was die Berichtigung nicht kann.</b> Stipp
+setzt seinen Fußnotenapparat im selben Einzug wie den Text, sodass auf einem Teil
+der Zeilen ein Lemma oder eine zitierte Lesart als Text gelesen wird; und eine
+Zeile, die über eine Verszahl hinausläuft, wird dem falschen Vers zugeschlagen.
+Sechzehn Verse fehlten dadurch ganz (13,10; 16,6; 17,2–5; 22,12; 22,27; 23,10;
+23,34; 27,14; 28,8–9; 33,11; 44,16; 52,20) und stehen hier vollständig ergänzt.
+Die Berichtigung arbeitet Vers für Vers und schiebt kein Wort über eine
+Versgrenze: ein Wort, das im Nachbarvers gelandet ist, wird dort getilgt und hier
+neu ergänzt, sodass der Text beider Verse stimmt, Stipps Farbe auf diesem Wort
+aber verloren geht. Die alexandrinische Spalte ist eine Rückübersetzung und wird
+nicht angetastet, der griechische Text ist Stipps eigener — für beide gibt es
+hier keine Prüfinstanz.
+</div><div class="idx"><a href="jer01.html">Jeremia 1 <span style="color:var(--mut)">(19 Verse, 10✓)</span></a><a href="jer02.html">Jeremia 2 <span style="color:var(--mut)">(37 Verse, 19✓)</span></a><a href="jer03.html">Jeremia 3 <span style="color:var(--mut)">(25 Verse, 13✓)</span></a><a href="jer04.html">Jeremia 4 <span style="color:var(--mut)">(31 Verse, 21✓)</span></a><a href="jer05.html">Jeremia 5 <span style="color:var(--mut)">(31 Verse, 22✓)</span></a><a href="jer06.html">Jeremia 6 <span style="color:var(--mut)">(30 Verse, 21✓)</span></a><a href="jer07.html">Jeremia 7 <span style="color:var(--mut)">(34 Verse, 28✓)</span></a><a href="jer08.html">Jeremia 8 <span style="color:var(--mut)">(23 Verse, 18✓)</span></a><a href="jer09.html">Jeremia 9 <span style="color:var(--mut)">(25 Verse, 18✓)</span></a><a href="jer10.html">Jeremia 10 <span style="color:var(--mut)">(25 Verse, 17✓)</span></a><a href="jer11.html">Jeremia 11 <span style="color:var(--mut)">(23 Verse, 13✓)</span></a><a href="jer12.html">Jeremia 12 <span style="color:var(--mut)">(17 Verse, 13✓)</span></a><a href="jer13.html">Jeremia 13 <span style="color:var(--mut)">(27 Verse, 18✓)</span></a><a href="jer14.html">Jeremia 14 <span style="color:var(--mut)">(22 Verse, 16✓)</span></a><a href="jer15.html">Jeremia 15 <span style="color:var(--mut)">(21 Verse, 12✓)</span></a><a href="jer16.html">Jeremia 16 <span style="color:var(--mut)">(21 Verse, 14✓)</span></a><a href="jer17.html">Jeremia 17 <span style="color:var(--mut)">(27 Verse, 16✓)</span></a><a href="jer18.html">Jeremia 18 <span style="color:var(--mut)">(23 Verse, 13✓)</span></a><a href="jer19.html">Jeremia 19 <span style="color:var(--mut)">(15 Verse, 11✓)</span></a><a href="jer20.html">Jeremia 20 <span style="color:var(--mut)">(18 Verse, 14✓)</span></a><a href="jer21.html">Jeremia 21 <span style="color:var(--mut)">(14 Verse, 9✓)</span></a><a href="jer22.html">Jeremia 22 <span style="color:var(--mut)">(30 Verse, 18✓)</span></a><a href="jer23.html">Jeremia 23 <span style="color:var(--mut)">(40 Verse, 24✓)</span></a><a href="jer24.html">Jeremia 24 <span style="color:var(--mut)">(10 Verse, 6✓)</span></a><a href="jer25.html">Jeremia 25 <span style="color:var(--mut)">(38 Verse, 21✓)</span></a><a href="jer26.html">Jeremia 26 <span style="color:var(--mut)">(24 Verse, 16✓)</span></a><a href="jer27.html">Jeremia 27 <span style="color:var(--mut)">(22 Verse, 15✓)</span></a><a href="jer28.html">Jeremia 28 <span style="color:var(--mut)">(17 Verse, 8✓)</span></a><a href="jer29.html">Jeremia 29 <span style="color:var(--mut)">(32 Verse, 19✓)</span></a><a href="jer30.html">Jeremia 30 <span style="color:var(--mut)">(24 Verse, 15✓)</span></a><a href="jer31.html">Jeremia 31 <span style="color:var(--mut)">(40 Verse, 22✓)</span></a><a href="jer32.html">Jeremia 32 <span style="color:var(--mut)">(44 Verse, 35✓)</span></a><a href="jer33.html">Jeremia 33 <span style="color:var(--mut)">(26 Verse, 16✓)</span></a><a href="jer34.html">Jeremia 34 <span style="color:var(--mut)">(22 Verse, 11✓)</span></a><a href="jer35.html">Jeremia 35 <span style="color:var(--mut)">(19 Verse, 12✓)</span></a><a href="jer36.html">Jeremia 36 <span style="color:var(--mut)">(32 Verse, 21✓)</span></a><a href="jer37.html">Jeremia 37 <span style="color:var(--mut)">(21 Verse, 10✓)</span></a><a href="jer38.html">Jeremia 38 <span style="color:var(--mut)">(28 Verse, 18✓)</span></a><a href="jer39.html">Jeremia 39 <span style="color:var(--mut)">(18 Verse, 14✓)</span></a><a href="jer40.html">Jeremia 40 <span style="color:var(--mut)">(16 Verse, 11✓)</span></a><a href="jer41.html">Jeremia 41 <span style="color:var(--mut)">(18 Verse, 12✓)</span></a><a href="jer42.html">Jeremia 42 <span style="color:var(--mut)">(22 Verse, 18✓)</span></a><a href="jer43.html">Jeremia 43 <span style="color:var(--mut)">(13 Verse, 3✓)</span></a><a href="jer44.html">Jeremia 44 <span style="color:var(--mut)">(30 Verse, 14✓)</span></a><a href="jer45.html">Jeremia 45 <span style="color:var(--mut)">(5 Verse, 3✓)</span></a><a href="jer46.html">Jeremia 46 <span style="color:var(--mut)">(28 Verse, 20✓)</span></a><a href="jer47.html">Jeremia 47 <span style="color:var(--mut)">(7 Verse, 4✓)</span></a><a href="jer48.html">Jeremia 48 <span style="color:var(--mut)">(47 Verse, 31✓)</span></a><a href="jer49.html">Jeremia 49 <span style="color:var(--mut)">(39 Verse, 22✓)</span></a><a href="jer50.html">Jeremia 50 <span style="color:var(--mut)">(46 Verse, 31✓)</span></a><a href="jer51.html">Jeremia 51 <span style="color:var(--mut)">(64 Verse, 48✓)</span></a><a href="jer52.html">Jeremia 52 <span style="color:var(--mut)">(34 Verse, 20✓)</span></a><a href="2kings25.html">2 Könige 25 <span style="color:var(--mut)">(30 Verse, 19✓)</span></a></div></main>
 <script>window.__A=[];</script>
 <script>
 var A=window.__A||[];
