@@ -1,0 +1,163 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Textkritische Synopse zum Jeremiabuch</title><style>
+:root{--bg:#fbfaf7;--fg:#1a1a1a;--rule:#d8d4cb;--mut:#6b665c;
+ --plus:#c8102e;--minus:#1d6fb8;--var:#8a6d1f;--mark:#5b8c5a;--panel:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#14150f;--fg:#e8e6df;--rule:#39372f;
+ --mut:#9a958a;--plus:#ff8b8b;--minus:#7cb8f0;--var:#dcc07a;--mark:#93c191;--panel:#1c1d16}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+ font:15px/1.55 "Iowan Old Style",Palatino,Georgia,serif}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--rule);
+ padding:.7rem 1.2rem;z-index:5}
+h1{margin:0;font-size:1.15rem;font-weight:600;letter-spacing:.01em}
+.sub{color:var(--mut);font-size:.8rem;margin-top:.15rem}
+nav{margin-top:.5rem;font-size:.82rem}
+nav a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);margin-right:.7rem}
+nav a:hover{border-color:var(--fg)}
+.toggles{float:right;font-size:.78rem;color:var(--mut)}
+.toggles label{margin-left:.9rem;cursor:pointer;user-select:none}
+main{padding:1rem 1.2rem 4rem;max-width:1400px}
+.v{border-top:1px solid var(--rule);padding:.8rem 0}
+.vh{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.35rem}
+.vn{font-weight:700;font-size:.95rem;min-width:3.2rem}
+.badge{font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;
+ border:1px solid var(--rule);border-radius:2px;padding:.05rem .35rem;color:var(--mut)}
+.badge.ok{color:var(--mark);border-color:var(--mark)}
+.badge.no{color:var(--mut);border-style:dashed}
+table{width:100%;border-collapse:collapse}
+td{vertical-align:top;padding:.18rem .5rem}
+td.heb{width:30%;direction:rtl;text-align:right;font-size:1.3rem;line-height:1.85;
+ font-family:"SBL Hebrew","Ezra SIL","Taamey Frank CLM","Times New Roman",serif}
+td.cl{width:2.2rem;text-align:center;color:var(--mut);font-size:.75rem;padding-top:.6rem}
+td.grk{width:36%;font-size:.98rem;line-height:1.6;color:var(--fg);
+ border-left:1px solid var(--rule);padding-left:.8rem;
+ font-family:"GFS Didot","New Athena Unicode","Palatino Linotype",Georgia,serif}
+td.grk:empty::after{content:"—";color:var(--rule)}
+.hide-grk td.grk,.hide-grk col.grk{display:none}
+.colhead td{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;
+ color:var(--mut);border-bottom:1px solid var(--rule);padding-bottom:.2rem}
+tr:hover{background:var(--panel)}
+.hl .plus{color:var(--plus)}
+.hl .minus{color:var(--minus)}
+.hl .mtvar,.hl .ogvar{color:var(--var)}
+.hl .scope{border-bottom:1px dotted var(--mark)}
+.notes{font-size:.8rem;color:var(--mut);padding:.1rem .5rem .4rem 1.6rem}
+.notes .n{margin-right:.9rem;white-space:nowrap}
+.notes .heb{direction:rtl;unicode-bidi:isolate;font-size:1rem}
+.hide-notes .notes{display:none}
+.legend{font-size:.75rem;color:var(--mut);margin-top:.5rem}
+.legend b{font-weight:400}
+.idx{columns:4;column-gap:2rem;font-size:.9rem;margin-top:1rem}
+.idx a{display:block;text-decoration:none;color:inherit;padding:.12rem 0}
+.idx a:hover{text-decoration:underline}
+.kq{font-size:.58em;vertical-align:super;color:var(--mut);
+ font-family:Georgia,serif;margin:0 .06em;user-select:none;letter-spacing:0}
+#tip .kq2{margin-top:.25rem;font-size:.78rem}
+#tip .kq2 b{font-weight:600;font-size:.7rem;color:var(--mut)}
+#tip .kq2 span{direction:rtl;unicode-bidi:isolate;
+ font-family:"SBL Hebrew","Ezra SIL",serif;font-size:1.05rem}
+.w{cursor:help;border-radius:2px}
+.w:hover{background:rgba(127,127,127,.22)}
+.w.nolink{cursor:default}
+#tip{position:fixed;z-index:99;max-width:22rem;display:none;pointer-events:none;
+ background:var(--panel);border:1px solid var(--rule);box-shadow:0 2px 10px rgba(0,0,0,.18);
+ padding:.5rem .6rem;font-size:.8rem;line-height:1.45;border-radius:3px}
+#tip .hw{font-size:1.15rem;direction:rtl;text-align:right;display:block;
+ font-family:"SBL Hebrew","Ezra SIL",serif;margin-bottom:.25rem}
+#tip .r{white-space:nowrap}
+#tip .lx{font-weight:600}
+#tip .cd{color:var(--mut);font-size:.72rem}
+#tip .gl{color:var(--mut);font-size:.75rem;margin:-.1rem 0 .2rem .2rem}
+#tip .hw.gk{direction:ltr;text-align:left;font-family:"GFS Didot","New Athena Unicode",Georgia,serif}
+#tip .lx.gk{font-family:"GFS Didot","New Athena Unicode","Palatino Linotype",Georgia,serif}
+#tip .src{color:var(--mut);font-size:.68rem;margin-top:.3rem;
+ border-top:1px solid var(--rule);padding-top:.25rem;font-style:italic}
+.note-b{background:var(--panel);border:1px solid var(--rule);padding:.7rem .9rem;
+ font-size:.83rem;color:var(--mut);margin:.8rem 0;line-height:1.5;max-width:60rem}
+</style></head>
+<body class="hl">
+<header><div class="toggles">
+<label><input type="checkbox" data-c="hl"> Varianten farbig</label>
+<label><input type="checkbox" data-c="hide-notes"> Apparat</label>
+<label><input type="checkbox" data-c="hide-grk"> Griechisch</label>
+</div>
+<h1>Textkritische Synopse zum Jeremiabuch</h1><div class="sub">53 Kapitelseiten · 1378 Verse · 880 gegen BHSA bestätigt (64%)</div>
+<nav><a href="jer01.html">Jeremia 1</a></nav></header>
+<main><div class="note-b">
+<b>Was hier steht.</b> Stipps Synopse stellt das Jeremiabuch Kolon für Kolon in
+zwei Ausgaben nebeneinander: den tiberischen Text und eine Rückübersetzung der
+alexandrinischen Vorlage. Sie ist als PDF in der BibleWorks-Schrift BWHEBB
+gesetzt, in der Hebräisch als ASCII in <i>visueller</i> Reihenfolge kodiert ist;
+diese Seiten geben denselben Text in Unicode.
+<br><br>
+<b>Was geprüft ist.</b> Die masoretische Spalte ist der BHS-Text und lässt sich
+gegen BHSA prüfen. Die Umschrift selbst stimmt zu 97,9&nbsp;% wortgenau mit BHSA
+überein; die Abweichungen sind überwiegend Ketiv-Formen und Stipps eigene
+Lesarten. Auf Versebene trägt jeder Vers ein Zeichen: <span class="badge ok">BHSA
+✓</span> heißt, dass die masoretische Spalte die Konsonanten von BHSA vollständig
+und in der richtigen Reihenfolge wiedergibt.
+<br><br>
+<b>Wortinformationen.</b> Jedes hebräische Wort trägt beim Überfahren mit der
+Maus seine BHSA-Analyse: <i>lex, sp, vt, vs, ps, nu, gn</i> und das vokalisierte
+Lexem. Die Einheit ist das graphische Wort, deshalb zeigt הַדָּבָר zwei Einträge,
+הַ als Artikel und דָּבָר als Nomen. In der masoretischen Spalte sind 92&nbsp;% der
+Wörter an einen BHSA-Knoten <i>dieses Verses</i> gebunden; in der
+alexandrinischen gilt das für den gemeinsamen Text (82&nbsp;%), während eine
+eigentliche alexandrinische Lesart keinen Knoten haben kann und, wenn ihre Form
+im ganzen Alten Testament eindeutig ist, aus einem Formenindex gedeutet wird —
+im Fenster entsprechend gekennzeichnet.
+<br><br>
+<b>Ketiv/Qere.</b> Wörter mit abweichender Lesart tragen ein hochgestelltes
+<sup class="kq">K</sup>; das Fenster nennt beide Formen. BHSA verzeichnet 193
+solche Wörter in Jeremia, von denen 134 in einem zugeordneten Wort stehen und
+daher markiert werden können. Die Markierung steht nur in der masoretischen Spalte,
+weil das Qere ein Apparat dieses Textes ist — die alexandrinische Spalte ist eine
+Rückübersetzung und kennt keine masoretische Lesetradition.
+<br><br>
+<b>Was nicht geprüft ist.</b> Stipp setzt seinen Fußnotenapparat im selben
+Einzug wie den Text, sodass auf einem Teil der Zeilen ein Lemma oder eine
+zitierte Lesart als Text gelesen wird. Diese Verse tragen <span class="badge
+no">BHSA ?</span>. Der griechische Text ist Stipps eigener, unrückübersetzter;
+für ihn gibt es hier keine Prüfinstanz.
+</div><div class="idx"><a href="jer01.html">Jeremia 1 <span style="color:var(--mut)">(19 Verse, 10✓)</span></a><a href="jer02.html">Jeremia 2 <span style="color:var(--mut)">(37 Verse, 20✓)</span></a><a href="jer03.html">Jeremia 3 <span style="color:var(--mut)">(25 Verse, 13✓)</span></a><a href="jer04.html">Jeremia 4 <span style="color:var(--mut)">(31 Verse, 21✓)</span></a><a href="jer05.html">Jeremia 5 <span style="color:var(--mut)">(31 Verse, 22✓)</span></a><a href="jer06.html">Jeremia 6 <span style="color:var(--mut)">(30 Verse, 21✓)</span></a><a href="jer07.html">Jeremia 7 <span style="color:var(--mut)">(34 Verse, 28✓)</span></a><a href="jer08.html">Jeremia 8 <span style="color:var(--mut)">(23 Verse, 18✓)</span></a><a href="jer09.html">Jeremia 9 <span style="color:var(--mut)">(25 Verse, 18✓)</span></a><a href="jer10.html">Jeremia 10 <span style="color:var(--mut)">(25 Verse, 17✓)</span></a><a href="jer11.html">Jeremia 11 <span style="color:var(--mut)">(23 Verse, 13✓)</span></a><a href="jer12.html">Jeremia 12 <span style="color:var(--mut)">(17 Verse, 13✓)</span></a><a href="jer13.html">Jeremia 13 <span style="color:var(--mut)">(26 Verse, 18✓)</span></a><a href="jer14.html">Jeremia 14 <span style="color:var(--mut)">(22 Verse, 16✓)</span></a><a href="jer15.html">Jeremia 15 <span style="color:var(--mut)">(21 Verse, 13✓)</span></a><a href="jer16.html">Jeremia 16 <span style="color:var(--mut)">(20 Verse, 14✓)</span></a><a href="jer17.html">Jeremia 17 <span style="color:var(--mut)">(23 Verse, 16✓)</span></a><a href="jer18.html">Jeremia 18 <span style="color:var(--mut)">(23 Verse, 13✓)</span></a><a href="jer19.html">Jeremia 19 <span style="color:var(--mut)">(15 Verse, 11✓)</span></a><a href="jer20.html">Jeremia 20 <span style="color:var(--mut)">(18 Verse, 14✓)</span></a><a href="jer21.html">Jeremia 21 <span style="color:var(--mut)">(14 Verse, 9✓)</span></a><a href="jer22.html">Jeremia 22 <span style="color:var(--mut)">(28 Verse, 18✓)</span></a><a href="jer23.html">Jeremia 23 <span style="color:var(--mut)">(38 Verse, 24✓)</span></a><a href="jer24.html">Jeremia 24 <span style="color:var(--mut)">(10 Verse, 6✓)</span></a><a href="jer25.html">Jeremia 25 <span style="color:var(--mut)">(38 Verse, 21✓)</span></a><a href="jer26.html">Jeremia 26 <span style="color:var(--mut)">(24 Verse, 16✓)</span></a><a href="jer27.html">Jeremia 27 <span style="color:var(--mut)">(21 Verse, 15✓)</span></a><a href="jer28.html">Jeremia 28 <span style="color:var(--mut)">(15 Verse, 8✓)</span></a><a href="jer29.html">Jeremia 29 <span style="color:var(--mut)">(32 Verse, 19✓)</span></a><a href="jer30.html">Jeremia 30 <span style="color:var(--mut)">(24 Verse, 15✓)</span></a><a href="jer31.html">Jeremia 31 <span style="color:var(--mut)">(40 Verse, 22✓)</span></a><a href="jer32.html">Jeremia 32 <span style="color:var(--mut)">(44 Verse, 35✓)</span></a><a href="jer33.html">Jeremia 33 <span style="color:var(--mut)">(25 Verse, 16✓)</span></a><a href="jer34.html">Jeremia 34 <span style="color:var(--mut)">(22 Verse, 11✓)</span></a><a href="jer35.html">Jeremia 35 <span style="color:var(--mut)">(19 Verse, 12✓)</span></a><a href="jer36.html">Jeremia 36 <span style="color:var(--mut)">(32 Verse, 21✓)</span></a><a href="jer37.html">Jeremia 37 <span style="color:var(--mut)">(21 Verse, 10✓)</span></a><a href="jer38.html">Jeremia 38 <span style="color:var(--mut)">(28 Verse, 18✓)</span></a><a href="jer39.html">Jeremia 39 <span style="color:var(--mut)">(18 Verse, 15✓)</span></a><a href="jer40.html">Jeremia 40 <span style="color:var(--mut)">(16 Verse, 11✓)</span></a><a href="jer41.html">Jeremia 41 <span style="color:var(--mut)">(18 Verse, 12✓)</span></a><a href="jer42.html">Jeremia 42 <span style="color:var(--mut)">(22 Verse, 18✓)</span></a><a href="jer43.html">Jeremia 43 <span style="color:var(--mut)">(13 Verse, 3✓)</span></a><a href="jer44.html">Jeremia 44 <span style="color:var(--mut)">(29 Verse, 14✓)</span></a><a href="jer45.html">Jeremia 45 <span style="color:var(--mut)">(5 Verse, 3✓)</span></a><a href="jer46.html">Jeremia 46 <span style="color:var(--mut)">(28 Verse, 20✓)</span></a><a href="jer47.html">Jeremia 47 <span style="color:var(--mut)">(7 Verse, 5✓)</span></a><a href="jer48.html">Jeremia 48 <span style="color:var(--mut)">(47 Verse, 32✓)</span></a><a href="jer49.html">Jeremia 49 <span style="color:var(--mut)">(39 Verse, 22✓)</span></a><a href="jer50.html">Jeremia 50 <span style="color:var(--mut)">(46 Verse, 31✓)</span></a><a href="jer51.html">Jeremia 51 <span style="color:var(--mut)">(64 Verse, 49✓)</span></a><a href="jer52.html">Jeremia 52 <span style="color:var(--mut)">(33 Verse, 20✓)</span></a><a href="2kings25.html">2 Könige 25 <span style="color:var(--mut)">(30 Verse)</span></a></div></main>
+<script>window.__A=[];</script>
+<script>
+var A=window.__A||[];
+var TIP=document.createElement('div');TIP.id='tip';document.body.appendChild(TIP);
+var LBL={sp:'',vs:'',vt:'',ps:'',nu:'',gn:''};
+function fmt(i,approx){var u=A[i];if(!u)return'';
+ var h='<span class="hw'+(u.g?' gk':'')+'">'+u.f+'</span>';
+ u.w.forEach(function(w){
+  var bits=[];
+  ['sp','vs','vt','case','tense','voice','mood','ps','nu','gn','degree']
+    .forEach(function(k){if(w[k])bits.push(w[k])});
+  h+='<div class="r"><span class="lx'+(u.g?' gk':'')+'">'+(w.vlex||w.lex||'')+'</span> '+
+     (w.vlex?'<span class="cd">'+(w.lex||'')+'</span>':'')+
+     (bits.length?' &middot; '+bits.join(' &middot; '):'')+'</div>';
+  if(w.gloss)h+='<div class="gl">'+w.gloss+'</div>';
+  if(w.q)h+='<div class="kq2"><b>K</b> <span>'+w.k+'</span> &nbsp;<b>Q</b> <span>'+w.q+'</span></div>';});
+ if(approx)h+='<div class="src">aus dem Formenindex (nicht aus diesem Vers)</div>';
+ return h;}
+document.addEventListener('mouseover',function(e){
+ var t=e.target;if(!t.classList||!t.classList.contains('w'))return;
+ var i=t.getAttribute('data-a');if(i===null)return;
+ TIP.innerHTML=fmt(+i,t.hasAttribute('data-x'));TIP.style.display='block';
+ var r=t.getBoundingClientRect();
+ var x=Math.min(r.left,window.innerWidth-TIP.offsetWidth-12);
+ var y=r.bottom+6;if(y+TIP.offsetHeight>window.innerHeight)y=r.top-TIP.offsetHeight-6;
+ TIP.style.left=Math.max(6,x)+'px';TIP.style.top=Math.max(6,y)+'px';});
+document.addEventListener('mouseout',function(e){
+ if(e.target.classList&&e.target.classList.contains('w'))TIP.style.display='none';});
+
+function t(k,c){var b=document.body;b.classList.toggle(c);
+ try{localStorage.setItem(k,b.classList.contains(c)?'1':'0')}catch(e){}}
+['hl','hide-notes','hide-grk'].forEach(function(c){
+ try{var v=localStorage.getItem(c);
+  if(v==='1')document.body.classList.add(c);
+  if(v==='0')document.body.classList.remove(c);}catch(e){}});
+document.querySelectorAll('input[data-c]').forEach(function(i){
+ var c=i.dataset.c;i.checked=(c==='hl')?document.body.classList.contains(c)
+   :!document.body.classList.contains(c);
+ i.onchange=function(){t(c,c)};});
+</script></body></html>
