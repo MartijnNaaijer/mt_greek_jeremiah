@@ -1,0 +1,48 @@
+{
+  "_": "Measured on 2026-09-05 from the pages built by build_synopse_pages.py. Floors, not targets: raise them when the extraction improves, and explain any fall.",
+  "verses": 1386,
+  "jeremiah_verses": 1356,
+  "pool_entries": 30683,
+  "confirmed_floor": 1136,
+  "ketiv_qere_floor": 138,
+  "expected_missing": [
+    [
+      13,
+      10
+    ],
+    [
+      22,
+      12
+    ],
+    [
+      22,
+      27
+    ],
+    [
+      23,
+      34
+    ],
+    [
+      28,
+      8
+    ],
+    [
+      28,
+      9
+    ],
+    [
+      44,
+      16
+    ],
+    [
+      52,
+      20
+    ]
+  ],
+  "bhsa": {
+    "exact_floor": 1136,
+    "recall_floor": 0.93,
+    "note": "Verses whose masoretic consonants equal BHSA's exactly and in order; the mean in-order recall over all verses; and how many verses carry letters BHSA does not have in that verse, which is apparatus read as text. Floors and a ceiling, set at the figures of 2026-09-05: tighten them as the extraction improves.",
+    "with_extra_text_ceiling": 61
+  }
+}

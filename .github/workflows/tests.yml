@@ -1,0 +1,22 @@
+name: tests
+
+# The pages are generated output, so the suite is a check on the generator: it
+# runs on every push and says whether the last build of the Synopse still holds
+# together and still says the right thing.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # No install step and no requirements file. The suite is standard library
+      # only; the tests that need BHSA skip themselves, and they are meant to be
+      # run locally, where the corpus is.
+      - run: python -m unittest discover -s tests -t tests -v

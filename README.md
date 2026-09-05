@@ -69,6 +69,39 @@ Synopse. Every verse carries a badge saying whether the two agree.
 - The alexandrian column is a retroversion of the Greek and Stipp's Greek is his
   own. Neither has a check here.
 
+## Tests
+
+    python -m unittest discover -s tests -t tests -v
+
+42 tests over the built pages, standard library only — no install, no
+requirements file. They are a check on the generator: the pages are output, so
+what the suite asserts is that the last build still holds together and still
+says the right thing.
+
+Three groups:
+
+- **`test_structure.py`** — the pages hold together. Every chapter present and
+  linked; every table stating its own column widths; no blank rows; verse
+  numbers ascending and matching their anchors; every hover resolving into the
+  page's analysis pool and every pool entry reached.
+- **`test_text.py`** — the text is text and is the right text. The Hebrew
+  columns hold only Hebrew, so a bracket or a Latin letter fails: that is how
+  Stipp's sigla and apparatus leak in. Five verses are pinned word for word,
+  read by hand off the Synopse against its Einleitung. Nothing on the page may
+  come from BHSA.
+- **`test_against_bhsa.py`** — the masoretic column against the database. These
+  **skip themselves** where BHSA is not installed, so a bare clone still runs
+  the other 30. They are floors, not targets: the pages are extraction from a
+  PDF and a sixth of the verses still deviate, so what they guard is a fall.
+  One test per fault the pages have actually had, each on the verse that showed
+  it. Install with `pip install text-fabric` and
+  `python -c "from tf.app import use; use('etcbc/bhsa:clone', version='2021')"`,
+  or point `BHSA_TF` at an existing copy.
+
+`tests/baseline.json` holds the counts measured when the suite was written.
+They are floors and one ceiling, not targets — tighten them as the extraction
+improves, and explain any fall.
+
 ## Where it comes from
 
 Output only. Nothing here is hand-edited, and nothing in the pipeline reads back
