@@ -27,16 +27,28 @@ main{padding:1rem 1.2rem 4rem;max-width:1400px}
  border:1px solid var(--rule);border-radius:2px;padding:.05rem .35rem;color:var(--mut)}
 .badge.ok{color:var(--mark);border-color:var(--mark)}
 .badge.no{color:var(--mut);border-style:dashed}
-table{width:100%;border-collapse:collapse}
-td{vertical-align:top;padding:.18rem .5rem}
-td.heb{width:30%;direction:rtl;text-align:right;font-size:1.3rem;line-height:1.85;
+/* EVERY VERSE IS ITS OWN TABLE, so the column widths have to be stated rather
+   than computed, or each verse sizes its columns to its own content and the
+   columns wander from verse to verse down the page. Jer 1,1 was the visible
+   case: its Greek is the longest line of the chapter, which widened that column
+   and pushed the masoretic column's right edge - and with it the text, which is
+   set flush right - away from where every other verse of the chapter had it.
+   table-layout:fixed with a colgroup makes all 54 pages align. */
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+col.mt,col.og{width:30%}
+col.cl{width:2.2rem}
+col.grk{width:36%}
+td{vertical-align:top;padding:.18rem .5rem;overflow-wrap:break-word}
+td.heb{direction:rtl;text-align:right;font-size:1.3rem;line-height:1.85;
  font-family:"SBL Hebrew","Ezra SIL","Taamey Frank CLM","Times New Roman",serif}
-td.cl{width:2.2rem;text-align:center;color:var(--mut);font-size:.75rem;padding-top:.6rem}
-td.grk{width:36%;font-size:.98rem;line-height:1.6;color:var(--fg);
+td.cl{text-align:center;color:var(--mut);font-size:.75rem;padding-top:.6rem}
+td.grk{font-size:.98rem;line-height:1.6;color:var(--fg);
  border-left:1px solid var(--rule);padding-left:.8rem;
  font-family:"GFS Didot","New Athena Unicode","Palatino Linotype",Georgia,serif}
 td.grk:empty::after{content:"—";color:var(--rule)}
-.hide-grk td.grk,.hide-grk col.grk{display:none}
+.hide-grk td.grk{display:none}
+.hide-grk col.grk{width:0}
+.hide-grk col.mt,.hide-grk col.og{width:48%}
 .colhead td{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;
  color:var(--mut);border-bottom:1px solid var(--rule);padding-bottom:.2rem}
 tr:hover{background:var(--panel)}
