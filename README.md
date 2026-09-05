@@ -47,13 +47,17 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,110 of 1,385 verses (80.1%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.933**.
+- **1,136 of 1,386 verses (82.0%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.934**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- **Nine verses are missing altogether** — 13:10, 22:12, 22:27, 23:34, 28:8–9,
-  33:11, 44:16, 52:20 — because their number never appears as a clause label on
-  the page it belongs to.
+- Counted by word rather than by letter, **64.1%** of verses match BHSA word for
+  word, a further **17.4%** have every letter right and differ only in where the
+  spaces fall — the source PDF breaks words across justification gaps — and
+  **18.5%** differ in the letters themselves.
+- **Eight verses are missing altogether** — 13:10, 22:12, 22:27, 23:34, 28:8–9,
+  44:16, 52:20 — because their number never appears as a clause label on the
+  page it belongs to; their text is folded into the verse before them.
 - The BWHEBB→Unicode map agrees with BHSA on **97.9%** of words; the Greek map,
   checked against Rahlfs, gives **96.6%** attested forms.
 - The Greek is placed in the right Rahlfs verse for **90.2%** of its words.
