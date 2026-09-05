@@ -7,15 +7,22 @@ unretroverted Greek.
 Source: Hermann-Josef Stipp, *Textkritische Synopse zum Jeremiabuch*, 15. Aufl.,
 April 2021.
 
+Read it here: **https://martijnnaaijer.github.io/mt_greek_jeremiah/**
+
 ## What is here
 
-    pages/index.html      the chapter index — open this one
-    pages/jer01.html …    Jeremiah 1–52, one page per chapter
-    pages/2kings25.html   the three Synopse pages of the parallel
+    docs/index.html      the chapter index — start here
+    docs/jer01.html …    Jeremiah 1–52, one page per chapter
+    docs/2kings25.html   the three Synopse pages of the parallel
 
 54 files. Each is self-contained: the data is embedded, the CSS is inline,
-nothing is fetched, so a page can be opened from the file system or mailed to
-someone.
+nothing is fetched, so a page can be opened from the file system, mailed to
+someone, or served as it stands.
+
+The folder is called `docs/` because that is the only subfolder a GitHub Pages
+branch deployment can serve, and it is served at the site root — so
+`docs/jer02.html` is `…github.io/mt_greek_jeremiah/jer02.html`. The name is
+GitHub's convention, not a description of the contents.
 
 ## What is on a page
 
