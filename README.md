@@ -47,19 +47,21 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,136 of 1,386 verses (82.0%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.934**.
+- **1,143 of 1,386 verses (82.5%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.936**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- Counted by word rather than by letter, **77.3%** of verses match BHSA word for
-  word, a further **4.6%** have every letter right and differ only in where the
-  spaces fall, and **18.0%** differ in the letters themselves. The middle group
-  is what is left of a much larger one: it was 15.4% until 2026-09-07, when three
+- Counted by word rather than by letter, **78.4%** of verses match BHSA word for
+  word, a further **4.0%** have every letter right and differ only in where the
+  spaces fall, and **17.5%** differ in the letters themselves. The middle group
+  is what is left of a much larger one: it was 15.4% until 2026-09-07, when five
   faults that put a space inside a word — or took one out — were fixed in the
-  extraction. What remains there is the source's own, either a word broken
-  across a justification gap (BI-SHLO SH-'ESREH at 1,2) or a compound name BHSA
-  writes as one graphical unit and Stipp sets as two ('OBED MELEK, BET LEHEM).
-  The three figures are printed by `build_synopse_pages.py` on every run.
+  extraction. The 56 verses that remain there are the source's own, in two
+  kinds: a word broken across a justification gap and left that way on purpose
+  (BI-SHLO SH-'ESREH at 1,2, SHALO SH eight times), and a compound proper name
+  BHSA writes as one graphical unit while Stipp sets it as two — 'OBED MELEK,
+  BET LEHEM, BEN HINNOM, NERGAL SAR 'ESER, QIR HERES. The three figures are
+  printed by `build_synopse_pages.py` on every run.
 - **Eight verses are missing altogether** — 13:10, 22:12, 22:27, 23:34, 28:8–9,
   44:16, 52:20 — because their number never appears as a clause label on the
   page it belongs to; their text is folded into the verse before them.
@@ -85,7 +87,7 @@ Synopse. Every verse carries a badge saying whether the two agree.
 
     python -m unittest discover -s tests -t tests -v
 
-51 tests over the built pages, standard library only — no install, no
+52 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.
@@ -107,7 +109,7 @@ Three groups:
   as written that is eight words where there are two.
 - **`test_against_bhsa.py`** — the masoretic column against the database. These
   **skip themselves** where BHSA is not installed, so a bare clone still runs
-  the other 35. They are floors, not targets: the pages are extraction from a
+  the other 36. They are floors, not targets: the pages are extraction from a
   PDF and a sixth of the verses still deviate, so what they guard is a fall.
   One test per fault the pages have actually had, each on the verse that showed
   it, plus a floor on word-for-word agreement — the axis the letter test cannot

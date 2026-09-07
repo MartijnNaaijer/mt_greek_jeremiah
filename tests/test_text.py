@@ -286,6 +286,25 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
         self.assertEqual(adrift, 0, f"{adrift} words begin with a sof pasuq")
         self.assertLessEqual(alone, BASELINE["lone_sof_pasuq_ceiling"])
 
+    def test_a_bracket_between_a_prefix_and_its_noun(self):
+        """Jer 4,3a: WE-LI <JOSHBEJ> JERUSHALAIM.
+
+        Stipp's space stands on the far side of the bracket, where it is the
+        alexandrian reading's word-space; the masoretic reading is one word.
+        The page had WE-LI and JERUSHA as two, and the last three glyphs of
+        JERUSHALAIM were missing besides, having overflowed the left edge of
+        the text column into the margin.
+        """
+        self.assertPrinted("וְלִירוּשָׁלַםִ", "jer04.html", 3)
+        self.assertPrinted("מִצָּפוֹן", "jer01.html", 14)
+        self.assertPrinted("לְמַלְכֵי", "jer01.html", 18)
+        self.assertPrinted("וִירוּשָׁלַםִ", "jer19.html", 7)
+        # and the words that are NOT fragments stay apart, though they too are
+        # spelled with nothing but proclitic letters
+        self.assertPrinted("כֹּה", "jer19.html", 1)
+        self.assertPrinted("שֵׁב", "jer36.html", 15)
+        self.assertPrinted("כָּל־הַשָּׂדֶה", "jer12.html", 4)
+
     def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
         # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
         # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.
