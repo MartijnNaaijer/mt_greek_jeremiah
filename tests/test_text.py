@@ -261,6 +261,31 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
         # WE-NISHBA'TA is a masoretic plus and came out as a word of its own.
         self.assertPrinted("וְנִשְׁבַּעְתָּ", "jer04.html", 2)
 
+    def test_the_sof_pasuq_is_written_against_its_word(self):
+        """It never begins a word, so it may not stand off from one.
+
+        Stipp sets his parenthetical apparatus inline in the text column, and
+        the gap around it arrives as a Hebrew span of nothing but space. Where
+        that fell between the last word of a verse and its sof pasuq the sign
+        was set adrift - 339 clauses, 115 masoretic and 224 alexandrian, of
+        which Jer 4,1d was one.
+        """
+        self.assertPrinted("תָנוּד׃", "jer04.html", 1)
+
+        # The exception is a clause whose text is ENTIRELY a masoretic plus:
+        # the alexandrian cell then holds the verse-end sign and nothing else,
+        # which is the structure of the verse and not a spacing fault.
+        adrift, alone = 0, 0
+        for v in S.verses():
+            for r in v.rows:
+                for cell in (r.mt_printed(), r.og_printed()):
+                    if cell == ["׃"]:
+                        alone += 1
+                    else:
+                        adrift += sum(1 for w in cell if w.startswith("׃"))
+        self.assertEqual(adrift, 0, f"{adrift} words begin with a sof pasuq")
+        self.assertLessEqual(alone, BASELINE["lone_sof_pasuq_ceiling"])
+
     def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
         # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
         # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.
