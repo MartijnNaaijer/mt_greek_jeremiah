@@ -47,14 +47,14 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,143 of 1,386 verses (82.5%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.936**.
+- **1,195 of 1,386 verses (86.2%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.951**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- Counted by word rather than by letter, **78.4%** of verses match BHSA word for
-  word, a further **4.0%** have every letter right and differ only in where the
-  spaces fall, and **17.5%** differ in the letters themselves. The middle group
-  is what is left of a much larger one: it was 15.4% until 2026-09-07, when five
+- Counted by word rather than by letter, **81.8%** of verses match BHSA word for
+  word, a further **4.4%** have every letter right and differ only in where the
+  spaces fall, and **13.8%** differ in the letters themselves. The middle group
+  is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
   extraction. The 56 verses that remain there are the source's own, in two
   kinds: a word broken across a justification gap and left that way on purpose
@@ -82,6 +82,13 @@ Synopse. Every verse carries a badge saying whether the two agree.
   number in the Greek panel is not an MT verse number.
 - The alexandrian column is a retroversion of the Greek and Stipp's Greek is his
   own. Neither has a check here.
+
+`scripts/pages_vs_bhsa.py` in the parent project scores these pages against BHSA
+consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,
+saying for each missing run whether it is in the alexandrian column, in a margin
+note, in the parse but not on the page, or nowhere. As of 2026-09-07: 156 verses
+are missing letters, 68 carry letters BHSA does not have in that verse, and 8
+are absent altogether.
 
 ## Tests
 
