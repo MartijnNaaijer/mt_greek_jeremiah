@@ -305,6 +305,59 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
         self.assertPrinted("שֵׁב", "jer36.html", 15)
         self.assertPrinted("כָּל־הַשָּׂדֶה", "jer12.html", 4)
 
+    def test_the_left_end_of_a_long_line_is_text_and_not_margin(self):
+        """Jer 2,34a, and the fault it showed.
+
+        The text column is set flush right and overflows MARGIN_X on a long
+        line, so its left end fell into the leading margin run and was dropped.
+        Here NEQIJIM stands at x = 141.5 with the bracket that closes the plus
+        on 'EBJONIM at 166.1, and BOTH were being read as margin - so the verse
+        lost a word AND the masoretic plus beside it. 80 verses of the book had
+        text sitting in a margin note that way; 41 of them are recovered, and
+        what is left is further left than the floor `OVERFLOW_X` allows.
+        """
+        v = next(v for v in S.pages()[1].verses if v.number == 34)
+        self.assertIn(unicodedata.normalize("NFC", "נְקִיִּים"),
+                      [unicodedata.normalize("NFC", w) for w in v.mt_printed()])
+        # the bracket travels with the word: 'EBJONIM is still marked a plus
+        self.assertTrue(
+            any("plus" in w.cls and "אֶבְיוֹנִים" in unicodedata.normalize("NFC", w.text)
+                for w in v.mt_words()),
+            "the masoretic plus of 2,34a was lost with the margin run")
+
+    def test_a_siglum_in_the_margin_is_not_a_bracket(self):
+        """Jer 8,1, the largest single loss in the book.
+
+        The margin note reads '7,30-8,3 > 4Q70* (4QJer a*)' - Stipp's siglum
+        for "absent from", with the witness after it. Read as the bracket that
+        opens an alexandrian plus it opened one that never closed, and the
+        whole of 8,1b went to the alexandrian column: 89 letters. Real markup
+        in the margin is the LEFTMOST thing on the printed line, so nothing
+        but space follows it in its span.
+        """
+        v = next(v for v in S.pages()[7].verses if v.number == 1)
+        mt = unicodedata.normalize("NFC", " ".join(v.mt_printed()))
+        self.assertIn("וְיֹצִיאוּ", mt)
+        self.assertIn("מִקִּבְרֵיהֶם", mt)
+
+    def test_a_printed_line_set_in_two_pieces_is_read_right_to_left(self):
+        """Jer 10,16 and 44,1: the halves came back in the wrong order.
+
+        Where Stipp's typesetter sets one printed line as two text objects,
+        pypdf hands back the LEFT half first, and the column runs right to
+        left. At 10,16 the label 'c' sits on the right half with WE-JISRAEL
+        SHEBET while NAHALATO, the left half of the same line, was handed to
+        the clause before it - so the verse read HU NAHALATO WE-JISRAEL SHEBET
+        for BHSA's HU WE-JISRAEL SHEBET NAHALATO. Nothing was ever lost here;
+        only the order was wrong, which is why no earlier check caught it.
+        """
+        def mt(page, number):
+            v = next(v for v in S.pages()[int(page[3:5]) - 1].verses
+                     if v.number == number)
+            return unicodedata.normalize("NFC", " ".join(v.mt_printed()))
+        self.assertIn("הוּא וְיִשְׂרָאֵל שֵׁבֶט נַחֲלָתוֹ", mt("jer10.html", 16))
+        self.assertIn("בְּאֶרֶץ מִצְרָיִם הַיֹּשְׁבִים", mt("jer44.html", 1))
+
     def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
         # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
         # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.
