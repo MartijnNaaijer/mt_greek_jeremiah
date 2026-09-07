@@ -436,14 +436,26 @@ class TestBaseline(unittest.TestCase):
             ok, BASELINE["confirmed_floor"],
             f"{ok} verses agree with BHSA, was {BASELINE['confirmed_floor']}")
 
-    def test_the_verses_known_to_be_missing_have_not_multiplied(self):
+    def test_every_verse_of_the_book_is_on_a_page(self):
+        """1,364 of 1,364, and `expected_missing` is empty.
+
+        Eight verses were missing until 2026-09-07 - 13,10; 22,12; 22,27;
+        23,34; 28,8-9; 44,16; 52,20 - because their number never appeared as a
+        clause label. It did appear: Stipp raises a P for Parablepsis on the
+        colon it qualifies and sets it inside the label span, ']_aP_10' at
+        13,9, and labelish() rejected the whole label for the capital letter.
+        The list is kept, empty, so that a fall shows up as a name.
+        """
         present = {(v.chapter, v.number) for v in S.verses()
                    if v.page.startswith("jer")}
         missing = [ref for ref in BASELINE["expected_missing"]
                    if tuple(ref) not in present]
-        self.assertEqual([list(m) for m in missing], BASELINE["expected_missing"],
-                         "a verse that used to be present has gone")
+        self.assertEqual([list(m) for m in missing], BASELINE["expected_missing"])
         self.assertEqual(len(present), BASELINE["jeremiah_verses"])
+        for ref in ((13, 10), (22, 12), (22, 27), (23, 34),
+                    (28, 8), (28, 9), (44, 16), (52, 20)):
+            with self.subTest(verse=ref):
+                self.assertIn(ref, present)
 
     def test_the_ketiv_qere_marks_have_not_been_lost(self):
         kq = sum(r.mt_kq for v in S.verses() for r in v.rows)

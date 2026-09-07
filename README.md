@@ -47,13 +47,13 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,283 of 1,386 verses (92.6%)** reproduce BHSA's consonants exactly and in
+- **1,297 of 1,394 verses (93.0%)** reproduce BHSA's consonants exactly and in
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.979**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- Counted by word rather than by letter, **88.0%** of verses match BHSA word for
+- Counted by word rather than by letter, **88.5%** of verses match BHSA word for
   word, a further **4.5%** have every letter right and differ only in where the
-  spaces fall, and **7.4%** differ in the letters themselves. The middle group
+  spaces fall, and **7.0%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
   extraction. The 56 verses that remain there are the source's own, in two
@@ -62,9 +62,11 @@ Synopse. Every verse carries a badge saying whether the two agree.
   BHSA writes as one graphical unit while Stipp sets it as two — 'OBED MELEK,
   BET LEHEM, BEN HINNOM, NERGAL SAR 'ESER, QIR HERES. The three figures are
   printed by `build_synopse_pages.py` on every run.
-- **Eight verses are missing altogether** — 13:10, 22:12, 22:27, 23:34, 28:8–9,
-  44:16, 52:20 — because their number never appears as a clause label on the
-  page it belongs to; their text is folded into the verse before them.
+- **The book is complete: 1,364 verses of 1,364.** Eight were missing until
+  2026-09-07 — 13:10, 22:12, 22:27, 23:34, 28:8–9, 44:16, 52:20 — because
+  Stipp raises a P for Parablepsis inside the label span (`] aP 10`) and the
+  capital letter made the whole label unreadable, so the verse never opened and
+  its text ran on into the verse before.
 - The BWHEBB→Unicode map agrees with BHSA on **97.9%** of words. The Greek is
   scored two ways against Rahlfs, both printed by `parse_synopse.py` on every
   run. **98.2%** of tokens are forms attested somewhere in LXX Jeremiah once
@@ -87,8 +89,8 @@ Synopse. Every verse carries a badge saying whether the two agree.
 consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,
 saying for each missing run whether it is in the alexandrian column, in a margin
 note, in the parse but not on the page, or nowhere. As of 2026-09-07: 70 verses
-are missing letters, 39 carry letters BHSA does not have in that verse, and 8
-are absent altogether. 16 of the 70 are not a fault at all: where Stipp's two
+are missing letters and 32 carry letters BHSA does not have in that verse; none
+is absent. 16 of the 70 are not a fault at all: where Stipp's two
 forms differ only at the head of a word he prints the masoretic head and the
 alexandrian word in full, and the shared remainder appears once.
 
