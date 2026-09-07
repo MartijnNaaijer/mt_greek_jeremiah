@@ -63,8 +63,15 @@ Synopse. Every verse carries a badge saying whether the two agree.
 - **Eight verses are missing altogether** — 13:10, 22:12, 22:27, 23:34, 28:8–9,
   44:16, 52:20 — because their number never appears as a clause label on the
   page it belongs to; their text is folded into the verse before them.
-- The BWHEBB→Unicode map agrees with BHSA on **97.9%** of words; the Greek map,
-  checked against Rahlfs, gives **96.6%** attested forms.
+- The BWHEBB→Unicode map agrees with BHSA on **97.9%** of words. The Greek is
+  scored two ways against Rahlfs, both printed by `parse_synopse.py` on every
+  run. **98.2%** of tokens are forms attested somewhere in LXX Jeremiah once
+  accent and breathing are stripped (96.6% before 2026-09-07), and **96.9%**
+  are byte-identical to a Rahlfs form with the marks left on (91.4% before).
+  The second figure is the one to watch: the first cannot see a breathing at
+  all, which is how four entries of the Greek map stayed wrong for as long as
+  they did. What is left is Stipp's own spelling against Rahlfs — φησί,
+  ἐποίησε, ἐλάλησε for ἐποίησεν and ἐλάλησεν, and unaccented Ιερεμίαν.
 - The Greek is placed in the right Rahlfs verse for **90.2%** of its words.
   Where the clause counts of the two columns agree — 1,062 verses of 1,246 — the
   verse is marked `Gr ✓`; where they do not, the Greek has still been dealt out
@@ -78,7 +85,7 @@ Synopse. Every verse carries a badge saying whether the two agree.
 
     python -m unittest discover -s tests -t tests -v
 
-47 tests over the built pages, standard library only — no install, no
+50 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.
@@ -94,10 +101,13 @@ Three groups:
   Stipp's sigla and apparatus leak in. Five verses are pinned word for word,
   read by hand off the Synopse against its Einleitung. Nothing on the page may
   come from BHSA. A bracket may not break a word: where Stipp brackets a prefix,
-  a suffix or one half of a maqqef pair, the page must still set one word.
+  a suffix or one half of a maqqef pair, the page must still set one word. Nor
+  may the Greek arrive as loose letters: Stipp letter-spaces a short colon to
+  fill its measure, and read as written that is eight words where there are
+  two.
 - **`test_against_bhsa.py`** — the masoretic column against the database. These
   **skip themselves** where BHSA is not installed, so a bare clone still runs
-  the other 31. They are floors, not targets: the pages are extraction from a
+  the other 34. They are floors, not targets: the pages are extraction from a
   PDF and a sixth of the verses still deviate, so what they guard is a fall.
   One test per fault the pages have actually had, each on the verse that showed
   it, plus a floor on word-for-word agreement — the axis the letter test cannot

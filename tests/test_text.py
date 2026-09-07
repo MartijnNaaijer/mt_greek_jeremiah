@@ -64,6 +64,64 @@ class TestTheTextIsText(unittest.TestCase):
                     self.assertTrue(S.is_hebrew_text(w.text),
                                     f"{v.ref}: {w.text!r} is not Hebrew")
 
+    def test_the_greek_column_is_words_and_not_letters(self):
+        """Stipp letter-spaces a short Greek colon to fill its measure - a space
+        between every character, two between words - on 247 spans over 129 of
+        the 181 pages. Read as written it puts eight words on the page where
+        there are two: Jer 4,30b came out 'τί π οι ήσ εις' for τί ποιήσεις. What
+        is asserted here is that the debris of that has not come back, since a
+        Greek word of one letter is almost always a piece of one.
+        """
+        # A BARE letter: one character with no breathing and no accent on it.
+        # Every genuine one-letter Greek word carries a breathing - ὁ, ἡ, ὃ, ᾧ -
+        # and those are single codepoints, so the test is on the DECOMPOSED
+        # form. It was 565 before 2026-09-07 and is 32 now.
+        n = 0
+        for v in S.verses():
+            for w in v.greek_words():
+                d = unicodedata.normalize("NFD", w.text.strip())
+                if len(d) == 1 and S.GRK.match(d):
+                    n += 1
+        self.assertLessEqual(
+            n, BASELINE["greek_single_letter_ceiling"],
+            f"{n} Greek words are a single letter, was "
+            f"{BASELINE['greek_single_letter_ceiling']}")
+
+    def test_the_letter_spaced_verse_that_showed_it(self):
+        # Jer 4,30b, and the ὡραϊσμός of 4,30f, whose diaeresis was written '?'
+        # in the source font and had no mapping, so a literal question mark
+        # stood on the page. Neither fault could be seen by the attested-form
+        # count: the broken pieces οι and εις are themselves Greek words, and
+        # the '?' drops out of the comparison as punctuation.
+        v = next(v for v in S.pages()[3].verses if v.number == 30)
+        greek = " ".join(w.text for w in v.greek_words())
+        self.assertIn("ποιήσεις", greek)
+        self.assertIn("ὡραϊσμός", greek)
+        self.assertNotIn("?", greek)
+
+    def test_the_marks_the_greek_map_had_wrong(self):
+        """Four entries of bwfonts.GRK_MARK, one verse each.
+
+        None of them could be seen by the attested-form count, which strips
+        accent and breathing before comparing; the measure that shows them is
+        exact agreement with a Rahlfs form, and that moved 91.4% to 96.9% when
+        they were fixed.
+        """
+        def greek(page, number):
+            v = next(v for v in S.pages()[int(page[3:5]) - 1].verses
+                     if v.number == number)
+            return unicodedata.normalize(
+                "NFC", " ".join(w.text for w in v.greek_words()))
+        # '-' was printing as a literal hyphen: 'ω-ν' for ὧν, 184 places.
+        self.assertIn("ὧν", greek("jer02.html", 32))
+        self.assertIn("οὗτος", greek("jer08.html", 5))
+        self.assertNotIn("-", greek("jer02.html", 32))
+        # "'" was unmapped and simply lost: 'η' for ἢ, 57 places.
+        self.assertIn("ἢ", greek("jer02.html", 14))
+        # 'V' inside a word is the elision apostrophe, not a breathing on the
+        # next word's vowel: ἐφ᾿ ὕδατα at 2,24, 298 places.
+        self.assertIn("ἐφ᾿ ὕδατα", greek("jer02.html", 24))
+
     def test_the_greek_column_holds_only_greek(self):
         for v in S.verses():
             for w in v.greek_words():
