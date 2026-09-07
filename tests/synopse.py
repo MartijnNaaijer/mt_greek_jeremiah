@@ -80,6 +80,26 @@ class Row:
     def mt_text(self):
         return " ".join(w.text for w in self.mt)
 
+    def printed(self, i):
+        """The words of cell `i` AS SET, not span by span.
+
+        A word can be several spans - Stipp brackets inside a word wherever the
+        two editions differ only in spelling, and the pieces are coloured
+        separately - and then the page writes them hard against each other with
+        no space between. Reading the spans as words says WE-NISHBA' TA where
+        the page says WE-NISHBA'TA, so the only way to test what a reader sees
+        is to take the cell's text and split it on whitespace.
+        """
+        t = WORD.sub(lambda m: unescape(m.group(3)), self.raw[i][1])
+        t = re.sub(r"<[^>]+>", "", t)
+        return t.split()
+
+    def mt_printed(self):
+        return self.printed(0)
+
+    def og_printed(self):
+        return self.printed(2)
+
 
 class Verse:
     def __init__(self, page, vid, body):
@@ -121,6 +141,12 @@ class Verse:
 
     def mt_text(self):
         return " ".join(r.mt_text() for r in self.rows if r.mt).strip()
+
+    def mt_printed(self):
+        return [w for r in self.rows for w in r.mt_printed()]
+
+    def og_printed(self):
+        return [w for r in self.rows for w in r.og_printed()]
 
     def consonants(self):
         return "".join(HEB.findall(self.mt_text()))

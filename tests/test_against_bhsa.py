@@ -63,13 +63,59 @@ def load_bhsa():
     return out
 
 
+def load_units():
+    """{'1:1': ['DBRJ', 'JRMJHW', ...]} - the same verses cut into GRAPHICAL
+    UNITS: what stands between spaces, with the maqqef counting as a break,
+    because that is how the pages set the column and how BHSA divides it.
+
+    The consonant test above is blind to where a space falls; this is the
+    ground truth for the other axis.
+    """
+    if not os.path.isdir(BHSA):
+        return None
+    try:
+        from tf.fabric import Fabric
+    except ImportError:
+        return None
+    api = Fabric(locations=[BHSA], silent="deep").load(
+        "otype g_cons_utf8 trailer", silent="deep")
+    F, L, T = api.F, api.L, api.T
+    out = {}
+    for vn in F.otype.s("verse"):
+        b, c, v = T.sectionFromNode(vn)
+        if b == "Jeremiah":
+            key = f"{c}:{v}"
+        elif b == "2_Kings" and c == 25:
+            key = f"K{c}:{v}"
+        else:
+            continue
+        units, buf = [], ""
+        for w in L.d(vn, "word"):
+            buf += "".join(S.HEB.findall(F.g_cons_utf8.v(w) or ""))
+            if F.trailer.v(w):
+                if buf:
+                    units.append(buf)
+                buf = ""
+        if buf:
+            units.append(buf)
+        out[key] = units
+    return out
+
+
 _BH = [None]
+_BU = [None]
 
 
 def bhsa():
     if _BH[0] is None:
         _BH[0] = load_bhsa() or {}
     return _BH[0]
+
+
+def units():
+    if _BU[0] is None:
+        _BU[0] = load_units() or {}
+    return _BU[0]
 
 
 def fold(t):
@@ -116,6 +162,33 @@ class TestTheColumnAgreesWithBHSA(BHSATest):
         mean = sum(rs) / len(rs)
         self.assertGreaterEqual(mean, BASE["recall_floor"],
                                 f"mean in-order recall {mean:.3f}")
+
+    def test_the_column_is_divided_into_words_as_bhsa_divides_it(self):
+        """Word-for-word agreement: the second axis, and the one the badge is
+        blind to.
+
+        The badge tests the letters and their order, so a word broken in two -
+        or two run together - passes it unseen. That is how a line-break rule
+        firing inside a line went unnoticed until 2026-09-07: it put a space
+        inside a word in 149 verses and no test moved. This floor is the one
+        that would have caught it, and it rose from 923 to 1,072 when the rule
+        was fixed and the leading maqqef was no longer dropped.
+        """
+        same = 0
+        for v in S.verses():
+            want = units().get(self.key(v))
+            if not want:
+                continue
+            got = [fold(w) for w in
+                   " ".join(v.mt_printed()).replace("־", " ").split()
+                   if S.HEB.search(w)]
+            got = ["".join(S.HEB.findall(w)) for w in got]
+            if got == [fold(w) for w in want]:
+                same += 1
+        self.assertGreaterEqual(
+            same, BASE["word_exact_floor"],
+            f"{same} verses are divided into words as BHSA divides them; "
+            f"the floor is {BASE['word_exact_floor']}.")
 
     def test_the_badge_tells_the_truth(self):
         """A verse marked BHSA ✓ really does reproduce BHSA.

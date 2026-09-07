@@ -51,10 +51,15 @@ Synopse. Every verse carries a badge saying whether the two agree.
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.934**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- Counted by word rather than by letter, **64.1%** of verses match BHSA word for
-  word, a further **17.4%** have every letter right and differ only in where the
-  spaces fall — the source PDF breaks words across justification gaps — and
-  **18.5%** differ in the letters themselves.
+- Counted by word rather than by letter, **77.3%** of verses match BHSA word for
+  word, a further **4.6%** have every letter right and differ only in where the
+  spaces fall, and **18.0%** differ in the letters themselves. The middle group
+  is what is left of a much larger one: it was 15.4% until 2026-09-07, when three
+  faults that put a space inside a word — or took one out — were fixed in the
+  extraction. What remains there is the source's own, either a word broken
+  across a justification gap (BI-SHLO SH-'ESREH at 1,2) or a compound name BHSA
+  writes as one graphical unit and Stipp sets as two ('OBED MELEK, BET LEHEM).
+  The three figures are printed by `build_synopse_pages.py` on every run.
 - **Eight verses are missing altogether** — 13:10, 22:12, 22:27, 23:34, 28:8–9,
   44:16, 52:20 — because their number never appears as a clause label on the
   page it belongs to; their text is folded into the verse before them.
@@ -73,7 +78,7 @@ Synopse. Every verse carries a badge saying whether the two agree.
 
     python -m unittest discover -s tests -t tests -v
 
-42 tests over the built pages, standard library only — no install, no
+47 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.
@@ -88,13 +93,15 @@ Three groups:
   columns hold only Hebrew, so a bracket or a Latin letter fails: that is how
   Stipp's sigla and apparatus leak in. Five verses are pinned word for word,
   read by hand off the Synopse against its Einleitung. Nothing on the page may
-  come from BHSA.
+  come from BHSA. A bracket may not break a word: where Stipp brackets a prefix,
+  a suffix or one half of a maqqef pair, the page must still set one word.
 - **`test_against_bhsa.py`** — the masoretic column against the database. These
   **skip themselves** where BHSA is not installed, so a bare clone still runs
-  the other 30. They are floors, not targets: the pages are extraction from a
+  the other 31. They are floors, not targets: the pages are extraction from a
   PDF and a sixth of the verses still deviate, so what they guard is a fall.
   One test per fault the pages have actually had, each on the verse that showed
-  it. Install with `pip install text-fabric` and
+  it, plus a floor on word-for-word agreement — the axis the letter test cannot
+  see, and the one that moved on 2026-09-07. Install with `pip install text-fabric` and
   `python -c "from tf.app import use; use('etcbc/bhsa:clone', version='2021')"`,
   or point `BHSA_TF` at an existing copy.
 

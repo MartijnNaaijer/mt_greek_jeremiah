@@ -7,6 +7,7 @@ themselves where the database is not installed.
 import json
 import os
 import re
+import unicodedata
 import unittest
 
 import synopse as S
@@ -164,6 +165,70 @@ class TestMarkup(unittest.TestCase):
                 if w.from_index:
                     with self.subTest(page=v.page, verse=v.ref, word=w.text):
                         self.assertIsNotNone(w.pool_id)
+
+
+class TestABracketDoesNotBreakAWord(unittest.TestCase):
+    """Stipp brackets INSIDE a word wherever the two editions differ only in a
+    prefix, a suffix or a letter, and the page has to set those pieces as one
+    word while still colouring the bracketed part. Both faults below were on the
+    pages until 2026-09-07 and neither could be seen by the BHSA badge, which
+    tests the letters and their order and is blind to where a space falls.
+    """
+
+    def words(self, page, number):
+        """The printed words of one verse, canonically ordered.
+
+        The points come off the page in the order BWHEBB writes them, which is
+        not always the canonical one - dagesh before vowel here, after it there
+        - so a literal typed into this file would compare unequal to a word
+        that is right. NFC settles the order on both sides.
+        """
+        v = next((v for v in S.pages()[int(page[3:5]) - 1].verses
+                  if v.number == number), None)
+        self.assertIsNotNone(v, f"{page} {number} is not on the page")
+        return [unicodedata.normalize("NFC", w) for w in v.mt_printed()]
+
+    def assertPrinted(self, word, page, number):
+        self.assertIn(unicodedata.normalize("NFC", word), self.words(page, number))
+
+    def test_a_bracketed_prefix_stays_on_its_word(self):
+        # Jer 4,5b: the conjunction of U-BIRUSHALAIM is a masoretic plus, so
+        # Stipp sets ] W [ BIRUSHALAIM and the waw is its own span. A line-break
+        # rule in parse_synopse.py fired inside the line and put a space after
+        # it, and the page read WU BIRUSHALAIM.
+        self.assertPrinted("וּבִירוּשָׁלַםִ", "jer04.html", 5)
+
+    def test_a_bracketed_suffix_stays_on_its_word(self):
+        # Jer 4,2a: the same fault at the other end of a word. The T' of
+        # WE-NISHBA'TA is a masoretic plus and came out as a word of its own.
+        self.assertPrinted("וְנִשְׁבַּעְתָּ", "jer04.html", 2)
+
+    def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
+        # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
+        # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.
+        # tokenise() could not match a leading maqqef and dropped it, and the
+        # two halves were printed run together as KJKH and 'TSPR.
+        self.assertPrinted("כִּי־כֹה", "jer04.html", 27)
+        self.assertPrinted("אֶת־סֵפֶר", "jer03.html", 8)
+
+    def test_no_masoretic_word_is_a_bare_point_or_a_lone_letter_beside_one(self):
+        """The general form of the two faults above, over the whole book.
+
+        A printed word of a single Hebrew letter is legitimate - the
+        prepositions, the conjunction before a shewa - but one that carries no
+        vowel of its own next to a word that begins with a vowel point is the
+        signature of a word cut in two. What is asserted here is only that the
+        count has not risen; the source itself breaks words across its
+        justification gaps and some of these are its own.
+        """
+        n = 0
+        for v in S.verses():
+            for w in v.mt_printed():
+                if len(S.HEB.findall(w)) == 1 and len(w) == 1:
+                    n += 1
+        self.assertLessEqual(n, BASELINE["bare_letter_ceiling"],
+                             f"{n} masoretic words are a single unpointed letter, "
+                             f"was {BASELINE['bare_letter_ceiling']}")
 
 
 class TestBaseline(unittest.TestCase):
