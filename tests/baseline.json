@@ -2,21 +2,22 @@
   "_": "Measured on 2026-09-05 from the pages built by build_synopse_pages.py and re-measured on 2026-09-07, when the spacing faults of the Hebrew columns were fixed, the Greek panel's letter-spacing undone and the text column's overflow recovered from the margin. Floors and ceilings, not targets: tighten them when the extraction improves, and explain any fall.",
   "verses": 1394,
   "jeremiah_verses": 1364,
-  "pool_entries": 30998,
-  "confirmed_floor": 1297,
+  "pool_entries": 31010,
+  "confirmed_floor": 1299,
   "ketiv_qere_floor": 138,
   "expected_missing": [],
   "bhsa": {
-    "exact_floor": 1297,
+    "exact_floor": 1299,
     "recall_floor": 0.978,
-    "note": "Verses whose masoretic consonants equal BHSA's exactly and in order; the mean in-order recall over all verses; how many verses carry letters BHSA does not have in that verse; and how many are divided into the same graphical units. Raised through 2026-09-07: 1,143 -> 1,195 when the text column's left overflow stopped being read as margin, -> 1,197 when a '>' in a margin reference stopped being read as a bracket, -> 1,231 when a printed line set as two text objects stopped being read in the order pypdf hands it back. THE EXTRA-TEXT CEILING WAS LOOSENED 61 -> 68 by the first of those was TIGHTENED to 35 by the third, which put the misplaced halves back where they belong, and loosened again to 39 when OVERFLOW_X came down from 80 to 45 - which recovered 9 verses of missing text for those 4. Raised again to 1,283 / 1,220 / 0.979 when the 56 orphan glyphs at x = 0 were given a position instead of being dropped: they are the last letters of words, and 57 verses had been a letter or two short because of them. And to 1,297 / 1,234 when a raised P or D on a clause label stopped hiding the verse number: the last eight missing verses came back and THE BOOK IS NOW COMPLETE, 1,364 of 1,364.",
-    "with_extra_text_ceiling": 32,
-    "word_exact_floor": 1234
+    "note": "Verses whose masoretic consonants equal BHSA's exactly and in order; the mean in-order recall over all verses; how many verses carry letters BHSA does not have in that verse; and how many are divided into the same graphical units. Raised through 2026-09-07: 1,143 -> 1,195 when the text column's left overflow stopped being read as margin, -> 1,197 when a '>' in a margin reference stopped being read as a bracket, -> 1,231 when a printed line set as two text objects stopped being read in the order pypdf hands it back. THE EXTRA-TEXT CEILING WAS LOOSENED 61 -> 68 by the first of those was TIGHTENED to 35 by the third, which put the misplaced halves back where they belong, and loosened again to 39 when OVERFLOW_X came down from 80 to 45 - which recovered 9 verses of missing text for those 4. Raised again to 1,283 / 1,220 / 0.979 when the 56 orphan glyphs at x = 0 were given a position instead of being dropped: they are the last letters of words, and 57 verses had been a letter or two short because of them. And to 1,297 / 1,234 when a raised P or D on a clause label stopped hiding the verse number: the last eight missing verses came back and THE BOOK IS NOW COMPLETE, 1,364 of 1,364. And to 1,299 / 1,236 when a masoretic plus stopped being able to nest inside itself.",
+    "with_extra_text_ceiling": 30,
+    "word_exact_floor": 1236
   },
   "bare_letter_ceiling": 14,
   "greek_single_letter_ceiling": 7,
   "lone_sof_pasuq_ceiling": 62,
   "sof_pasuq_adrift_ceiling": 1,
   "klammer_index_floor": 256,
-  "unlabelled_clause_ceiling": 134
+  "unlabelled_clause_ceiling": 134,
+  "greek_misplaced_ceiling": 7
 }

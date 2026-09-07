@@ -224,6 +224,65 @@ class TestTheColumnAgreesWithBHSA(BHSATest):
             f"{bad[:8]}")
 
 
+class TestTheGreekIsBesideTheRightColon(unittest.TestCase):
+    """The Greek panel's placement, scored on transliterated proper names.
+
+    A name is the same word in both columns, so it can be matched with no
+    lexicon at all: where a Greek colon names Babylon and the Hebrew colon
+    beside it does not, but another colon of the same verse does, the Greek is
+    in the wrong row. Nothing about names goes into the placement - it is made
+    on LENGTH - so this is an independent check and not the training signal.
+
+    It was 47 verses of 430 while the cola were dealt out one per clause, and
+    five of those were badged Gr OK, because that badge only compared counts.
+    """
+
+    ANCHORS = [("ιερουσαλημ", "ירושלם"), ("βαβυλ", "בבל"), ("ιουδα", "יהודה"),
+               ("ισραηλ", "ישראל"), ("χαλδαι", "כשדים"), ("ιερεμι", "ירמיהו"),
+               ("σεδεκι", "צדקיהו"), ("ναβουχοδονοσορ", "נבוכדראצר"),
+               ("αιγυπτ", "מצרים"), ("σιων", "ציון"), ("δαυιδ", "דוד"),
+               ("μωαβ", "מואב"), ("εδωμ", "אדום"), ("αμμων", "עמון")]
+
+    @staticmethod
+    def _gk(t):
+        import unicodedata
+        d = unicodedata.normalize("NFD", (t or "").lower())
+        return "".join(c for c in d if "α" <= c <= "ω" or c in "ςϲ").replace(
+            "ς", "σ").replace("ϲ", "σ")
+
+    def test_the_greek_is_not_beside_the_wrong_colon(self):
+        import json as _json
+        base = _json.load(open(os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "baseline.json"), encoding="utf-8"))
+        testable = misplaced = 0
+        for v in S.verses():
+            rows = [r for r in v.rows if r.greek]
+            if len(rows) < 2:
+                continue
+            heb = ["".join(S.HEB.findall(" ".join(w.text for w in r.og)))
+                   for r in v.rows]
+            whole = "".join(heb)
+            hit = mis = 0
+            for r in rows:
+                g = self._gk(" ".join(w.text for w in r.greek))
+                own = "".join(S.HEB.findall(" ".join(w.text for w in r.og)))
+                for ga, ha in self.ANCHORS:
+                    if ga in g:
+                        if ha in own:
+                            hit += 1
+                        elif ha in whole:
+                            mis += 1
+                        break
+            if hit or mis:
+                testable += 1
+                misplaced += bool(mis)
+        self.assertGreater(testable, 400)
+        self.assertLessEqual(
+            misplaced, base["greek_misplaced_ceiling"],
+            f"{misplaced} verses of {testable} have Greek beside the wrong "
+            f"colon; the ceiling is {base['greek_misplaced_ceiling']}")
+
+
 class TestTheVersesThatWereWrong(BHSATest):
     """One test per fault found on 2026-09-05, each on the verse that showed it.
 

@@ -410,6 +410,55 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
                     if not r.letter and (r.mt or r.og))
         self.assertLessEqual(blank, BASELINE["unlabelled_clause_ceiling"])
 
+    def test_a_plus_that_runs_over_a_line_break_closes_again(self):
+        """Jer 28,1a, and the whole of it: label, plus, and Greek.
+
+        A bracket that runs over a line break is re-opened at the head of the
+        next line, so the clause carries two ']' and one '['. Counted as a
+        DEPTH that made 2 and the single '[' brought it back to 1, so the plus
+        never closed and swallowed the rest of the clause: the alexandrian
+        column kept WAJHI alone where the Greek has the whole date. A masoretic
+        plus is material the other edition lacks and cannot nest inside itself,
+        so the depth is binary. 45 clauses ended with an unclosed plus.
+        """
+        v = next(v for v in S.pages()[27].verses if v.number == 1)
+        self.assertEqual([r.letter for r in v.rows], ["a", "b1", "c", "b2"])
+        self.assertTrue(v.confirmed(), "28,1 should agree with BHSA")
+        og = unicodedata.normalize("NFC", " ".join(v.og_printed()))
+        self.assertIn("וַיְהִי בִּשְׁנַת הָרְבִעִית", og)
+        # and the Greek beside each of them
+        gk = [" ".join(w.text for w in r.greek) for r in v.rows]
+        self.assertIn("Ανανίας", gk[1])
+        self.assertIn("Γαβαων", gk[2])
+
+    def test_the_greek_is_cut_where_the_hebrew_is_cut(self):
+        """Jer 1,1: EK TON HIEREON belongs beside MIN-HAK-KOHANIM.
+
+        Stipp's Greek panel gives verse 1 four cola where his Hebrew has two,
+        so the four have to be grouped, and matching each Greek colon to the
+        nearest Hebrew MIDPOINT put the group boundary in the wrong place by a
+        margin of 0.06: EK TON HIEREON went to colon b, where the Hebrew has
+        no priests at all. Matching the BOUNDARIES instead - the cut after each
+        Hebrew colon falling at the same proportion of the Greek - puts it back
+        with colon a. Over the book that took the verses with Greek beside the
+        wrong colon from 26 to 7, and none of the 7 is badged Gr OK.
+        """
+        def rows(page, number):
+            v = next(v for v in S.pages()[int(page[3:5]) - 1].verses
+                     if v.number == number)
+            return [(r.letter,
+                     unicodedata.normalize("NFC", " ".join(w.text for w in r.greek)))
+                    for r in v.rows]
+        one = rows("jer01.html", 1)
+        self.assertIn("ἐκ τῶν ἱερέων", one[0][1])
+        self.assertNotIn("ἐκ τῶν ἱερέων", one[1][1])
+        self.assertIn("κατῴκει", one[1][1])
+        # 28,1 keeps its four, one to one
+        two = dict(rows("jer28.html", 1))
+        self.assertIn("Ανανίας", two["b1"])
+        self.assertIn("Γαβαων", two["c"])
+        self.assertIn("οἴκῳ", two["b2"])
+
     def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
         # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
         # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.
