@@ -16,5 +16,7 @@
   "bare_letter_ceiling": 14,
   "greek_single_letter_ceiling": 7,
   "lone_sof_pasuq_ceiling": 62,
-  "sof_pasuq_adrift_ceiling": 1
+  "sof_pasuq_adrift_ceiling": 1,
+  "klammer_index_floor": 256,
+  "unlabelled_clause_ceiling": 134
 }

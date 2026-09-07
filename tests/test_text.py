@@ -389,6 +389,27 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
         self.assertIn("צְבָאוֹת", mt("jer09.html", 6))
         self.assertIn("לַעֲשׂוֹת", mt("jer11.html", 8))
 
+    def test_a_klammerkonstruktion_index_stays_on_its_clause_letter(self):
+        """Jer 28,1, where Stipp prints b1 and b2 and the page printed neither.
+
+        He counts the parts of a Klammerkonstruktion with an index figure and
+        gives it a size of its own - ' b' at 9.88pt then ' 1' at 6.36pt, two
+        spans at the right edge. label_span() returned the LAST of them, the
+        index, and read_clause() refused it for its size, so the label came out
+        empty. The size guard is right and stays: a 6.36pt digit must never be
+        read as a verse number, which is the trap that cost 61 verses at 4,23a.
+        What was missing is that the letter is in the other span. 394 clauses
+        carried text with no letter at all; 134 do now.
+        """
+        v = next(v for v in S.pages()[27].verses if v.number == 1)
+        self.assertEqual([r.letter for r in v.rows], ["a", "b1", "c", "b2"])
+
+        indexed = sum(1 for x in S.verses() for r in x.rows if len(r.letter) > 1)
+        self.assertGreaterEqual(indexed, BASELINE["klammer_index_floor"])
+        blank = sum(1 for x in S.verses() for r in x.rows
+                    if not r.letter and (r.mt or r.og))
+        self.assertLessEqual(blank, BASELINE["unlabelled_clause_ceiling"])
+
     def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
         # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
         # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.
