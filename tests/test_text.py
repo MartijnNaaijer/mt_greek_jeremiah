@@ -368,6 +368,27 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
         self.assertIn("הוּא וְיִשְׂרָאֵל שֵׁבֶט נַחֲלָתוֹ", mt("jer10.html", 16))
         self.assertIn("בְּאֶרֶץ מִצְרָיִם הַיֹּשְׁבִים", mt("jer44.html", 1))
 
+    def test_the_orphan_glyphs_are_back_in_their_words(self):
+        """56 spans of the book report x = 0, y = 0 and carry one Hebrew letter.
+
+        They are the 15th edition's one-glyph-per-span setting, where a glyph
+        never received a matrix, and they were dropped - rightly as far as it
+        went, since each otherwise became a line of its own at the head of the
+        page (see Jer 1,11 in GOLDEN). But they are the LAST letters of words:
+        L twelve times, M eleven, H ten, T seven. Jer 1,13d lost the H of RO'EH
+        and 7,21 the L of JISRA'EL, and 57 verses were a letter or two short.
+        Document order survived even where position did not, so each is put
+        back beside the line it sits in.
+        """
+        def mt(page, number):
+            v = next(v for v in S.pages()[int(page[3:5]) - 1].verses
+                     if v.number == number)
+            return unicodedata.normalize("NFC", " ".join(v.mt_printed()))
+        self.assertIn("רֹאֶה", mt("jer01.html", 13))
+        self.assertIn("יִשְׂרָאֵל", mt("jer07.html", 21))
+        self.assertIn("צְבָאוֹת", mt("jer09.html", 6))
+        self.assertIn("לַעֲשׂוֹת", mt("jer11.html", 8))
+
     def test_a_maqqef_that_opens_a_segment_is_still_printed(self):
         # Jer 4,27a and 3,8: Stipp brackets one half of a maqqef pair, so the
         # maqqef itself opens the segment that follows - KJ / -KH, 'T / -SPR.

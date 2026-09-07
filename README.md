@@ -47,13 +47,13 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,236 of 1,386 verses (89.2%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.962**.
+- **1,283 of 1,386 verses (92.6%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.979**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- Counted by word rather than by letter, **84.6%** of verses match BHSA word for
+- Counted by word rather than by letter, **88.0%** of verses match BHSA word for
   word, a further **4.5%** have every letter right and differ only in where the
-  spaces fall, and **10.8%** differ in the letters themselves. The middle group
+  spaces fall, and **7.4%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
   extraction. The 56 verses that remain there are the source's own, in two
@@ -86,15 +86,17 @@ Synopse. Every verse carries a badge saying whether the two agree.
 `scripts/pages_vs_bhsa.py` in the parent project scores these pages against BHSA
 consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,
 saying for each missing run whether it is in the alexandrian column, in a margin
-note, in the parse but not on the page, or nowhere. As of 2026-09-07: 119 verses
+note, in the parse but not on the page, or nowhere. As of 2026-09-07: 70 verses
 are missing letters, 39 carry letters BHSA does not have in that verse, and 8
-are absent altogether.
+are absent altogether. 16 of the 70 are not a fault at all: where Stipp's two
+forms differ only at the head of a word he prints the masoretic head and the
+alexandrian word in full, and the shared remainder appears once.
 
 ## Tests
 
     python -m unittest discover -s tests -t tests -v
 
-55 tests over the built pages, standard library only — no install, no
+56 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.
@@ -116,7 +118,7 @@ Three groups:
   as written that is eight words where there are two.
 - **`test_against_bhsa.py`** — the masoretic column against the database. These
   **skip themselves** where BHSA is not installed, so a bare clone still runs
-  the other 39. They are floors, not targets: the pages are extraction from a
+  the other 40. They are floors, not targets: the pages are extraction from a
   PDF and a sixth of the verses still deviate, so what they guard is a fall.
   One test per fault the pages have actually had, each on the verse that showed
   it, plus a floor on word-for-word agreement — the axis the letter test cannot
