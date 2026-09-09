@@ -4,8 +4,8 @@ One page per chapter of Jeremiah, plus the parallel at 2 Kings 25, setting the
 masoretic text beside the retroverted alexandrian text and Stipp's own
 unretroverted Greek.
 
-Source: Hermann-Josef Stipp, *Textkritische Synopse zum Jeremiabuch*, 15. Aufl.,
-April 2021.
+Source: Hermann-Josef Stipp, *Textkritische Synopse zum Jeremiabuch*,
+15. korrigierte interne Auflage, April 2021.
 
 Read it here: **https://martijnnaaijer.github.io/mt_greek_jeremiah/**
 
