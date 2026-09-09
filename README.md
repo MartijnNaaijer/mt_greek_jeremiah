@@ -47,16 +47,35 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,299 of 1,394 verses (93.2%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.979**.
+- **1,333 of 1,394 verses (95.6%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.989**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
-- Counted by word rather than by letter, **88.7%** of verses match BHSA word for
-  word, a further **4.5%** have every letter right and differ only in where the
-  spaces fall, and **6.8%** differ in the letters themselves. The middle group
+- **Where Stipp abbreviates, the word is completed from his own page.** If the
+  two forms differ only in their first letter he prints the masoretic head, the
+  bar, and the alexandrian word in full, so the letters they share are set once
+  and are set on the alexandrian side: at 52,9 the line reads DIBLATAH \ RI and
+  the masoretic reading is RIBLATAH. Sixteen verses were short for that reason
+  alone and fourteen are now exact. The supplied letters come from the Synopse
+  and from nowhere else, and the page marks them with a dotted underline; the
+  bar that says a word has been abbreviated is the one set hard against the text
+  on both sides, 66 of the book's 820. Seventeen verses are completed this way
+  and all seventeen now agree with BHSA exactly. At 7,9 the shared letters run
+  over three words, more than a bare bar reaches, so Stipp states the reach with
+  § … #; that is the only place in the book where he has to.
+- **An apparatus set inside the line no longer takes the text after it with
+  it.** Stipp sets his parenthetical apparatus inline in the masoretic column,
+  and a long one pushes what follows out past the left edge of the column into
+  the margin zone, where it was read as margin and dropped: at 2,25a MI-TSIM'AH
+  stands beyond `(AlT = U-GRONEK)` and went with it. The parentheses say where
+  the printed line begins, since a `)` in the column with no `(` before it can
+  only have opened further left. 18 verses.
+- Counted by word rather than by letter, **91.0%** of verses match BHSA word for
+  word, a further **4.7%** have every letter right and differ only in where the
+  spaces fall, and **4.4%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
-  extraction. The 56 verses that remain there are the source's own, in two
+  extraction. The 65 verses that remain there are the source's own, in two
   kinds: a word broken across a justification gap and left that way on purpose
   (BI-SHLO SH-'ESREH at 1,2, SHALO SH eight times), and a compound proper name
   BHSA writes as one graphical unit while Stipp sets it as two — 'OBED MELEK,

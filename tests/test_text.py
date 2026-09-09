@@ -164,6 +164,66 @@ class TestTheRightText(unittest.TestCase):
                 self.assertEqual(cons(v.mt_words()).replace(" ", ""),
                                  want.replace(" ", ""))
 
+    def test_the_masoretic_word_stipp_writes_only_the_head_of(self):
+        """(26) Where the two forms differ only in their first letter he prints
+        the masoretic head, the bar, and the alexandrian word IN FULL, so the
+        letters they share stand once and stand on the alexandrian side. Jer
+        52,9 is the verse that showed it: the masoretic column held RI and
+        nothing more where BHS reads RIBLATAH. The completion is Stipp's own
+        text, carried in from the other column and marked `mtsup` where it goes.
+
+        5,18 is here because it is the ONE place a second letter goes with the
+        first: 'ITTE closes on a silent sheva, so what 'ETKHEM offers next is
+        the head's own taw over again, and 'ITTEKHEM is right where
+        'ITTETKHEM would be nonsense.
+        """
+        want = {
+            ("jer52.html", 9): "רבלתה",
+            ("jer52.html", 10): "ברבלתה",
+            ("jer05.html", 18): "אתכם",
+        }
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, word in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, f"{key} is not on the page")
+                printed = ["".join(S.HEB.findall(w)) for w in v.mt_printed()]
+                self.assertIn(word, printed,
+                              "the masoretic column stops at the head")
+                self.assertTrue(any("mtsup" in w.cls for w in v.mt_words()),
+                                "the supplied letters are not marked as supplied")
+
+    def test_the_abbreviation_that_needs_a_scope_to_state_its_reach(self):
+        """(27) A bare bar reaches one word on each side, so where the letters
+        the two forms share run over MORE than one word Stipp has to mark the
+        reach with § ... #. 7,9 is the only place in the book: he sets
+        HA \ WE-GANOB * <WE>RATSOAH WE-NA'OF, and the masoretic reading is the
+        alexandrian side entire, less its own first letter and less the WE his
+        brackets already mark as alexandrian.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        v = by_ref.get(("jer07.html", 9))
+        self.assertIsNotNone(v, "Jer 7,9 is not on the page")
+        printed = ["".join(S.HEB.findall(w)) for w in v.mt_printed()]
+        self.assertEqual(printed[:4], ["הגנב", "רצח", "ונאף", "והשבע"])
+        self.assertTrue(any("mtsup" in w.cls for w in v.mt_words()))
+
+    def test_the_word_beyond_an_apparatus_set_inside_the_line(self):
+        """(28) Stipp sets his parenthetical apparatus inline in the text
+        column, and a long one pushes what follows it out past the left edge of
+        the column, where the leading-margin loop swallowed it. At 2,25a
+        MI-TSIM'AH stands beyond `(AlT = U-GRONEK)` and was lost with it. The
+        parentheses say where the line begins: a ')' in the text with no '('
+        before it means the '(' is further left on the same printed line.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        v = by_ref.get(("jer02.html", 25))
+        self.assertIsNotNone(v, "Jer 2,25 is not on the page")
+        printed = ["".join(S.HEB.findall(w)) for w in v.mt_printed()]
+        self.assertIn("מצמאה", printed)
+        # and the apparatus itself did not come with it
+        self.assertNotIn("AlT", v.mt_text())
+
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
         for key, want in GOLDEN.items():
@@ -207,7 +267,8 @@ class TestMarkup(unittest.TestCase):
                     self.assertEqual(r.og_kq, 0, "a K in the alexandrian column")
 
     def test_every_word_class_is_one_the_stylesheet_knows(self):
-        known = {"common", "plus", "minus", "mtvar", "ogvar", "scope", "nolink", ""}
+        known = {"common", "plus", "minus", "mtvar", "ogvar", "mtsup",
+                 "scope", "nolink", ""}
         for v in S.verses():
             for w in v.mt_words() + v.og_words() + v.greek_words():
                 for c in w.cls.split():
