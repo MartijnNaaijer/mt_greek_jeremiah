@@ -47,7 +47,7 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,333 of 1,394 verses (95.6%)** reproduce BHSA's consonants exactly and in
+- **1,339 of 1,394 verses (96.1%)** reproduce BHSA's consonants exactly and in
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.989**.
   The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
   the same indent as his text and so read as text on some lines.
@@ -70,9 +70,16 @@ Synopse. Every verse carries a badge saying whether the two agree.
   stands beyond `(AlT = U-GRONEK)` and went with it. The parentheses say where
   the printed line begins, since a `)` in the column with no `(` before it can
   only have opened further left. 18 verses.
-- Counted by word rather than by letter, **91.0%** of verses match BHSA word for
+- **One page of the 181 is not a page of the text, and it is skipped.** p. 141
+  is headed *Jer 43,3–9 mit 4Q72a (4QJer d)* and sets a passage the book has
+  already given, this time beside the Qumran scroll. Read as more of the text it
+  gave every clause of those seven verses a second time — 107 extra letters at
+  43,6, more than half of all the extra text in the book. It is the only heading
+  in the Synopse that names a scroll, and nothing is lost: the same verses stand
+  in full on pp. 139–140.
+- Counted by word rather than by letter, **91.4%** of verses match BHSA word for
   word, a further **4.7%** have every letter right and differ only in where the
-  spaces fall, and **4.4%** differ in the letters themselves. The middle group
+  spaces fall, and **3.9%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
   extraction. The 65 verses that remain there are the source's own, in two

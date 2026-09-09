@@ -36,6 +36,10 @@ GOLDEN = {
                         "אליהם נאם יהוה"),
     # Here the backslash itself is in the margin.
     ("jer10.html", 17): "אספי מארץ כנעתך ישבתי במצור",
+    # This verse stood twice on the page until 2026-09-09: p. 141 of the
+    # Synopse reprints 43,3-9 beside 4QJer d, and the extraction read the
+    # supplement as if it were more of the book.
+    ("jer43.html", 8): "ויהי דבר יהוה אל ירמיהו בתחפנחס לאמר",
 }
 
 # Of those, the ones the source itself sets with a broken word.
@@ -223,6 +227,29 @@ class TestTheRightText(unittest.TestCase):
         self.assertIn("מצמאה", printed)
         # and the apparatus itself did not come with it
         self.assertNotIn("AlT", v.mt_text())
+
+    def test_the_page_that_reprints_a_passage_beside_a_scroll(self):
+        """(29) p. 141 is headed "Jer 43,3-9 mit 4Q72a (4QJer d)" and sets a
+        passage the book has already given, this time with the Qumran scroll
+        against it. Read as more of the text it gave every clause of those seven
+        verses a second time - 107 extra letters at 43,6, and more than half of
+        all the extra text in the book. It is the only heading in the Synopse
+        that names a scroll.
+
+        The passage is not doubled anywhere else, so the test is that each of
+        the seven verses uses each of its clause letters once. Twelve verses of
+        the book do repeat a letter, legitimately - those are the ones where a
+        raised P or D rides on the label and the clause is set in two pieces -
+        and none of them is here.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for n in range(3, 10):
+            with self.subTest(verse=n):
+                v = by_ref.get(("jer43.html", n))
+                self.assertIsNotNone(v, f"Jer 43,{n} is not on the page")
+                letters = [r.letter for r in v.rows if r.letter]
+                self.assertEqual(sorted(letters), sorted(set(letters)),
+                                 "a clause letter is used twice")
 
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
