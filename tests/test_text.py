@@ -363,6 +363,60 @@ class TestTheRightText(unittest.TestCase):
                          ["כהאמר", "יהוה", "אלהי", "ישראל", "אלהעיר", "הזאת"])
         self.assertTrue(v35.confirmed() and v36.confirmed())
 
+    def test_a_notation_with_no_bar_in_it_is_not_a_variant(self):
+        """(33) Stipp has two notations. `§ A \ B #` states the reach of the
+        bar; `§ A #` is a marked stretch with no alternative, where the two
+        editions have THE SAME CONSONANTS and the difference is described in the
+        note - a transposition, marked with his star, or a matter of pointing.
+        Read as a variant it went to the masoretic column alone and the
+        ALEXANDRIAN CELL EMPTIED. 71 colons of the book, 809 consonants.
+
+        Nothing here can be seen by the BHSA check, which reads the masoretic
+        column only and to which `common` and `mtvar` look alike. The evidence
+        is Stipp's own Greek, printed beside 44 of them: at 1,19 the alexandrian
+        cell held nothing while the Greek reads TOU EXAIRESTHAI SE LEGEI KYRIOS,
+        which is both of the marked words in the other order.
+
+        41,6 is here as the single colon in the book that carries two notations
+        of which only one holds a bar, which is why the test is per notation and
+        not per colon.
+        """
+        want = {
+            ("jer01.html", 19): [u"להצילך", u"נאםיהוה"],
+            ("jer11.html", 1): [u"אלירמיהו", u"מאת"],
+            ("jer48.html", 38): [u"ככלי"],
+            ("jer41.html", 6): [u"ישמעאל", u"לקראתם"],
+        }
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, words in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, "%s is not on the page" % (key,))
+                og = ["".join(S.HEB.findall(w)) for w in v.og_printed()]
+                for w in words:
+                    self.assertIn(w, og,
+                                  "held out of the alexandrian column by a "
+                                  "notation that has no bar in it")
+        # and the masoretic plus of 41,6 did NOT come with it
+        og = ["".join(S.HEB.findall(w))
+              for w in by_ref[("jer41.html", 6)].og_printed()]
+        self.assertNotIn(u"בןנתניה", og)
+
+    def test_a_masoretic_variant_has_an_alexandrian_counterpart(self):
+        """The general form of (33), and the only figure that can see it.
+
+        A bar divides two readings, so a colon that shows one side must show the
+        other. Six colons of the book legitimately do not: they open a notation
+        and hand it to the NEXT colon, where the bar is, so everything before
+        the bar is masoretic and the alexandrian cell of that colon is empty -
+        6,6d is the one that showed it. Before (33) there were 72.
+        """
+        odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
+               if any("mtvar" in w.cls for w in r.mt)
+               and not any("ogvar" in w.cls for w in r.og)]
+        self.assertLessEqual(len(odd), BASELINE["one_sided_variant_ceiling"],
+                             "colons showing one side of a bar only: %s" % (odd,))
+
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
         for key, want in GOLDEN.items():

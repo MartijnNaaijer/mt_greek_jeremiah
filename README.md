@@ -110,6 +110,16 @@ Synopse. Every verse carries a badge saying whether the two agree.
   letters on the wrong verse at each end and the largest deviation in the book.
   Only a raised line may be stepped over; stepping over any line without Hebrew
   on it costs eleven verses and loses one from the book altogether.
+- **A notation with no bar in it is not a variant, and the alexandrian column
+  was paying for it.** Stipp has two notations: one states the reach of the bar
+  inside it, the other marks a stretch where the two editions have the *same*
+  consonants and the difference is described in the note — a transposition, or
+  a matter of pointing. Read as a variant, the second sent its text to the
+  masoretic column alone and emptied the alexandrian cell. 71 colons, 809
+  consonants. Nothing in the BHSA check could see it, because the masoretic
+  column does not change. The evidence is Stipp's own Greek, printed beside 44
+  of them: at 1,19 the cell held nothing while the Greek reads
+  τοῦ ἐξαιρεῖσθαί σε λέγει κύριος, which is both marked words in the other order.
 - Counted by word rather than by letter, **93.2%** of verses match BHSA word for
   word, a further **4.7%** have every letter right and differ only in where the
   spaces fall, and **2.1%** differ in the letters themselves. The middle group
@@ -146,16 +156,26 @@ Synopse. Every verse carries a badge saying whether the two agree.
 - Greek versification is Greek: the LXX Jer 32 is the Hebrew Jer 25. A verse
   number in the Greek panel is not an MT verse number.
 - The alexandrian column is a retroversion of the Greek and Stipp's Greek is his
-  own. Neither has a check here.
+  own. Neither has a ground truth here, and two weaker checks stand in for one.
+  Colon by colon, Stipp's Greek says whether the alexandrian cell should be
+  empty; six colons of the book show one side of a bar and no other, and all six
+  hand the bar to the colon that follows. In bulk, the masoretic column holds
+  84,904 consonants against the alexandrian column's 72,835, a ratio of
+  **1.166**, where Janzen's estimate for the short edition puts it near 1.14.
+  Two things the column is still known to get wrong: where the two forms differ
+  only at the *end* of a word Stipp prints the masoretic word whole and only the
+  alexandrian tail, and that tail is left as a fragment — about thirty places,
+  the reverse of the completion made on the masoretic side. And where the
+  masoretic side of a bare bar runs to more than one word the surplus stays
+  common and prints here too, twenty colons.
 
 `scripts/pages_vs_bhsa.py` in the parent project scores these pages against BHSA
 consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,
 saying for each missing run whether it is in the alexandrian column, in a margin
-note, in the parse but not on the page, or nowhere. As of 2026-09-07: 70 verses
-are missing letters and 30 carry letters BHSA does not have in that verse; none
-is absent. 16 of the 70 are not a fault at all: where Stipp's two
-forms differ only at the head of a word he prints the masoretic head and the
-alexandrian word in full, and the shared remainder appears once.
+note, in the parse but not on the page, or nowhere. As of 2026-09-10: 14 verses
+are missing letters and 16 carry letters BHSA does not have in that verse; none
+is absent. Its categories are a hypothesis and not a measurement — five of the
+verses it filed under four different headings turned out to be one fault.
 
 ## Tests
 
