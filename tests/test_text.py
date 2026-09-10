@@ -413,7 +413,7 @@ class TestTheRightText(unittest.TestCase):
         """
         odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
                if any("mtvar" in w.cls for w in r.mt)
-               and not any("ogvar" in w.cls for w in r.og)]
+               and not any("ogvar" in w.cls or "ogabbr" in w.cls for w in r.og)]
         self.assertLessEqual(len(odd), BASELINE["one_sided_variant_ceiling"],
                              "colons showing one side of a bar only: %s" % (odd,))
 
@@ -469,11 +469,95 @@ class TestTheRightText(unittest.TestCase):
         side in the colon it stands in. It was true of 20 colons before (34).
         """
         odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
-               if any("ogvar" in w.cls for w in r.og)
+               if any("ogvar" in w.cls or "ogabbr" in w.cls for w in r.og)
                and not any("mtvar" in w.cls for w in r.mt)]
         self.assertLessEqual(len(odd), BASELINE["og_only_variant_ceiling"],
                              "colons showing the alexandrian side alone: %s"
                              % (odd,))
+
+    def test_the_abbreviated_alexandrian_form_is_marked_and_not_completed(self):
+        """(35) The abbreviation runs both ways and only one way is completed.
+
+        Where the two forms differ in their FIRST letters Stipp prints the
+        masoretic head and the alexandrian word in full, and (26) finishes the
+        masoretic word from his page - 17 places, each checked against BHSA
+        exactly. Where they differ at the END he does the reverse: the masoretic
+        word entire, and of the alexandrian form only its tail. 40 places, and
+        they are NOT completed. The cut is not mechanical - SARAJW against HEM
+        drops one masoretic letter and 'ABIKEM against HEM drops two, and both
+        tails are two consonants - and nothing could check a guess, since this
+        column has no ground truth. So the fragment is marked with a dagger and
+        a dashed underline, and the page says it is a fragment.
+
+        7,5 is the bound. A single letter under a sheva that is not a final
+        form can only OPEN a word, so Stipp's 'IM \ WE is a variant of its own
+        and not the end of the masoretic word - the Greek has KAI POIOUNTES.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        want = {("jer23.html", 1): u"תם",
+                ("jer03.html", 18): u"תם",
+                ("jer01.html", 18): u"מת"}
+        for key, frag in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, "%s is not on the page" % (key,))
+                marked = [w for w in v.og_words() if "ogabbr" in w.cls]
+                self.assertTrue(marked, "the fragment is not marked")
+                self.assertIn(frag, ["".join(S.HEB.findall(w.text))
+                                     for w in marked])
+                # and nothing was supplied to it
+                self.assertFalse(any("mtsup" in w.cls for w in v.og_words()))
+        # 7,5: a proclitic is a head, not a tail
+        v = by_ref[("jer07.html", 5)]
+        self.assertFalse([w for w in v.og_words() if "ogabbr" in w.cls],
+                         "a proclitic was marked as an abbreviated tail")
+        # the whole book, so the class cannot quietly grow or vanish
+        n = sum(1 for x in S.verses() for r in x.rows
+                if any("ogabbr" in w.cls for w in r.og))
+        self.assertEqual(n, BASELINE["abbreviated_alexandrian"])
+
+    def test_a_bracket_that_closes_anywhere_in_the_text_column(self):
+        """(36) The general form of (31), which asked only of the FIRST span of
+        the text column whether it closed a plus opened in the margin. It need
+        not be the first. At 52,29 Stipp brackets the whole of the wrapped line,
+        so the opener and SHIM U-SHENAJIM stand at the far left and the closer
+        at the far right, past the text; at 34,10 the closer comes after the
+        column's first Hebrew rather than before it. The test is the one the
+        file already applies to a parenthesis: does this run of spans close a
+        bracket it never opened?
+        """
+        want = {("jer52.html", 29): u"שים",
+                ("jer34.html", 10): u"עוד"}
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, word in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, "%s is not on the page" % (key,))
+                self.assertIn(word, ["".join(S.HEB.findall(w))
+                                     for w in v.mt_printed()])
+                self.assertTrue(v.confirmed())
+
+    def test_the_walk_steps_over_an_apparatus_and_over_a_star(self):
+        """(37) Two more things that belong to the printed line and are not
+        markup, so the leftward walk stopped dead at them and the word beyond
+        was lost to the margin.
+
+        An apparatus complete inside its own span is one. (28) reaches an
+        apparatus only through a ')' that opens no parenthesis, and this one
+        closes its own, so at 7,8 it stood at x = 128 with HO'IL beyond it at
+        97 and the walk got no further. The transposition star is the other: at
+        14,17 it stands at x = 137 between the column and WE-JOMAM.
+        """
+        want = {("jer07.html", 8): u"הועיל",
+                ("jer14.html", 17): u"ויומם"}
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, word in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, "%s is not on the page" % (key,))
+                self.assertIn(word, ["".join(S.HEB.findall(w))
+                                     for w in v.mt_printed()])
+                self.assertTrue(v.confirmed())
 
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
@@ -518,7 +602,7 @@ class TestMarkup(unittest.TestCase):
                     self.assertEqual(r.og_kq, 0, "a K in the alexandrian column")
 
     def test_every_word_class_is_one_the_stylesheet_knows(self):
-        known = {"common", "plus", "minus", "mtvar", "ogvar", "mtsup",
+        known = {"common", "plus", "minus", "mtvar", "ogvar", "ogabbr", "mtsup",
                  "scope", "nolink", ""}
         for v in S.verses():
             for w in v.mt_words() + v.og_words() + v.greek_words():

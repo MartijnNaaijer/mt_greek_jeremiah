@@ -47,12 +47,12 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,365 of 1,394 verses (97.9%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.996**.
-  The rest carry `BHSA ?`. Of those, 14 are missing letters, half of them in a
-  margin note where the text column overflowed; 16 carry letters BHSA does not
-  have in that verse, and 13 of the 16 are still an alexandrian reading standing
-  in a segment read as common. This README attributed the second group to
+- **1,370 of 1,394 verses (98.3%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.997**.
+  The rest carry `BHSA ?`. Of those, 9 are missing letters, 3 of them in a margin
+  note where the text column overflowed; 16 carry letters BHSA does not have in
+  that verse, and 13 of the 16 are still an alexandrian reading standing in a
+  segment read as common. This README attributed the second group to
   Stipp's footnote apparatus until 2026-09-10, and that was wrong: the apparatus
   accounts for hardly any of it.
 - **Where Stipp abbreviates, the word is completed from his own page.** If the
@@ -126,12 +126,28 @@ Synopse. Every verse carries a badge saying whether the two agree.
   word was never marked and printed in the alexandrian column as well: 13,16
   read יָשִׁית יֻשָׁת לַעֲרָפֶל there, where only the second word belongs. 20
   colons. The forward reference has been guarded since 2,36.
-- Counted by word rather than by letter, **93.2%** of verses match BHSA word for
-  word, a further **4.7%** have every letter right and differ only in where the
-  spaces fall, and **2.1%** differ in the letters themselves. The middle group
+- **Where Stipp abbreviates the alexandrian form, the page says so.** The
+  abbreviation runs both ways. If the two forms differ in their first letters he
+  prints the masoretic head and the alexandrian word in full, and these pages
+  finish the masoretic word from his own page, marking the borrowed letters with
+  a dotted underline. If they differ at the *end* he does the reverse: the
+  masoretic word entire, and of the alexandrian form only its tail. **Those 39
+  places are not completed.** They carry a dashed underline and a dagger
+  instead. The cut is not mechanical, since שריו against הם drops one masoretic
+  letter while אביכם against הם drops two, and unlike the seventeen completions
+  on the masoretic side there is nothing here that could check a guess.
+- **A bracket may close anywhere in the text column, and two more things belong
+  to the printed line.** The rule above looked only at the head of the column for
+  a bracket closing a plus opened in the margin; at 52,29 Stipp brackets the whole
+  wrapped line, so the closer is at the far right. And the leftward walk used to
+  stop dead at an apparatus complete inside its own span, or at a transposition
+  star, both of which are set in the column like any other text. Five verses.
+- Counted by word rather than by letter, **93.5%** of verses match BHSA word for
+  word, a further **4.8%** have every letter right and differ only in where the
+  spaces fall, and **1.7%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
-  extraction. The 66 verses that remain there are the source's own, in two
+  extraction. The 67 verses that remain there are the source's own, in two
   kinds: a word broken across a justification gap and left that way on purpose
   (BI-SHLO SH-'ESREH at 1,2, SHALO SH eight times), and a compound proper name
   BHSA writes as one graphical unit while Stipp sets it as two — 'OBED MELEK,
@@ -166,20 +182,14 @@ Synopse. Every verse carries a badge saying whether the two agree.
   Colon by colon, Stipp's Greek says whether the alexandrian cell should be
   empty; six colons of the book show a masoretic variant with no alexandrian
   counterpart, and all six hand the bar to the colon that follows, while none at
-  all goes the other way. In bulk, the masoretic column holds 84,904 consonants
-  against the alexandrian column's 72,710, a ratio of **1.168**, where Janzen's
-  estimate for the short edition puts it near 1.14. One thing the column is
-  still known to get wrong, and it is left wrong on purpose: where the two forms
-  differ only at the *end* of a word Stipp prints the masoretic word whole and
-  sets only the alexandrian tail, and that tail is left as a fragment. 43 of the
-  62 bars set hard against the text. The cut is not mechanical, and unlike the
-  seventeen completions made on the masoretic side there is nothing here that
-  could check the result.
+  all goes the other way. In bulk, the masoretic column holds 84,926 consonants
+  against the alexandrian column's 72,719, a ratio of **1.168**, where Janzen's
+  estimate for the short edition puts it near 1.14.
 
 `scripts/pages_vs_bhsa.py` in the parent project scores these pages against BHSA
 consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,
 saying for each missing run whether it is in the alexandrian column, in a margin
-note, in the parse but not on the page, or nowhere. As of 2026-09-10: 14 verses
+note, in the parse but not on the page, or nowhere. As of 2026-09-10: 9 verses
 are missing letters and 16 carry letters BHSA does not have in that verse; none
 is absent. Its categories are a hypothesis and not a measurement — five of the
 verses it filed under four different headings turned out to be one fault.
@@ -210,8 +220,8 @@ Three groups:
   as written that is eight words where there are two.
 - **`test_against_bhsa.py`** — the masoretic column against the database. These
   **skip themselves** where BHSA is not installed, so a bare clone still runs
-  the other 43. They are floors, not targets: the pages are extraction from a
-  PDF and a sixth of the verses still deviate, so what they guard is a fall.
+  the other 61. They are floors, not targets: the pages are extraction from a
+  PDF and 24 verses of 1,394 still deviate, so what they guard is a fall.
   One test per fault the pages have actually had, each on the verse that showed
   it, plus a floor on word-for-word agreement — the axis the letter test cannot
   see, and the one that moved on 2026-09-07. Install with `pip install text-fabric` and
@@ -233,3 +243,17 @@ in the parent project, from `results/synopse.json` (`parse_synopse.py`), with
 `check_synopse.py` supplying the per-verse badge, `bhsa_lex.py` the Hebrew
 analyses and `lxx_greek.py` the Greek. To change a page, change the script and
 re-run it; the whole folder is regenerated in one pass.
+
+## License
+
+The work in this repository is under a Creative Commons
+Attribution-NonCommercial 4.0 International licence, CC BY-NC 4.0. The full
+legal code is in `LICENSE`; the summary is at
+<https://creativecommons.org/licenses/by-nc/4.0/>.
+
+That covers what this project made: the extraction, the checks that measure it,
+the design of the pages and the prose about them. It does not extend to the
+source. The masoretic and alexandrian columns reproduce text from Hermann-Josef
+Stipp, *Textkritische Synopse zum Jeremiabuch*, 15. korrigierte interne Auflage,
+2021, and the rights in that edition are his. The Hebrew of the masoretic column
+is checked against the ETCBC BHSA database, which carries its own terms.
