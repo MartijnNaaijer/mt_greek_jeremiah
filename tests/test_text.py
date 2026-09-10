@@ -251,6 +251,66 @@ class TestTheRightText(unittest.TestCase):
                 self.assertEqual(sorted(letters), sorted(set(letters)),
                                  "a clause letter is used twice")
 
+    def test_a_notation_that_closes_on_the_next_colon(self):
+        """(30) A § ... # states the reach of the bar inside it, and the reach
+        is Stipp's, not his colometry's: at 6,6 the § rides on the label of
+        colon d, the bar stands in colon e and the # at its left edge. Read
+        colon by colon the bar was bare, reached one word on each side, and the
+        surplus of the ALEXANDRIAN reading stayed common - so the masoretic
+        column printed HOJ 'IR HA-SHEQER where BHS has only HI' HA-'IR HAPQAD.
+
+        That is the one thing these pages must never do, and the badge cannot
+        see it as such: it counts consonants, so an alexandrian word in the
+        masoretic column reads as extra text and nothing says where it came
+        from. Five verses of the book were wrong this way. 44,12 is here as the
+        second of them, and because its notation reaches the other way, from
+        the last colon of 44,11 into the first of 44,12.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        want = {
+            ("jer06.html", 6): (["היא", "העיר", "הפקד"],
+                                ["הוי", "עיר", "השקר"]),
+            ("jer44.html", 12): (["ולקחתי", "אתשארית", "יהודה"],
+                                 ["אתכלהשארית"]),
+        }
+        for key, (mt, og) in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, f"{key} is not on the page")
+                printed = ["".join(S.HEB.findall(w)) for w in v.mt_printed()]
+                for w in mt:
+                    self.assertIn(w, printed)
+                for w in og:
+                    self.assertNotIn(w, printed,
+                                     "an alexandrian reading is printed in the "
+                                     "masoretic column")
+                    self.assertIn(w, ["".join(S.HEB.findall(x)) for x in v.og_printed()])
+
+    def test_a_notation_reaches_only_where_the_next_colon_has_the_bar(self):
+        """The other half of (30), and the half no figure can see.
+
+        A notation carried too far takes the whole of the next colon into the
+        masoretic column and empties the ALEXANDRIAN cell, where there is no
+        ground truth at all. Two colons show the two ways it happens, and both
+        must keep their Greek side.
+
+        21,8c is the book's one REVERSED pair: the # rides on the label and the
+        § stands after the bar, so the § opens a notation with no close
+        anywhere, and carried it ran nine colons to 21,10c. 48,38 is Stipp's
+        OTHER notation, the marked stretch with no bar in it - 'EN-XEFETS BW, a
+        transposition star and NE'UM-YHWH - which the Greek has in full, in
+        another order.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, word in ((("jer21.html", 9), "הישב"),
+                          (("jer48.html", 38), "נאםיהוה")):
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, f"{key} is not on the page")
+                self.assertIn(word, ["".join(S.HEB.findall(w)) for w in v.og_printed()],
+                              "the alexandrian cell was emptied by a notation "
+                              "that reached further than its bar")
+
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
         for key, want in GOLDEN.items():

@@ -47,10 +47,14 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,339 of 1,394 verses (96.1%)** reproduce BHSA's consonants exactly and in
+- **1,344 of 1,394 verses (96.4%)** reproduce BHSA's consonants exactly and in
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.989**.
-  The rest carry `BHSA ?`: the shortfall is Stipp's footnote apparatus, set at
-  the same indent as his text and so read as text on some lines.
+  The rest carry `BHSA ?`. Of those, 34 are missing letters and 20 of the 34
+  have them in a margin note, where the text column overflowed; 19 carry letters
+  BHSA does not have in that verse, and most of those are still an alexandrian
+  reading standing in a segment read as common. This README attributed the
+  second group to Stipp's footnote apparatus until 2026-09-10, and that was
+  wrong: the apparatus accounts for hardly any of it.
 - **Where Stipp abbreviates, the word is completed from his own page.** If the
   two forms differ only in their first letter he prints the masoretic head, the
   bar, and the alexandrian word in full, so the letters they share are set once
@@ -63,6 +67,17 @@ Synopse. Every verse carries a badge saying whether the two agree.
   and all seventeen now agree with BHSA exactly. At 7,9 the shared letters run
   over three words, more than a bare bar reaches, so Stipp states the reach with
   § … #; that is the only place in the book where he has to.
+- **A notation may close on the next colon, and now it does.** A `§ … #` states
+  the reach of the bar inside it, and the reach is Stipp's, not his colometry's:
+  at 6,6 the § rides on the label of colon d, the bar stands in colon e and the
+  # at its left edge. Read colon by colon the bar was bare, reached one word on
+  each side, and the surplus of the *alexandrian* reading stayed common — so the
+  masoretic column printed HOJ 'IR HA-SHEQER where BHS has only HI' HA-'IR
+  HAPQAD. Five verses were wrong that way: 6,6, 20,11, 22,4, 33,2 and 44,12. The
+  reach is bounded by looking at the colon that follows rather than by a
+  threshold, because Stipp's other notation — a marked stretch with *no* bar in
+  it, where the two editions have the same consonants and the difference is
+  described in the note — must not be carried at all.
 - **An apparatus set inside the line no longer takes the text after it with
   it.** Stipp sets his parenthetical apparatus inline in the masoretic column,
   and a long one pushes what follows out past the left edge of the column into
@@ -77,9 +92,9 @@ Synopse. Every verse carries a badge saying whether the two agree.
   43,6, more than half of all the extra text in the book. It is the only heading
   in the Synopse that names a scroll, and nothing is lost: the same verses stand
   in full on pp. 139–140.
-- Counted by word rather than by letter, **91.4%** of verses match BHSA word for
+- Counted by word rather than by letter, **91.8%** of verses match BHSA word for
   word, a further **4.7%** have every letter right and differ only in where the
-  spaces fall, and **3.9%** differ in the letters themselves. The middle group
+  spaces fall, and **3.6%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
   extraction. The 65 verses that remain there are the source's own, in two
