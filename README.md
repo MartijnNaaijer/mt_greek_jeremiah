@@ -120,6 +120,12 @@ Synopse. Every verse carries a badge saying whether the two agree.
   column does not change. The evidence is Stipp's own Greek, printed beside 44
   of them: at 1,19 the cell held nothing while the Greek reads
   τοῦ ἐξαιρεῖσθαί σε λέγει κύριος, which is both marked words in the other order.
+- **A bare space no longer swallows the backslash's backward reference.** A bar
+  divides the masoretic reading from the alexandrian one. Where Stipp's inline
+  apparatus put a span of pure space between the masoretic word and the bar, the
+  word was never marked and printed in the alexandrian column as well: 13,16
+  read יָשִׁית יֻשָׁת לַעֲרָפֶל there, where only the second word belongs. 20
+  colons. The forward reference has been guarded since 2,36.
 - Counted by word rather than by letter, **93.2%** of verses match BHSA word for
   word, a further **4.7%** have every letter right and differ only in where the
   spaces fall, and **2.1%** differ in the letters themselves. The middle group
@@ -158,16 +164,17 @@ Synopse. Every verse carries a badge saying whether the two agree.
 - The alexandrian column is a retroversion of the Greek and Stipp's Greek is his
   own. Neither has a ground truth here, and two weaker checks stand in for one.
   Colon by colon, Stipp's Greek says whether the alexandrian cell should be
-  empty; six colons of the book show one side of a bar and no other, and all six
-  hand the bar to the colon that follows. In bulk, the masoretic column holds
-  84,904 consonants against the alexandrian column's 72,835, a ratio of
-  **1.166**, where Janzen's estimate for the short edition puts it near 1.14.
-  Two things the column is still known to get wrong: where the two forms differ
-  only at the *end* of a word Stipp prints the masoretic word whole and only the
-  alexandrian tail, and that tail is left as a fragment — about thirty places,
-  the reverse of the completion made on the masoretic side. And where the
-  masoretic side of a bare bar runs to more than one word the surplus stays
-  common and prints here too, twenty colons.
+  empty; six colons of the book show a masoretic variant with no alexandrian
+  counterpart, and all six hand the bar to the colon that follows, while none at
+  all goes the other way. In bulk, the masoretic column holds 84,904 consonants
+  against the alexandrian column's 72,710, a ratio of **1.168**, where Janzen's
+  estimate for the short edition puts it near 1.14. One thing the column is
+  still known to get wrong, and it is left wrong on purpose: where the two forms
+  differ only at the *end* of a word Stipp prints the masoretic word whole and
+  sets only the alexandrian tail, and that tail is left as a fragment. 43 of the
+  62 bars set hard against the text. The cut is not mechanical, and unlike the
+  seventeen completions made on the masoretic side there is nothing here that
+  could check the result.
 
 `scripts/pages_vs_bhsa.py` in the parent project scores these pages against BHSA
 consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,

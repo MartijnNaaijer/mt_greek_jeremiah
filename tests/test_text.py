@@ -417,6 +417,64 @@ class TestTheRightText(unittest.TestCase):
         self.assertLessEqual(len(odd), BASELINE["one_sided_variant_ceiling"],
                              "colons showing one side of a bar only: %s" % (odd,))
 
+    def test_the_backslash_reaches_back_past_a_space(self):
+        """(34) A span of nothing but space must not consume the backslash's
+        BACKWARD reference, which is the rule add() has kept for the forward one
+        since 2,36a. Stipp sets his apparatus inline and the gap around it
+        arrives as a Hebrew span of pure space; standing between the masoretic
+        word and the bar it left bare_slash() looking at spacing, finding no
+        word to mark, and giving up. The masoretic reading then stayed common
+        and printed in the ALEXANDRIAN column as well - 13,16 read JASHIT JUSHAT
+        LA-'ARAFEL there, where only the second word is alexandrian. 20 colons.
+
+        8,2 is here for the second half of it: the 15th edition emits much of
+        its Hebrew one glyph per span, so the word nearest the bar arrives as
+        several segments of which the last is a single letter. Marking that
+        alone cut LO' JE'ASFU into LO' JE'ASF and a lone WAW, and left the
+        tsere of the JOD behind with LO'.
+
+        36,1 is the bound. A bar with nothing after it in the colon marks
+        nothing before it either: the backward reference is warranted only once
+        the forward one has been answered, and JEHUDAH would otherwise have
+        left the alexandrian column, where the Greek has BASILEOS IOUDA.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        cases = [
+            (("jer13.html", 16), u"ישת", u"ישית"),
+            (("jer08.html", 2), u"יספדו", u"יאספו"),
+            (("jer25.html", 16), u"וקאו", u"והתגעשו"),
+        ]
+        for key, keep, drop in cases:
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, "%s is not on the page" % (key,))
+                og = ["".join(S.HEB.findall(w)) for w in v.og_printed()]
+                mt = ["".join(S.HEB.findall(w)) for w in v.mt_printed()]
+                self.assertIn(keep, og)
+                self.assertNotIn(drop, og,
+                                 "the masoretic reading is printed in the "
+                                 "alexandrian column as well")
+                self.assertIn(drop, mt, "and the word lost its pointing or "
+                                        "was cut short in its own column")
+        og = ["".join(S.HEB.findall(w))
+              for w in by_ref[("jer36.html", 1)].og_printed()]
+        self.assertIn(u"יהוה", og)
+
+    def test_an_alexandrian_variant_has_a_masoretic_counterpart(self):
+        """The mirror of the invariant above, and it admits no exceptions.
+
+        A colon that opens a notation may hand it to the next one, which is why
+        six colons show a masoretic variant with no alexandrian counterpart. The
+        other way round there is no such case: a bar always has its masoretic
+        side in the colon it stands in. It was true of 20 colons before (34).
+        """
+        odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
+               if any("ogvar" in w.cls for w in r.og)
+               and not any("mtvar" in w.cls for w in r.mt)]
+        self.assertLessEqual(len(odd), BASELINE["og_only_variant_ceiling"],
+                             "colons showing the alexandrian side alone: %s"
+                             % (odd,))
+
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
         for key, want in GOLDEN.items():
