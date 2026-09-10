@@ -224,16 +224,16 @@ class TestTheColumnAgreesWithBHSA(BHSATest):
             f"{bad[:8]}")
 
 
-class TestTheGreekIsBesideTheRightColon(unittest.TestCase):
+class TestTheGreekIsBesideTheRightSentence(unittest.TestCase):
     """The Greek panel's placement, scored on transliterated proper names.
 
     A name is the same word in both columns, so it can be matched with no
-    lexicon at all: where a Greek colon names Babylon and the Hebrew colon
-    beside it does not, but another colon of the same verse does, the Greek is
+    lexicon at all: where a Greek sentence names Babylon and the Hebrew sentence
+    beside it does not, but another sentence of the same verse does, the Greek is
     in the wrong row. Nothing about names goes into the placement - it is made
     on LENGTH - so this is an independent check and not the training signal.
 
-    It was 47 verses of 430 while the cola were dealt out one per clause, and
+    It was 47 verses of 430 while the sentences were dealt out one per clause, and
     five of those were badged Gr OK, because that badge only compared counts.
     """
 
@@ -250,7 +250,7 @@ class TestTheGreekIsBesideTheRightColon(unittest.TestCase):
         return "".join(c for c in d if "α" <= c <= "ω" or c in "ςϲ").replace(
             "ς", "σ").replace("ϲ", "σ")
 
-    def test_the_greek_is_not_beside_the_wrong_colon(self):
+    def test_the_greek_is_not_beside_the_wrong_sentence(self):
         import json as _json
         base = _json.load(open(os.path.join(os.path.dirname(
             os.path.abspath(__file__)), "baseline.json"), encoding="utf-8"))
@@ -280,7 +280,7 @@ class TestTheGreekIsBesideTheRightColon(unittest.TestCase):
         self.assertLessEqual(
             misplaced, base["greek_misplaced_ceiling"],
             f"{misplaced} verses of {testable} have Greek beside the wrong "
-            f"colon; the ceiling is {base['greek_misplaced_ceiling']}")
+            f"sentence; the ceiling is {base['greek_misplaced_ceiling']}")
 
 
 class TestTheVersesThatWereWrong(BHSATest):

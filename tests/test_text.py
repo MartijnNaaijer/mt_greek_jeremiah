@@ -69,7 +69,7 @@ class TestTheTextIsText(unittest.TestCase):
                                     f"{v.ref}: {w.text!r} is not Hebrew")
 
     def test_the_greek_column_is_words_and_not_letters(self):
-        """Stipp letter-spaces a short Greek colon to fill its measure - a space
+        """Stipp letter-spaces a short Greek sentence to fill its measure - a space
         between every character, two between words - on 247 spans over 129 of
         the 181 pages. Read as written it puts eight words on the page where
         there are two: Jer 4,30b came out 'τί π οι ήσ εις' for τί ποιήσεις. What
@@ -251,11 +251,11 @@ class TestTheRightText(unittest.TestCase):
                 self.assertEqual(sorted(letters), sorted(set(letters)),
                                  "a clause letter is used twice")
 
-    def test_a_notation_that_closes_on_the_next_colon(self):
+    def test_a_notation_that_closes_on_the_next_sentence(self):
         """(30) A § ... # states the reach of the bar inside it, and the reach
-        is Stipp's, not his colometry's: at 6,6 the § rides on the label of
-        colon d, the bar stands in colon e and the # at its left edge. Read
-        colon by colon the bar was bare, reached one word on each side, and the
+        is Stipp's, not his sentence division's: at 6,6 the § rides on the label of
+        sentence d, the bar stands in sentence e and the # at its left edge. Read
+        sentence by sentence the bar was bare, reached one word on each side, and the
         surplus of the ALEXANDRIAN reading stayed common - so the masoretic
         column printed HOJ 'IR HA-SHEQER where BHS has only HI' HA-'IR HAPQAD.
 
@@ -264,7 +264,7 @@ class TestTheRightText(unittest.TestCase):
         masoretic column reads as extra text and nothing says where it came
         from. Five verses of the book were wrong this way. 44,12 is here as the
         second of them, and because its notation reaches the other way, from
-        the last colon of 44,11 into the first of 44,12.
+        the last sentence of 44,11 into the first of 44,12.
         """
         by_ref = {(v.page, v.number): v for v in S.verses()}
         want = {
@@ -286,17 +286,17 @@ class TestTheRightText(unittest.TestCase):
                                      "masoretic column")
                     self.assertIn(w, ["".join(S.HEB.findall(x)) for x in v.og_printed()])
 
-    def test_a_notation_reaches_only_where_the_next_colon_has_the_bar(self):
+    def test_a_notation_reaches_only_where_the_next_sentence_has_the_bar(self):
         """The other half of (30), and the half no figure can see.
 
-        A notation carried too far takes the whole of the next colon into the
+        A notation carried too far takes the whole of the next sentence into the
         masoretic column and empties the ALEXANDRIAN cell, where there is no
-        ground truth at all. Two colons show the two ways it happens, and both
+        ground truth at all. Two sentences show the two ways it happens, and both
         must keep their Greek side.
 
         21,8c is the book's one REVERSED pair: the # rides on the label and the
         § stands after the bar, so the § opens a notation with no close
-        anywhere, and carried it ran nine colons to 21,10c. 48,38 is Stipp's
+        anywhere, and carried it ran nine sentences to 21,10c. 48,38 is Stipp's
         OTHER notation, the marked stretch with no bar in it - 'EN-XEFETS BW, a
         transposition star and NE'UM-YHWH - which the Greek has in full, in
         another order.
@@ -369,7 +369,7 @@ class TestTheRightText(unittest.TestCase):
         editions have THE SAME CONSONANTS and the difference is described in the
         note - a transposition, marked with his star, or a matter of pointing.
         Read as a variant it went to the masoretic column alone and the
-        ALEXANDRIAN CELL EMPTIED. 71 colons of the book, 809 consonants.
+        ALEXANDRIAN CELL EMPTIED. 71 sentences of the book, 809 consonants.
 
         Nothing here can be seen by the BHSA check, which reads the masoretic
         column only and to which `common` and `mtvar` look alike. The evidence
@@ -377,9 +377,9 @@ class TestTheRightText(unittest.TestCase):
         cell held nothing while the Greek reads TOU EXAIRESTHAI SE LEGEI KYRIOS,
         which is both of the marked words in the other order.
 
-        41,6 is here as the single colon in the book that carries two notations
+        41,6 is here as the single sentence in the book that carries two notations
         of which only one holds a bar, which is why the test is per notation and
-        not per colon.
+        not per sentence.
         """
         want = {
             ("jer01.html", 19): [u"להצילך", u"נאםיהוה"],
@@ -405,17 +405,17 @@ class TestTheRightText(unittest.TestCase):
     def test_a_masoretic_variant_has_an_alexandrian_counterpart(self):
         """The general form of (33), and the only figure that can see it.
 
-        A bar divides two readings, so a colon that shows one side must show the
-        other. Six colons of the book legitimately do not: they open a notation
-        and hand it to the NEXT colon, where the bar is, so everything before
-        the bar is masoretic and the alexandrian cell of that colon is empty -
+        A bar divides two readings, so a sentence that shows one side must show the
+        other. Six sentences of the book legitimately do not: they open a notation
+        and hand it to the NEXT sentence, where the bar is, so everything before
+        the bar is masoretic and the alexandrian cell of that sentence is empty -
         6,6d is the one that showed it. Before (33) there were 72.
         """
         odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
                if any("mtvar" in w.cls for w in r.mt)
                and not any("ogvar" in w.cls or "ogabbr" in w.cls for w in r.og)]
         self.assertLessEqual(len(odd), BASELINE["one_sided_variant_ceiling"],
-                             "colons showing one side of a bar only: %s" % (odd,))
+                             "sentences showing one side of a bar only: %s" % (odd,))
 
     def test_the_backslash_reaches_back_past_a_space(self):
         """(34) A span of nothing but space must not consume the backslash's
@@ -425,7 +425,7 @@ class TestTheRightText(unittest.TestCase):
         word and the bar it left bare_slash() looking at spacing, finding no
         word to mark, and giving up. The masoretic reading then stayed common
         and printed in the ALEXANDRIAN column as well - 13,16 read JASHIT JUSHAT
-        LA-'ARAFEL there, where only the second word is alexandrian. 20 colons.
+        LA-'ARAFEL there, where only the second word is alexandrian. 20 sentences.
 
         8,2 is here for the second half of it: the 15th edition emits much of
         its Hebrew one glyph per span, so the word nearest the bar arrives as
@@ -433,7 +433,7 @@ class TestTheRightText(unittest.TestCase):
         alone cut LO' JE'ASFU into LO' JE'ASF and a lone WAW, and left the
         tsere of the JOD behind with LO'.
 
-        36,1 is the bound. A bar with nothing after it in the colon marks
+        36,1 is the bound. A bar with nothing after it in the sentence marks
         nothing before it either: the backward reference is warranted only once
         the forward one has been answered, and JEHUDAH would otherwise have
         left the alexandrian column, where the Greek has BASILEOS IOUDA.
@@ -463,16 +463,16 @@ class TestTheRightText(unittest.TestCase):
     def test_an_alexandrian_variant_has_a_masoretic_counterpart(self):
         """The mirror of the invariant above, and it admits no exceptions.
 
-        A colon that opens a notation may hand it to the next one, which is why
-        six colons show a masoretic variant with no alexandrian counterpart. The
+        A sentence that opens a notation may hand it to the next one, which is why
+        six sentences show a masoretic variant with no alexandrian counterpart. The
         other way round there is no such case: a bar always has its masoretic
-        side in the colon it stands in. It was true of 20 colons before (34).
+        side in the sentence it stands in. It was true of 20 sentences before (34).
         """
         odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
                if any("ogvar" in w.cls or "ogabbr" in w.cls for w in r.og)
                and not any("mtvar" in w.cls for w in r.mt)]
         self.assertLessEqual(len(odd), BASELINE["og_only_variant_ceiling"],
-                             "colons showing the alexandrian side alone: %s"
+                             "sentences showing the alexandrian side alone: %s"
                              % (odd,))
 
     def test_the_abbreviated_alexandrian_form_is_marked_and_not_completed(self):
@@ -830,14 +830,14 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
     def test_the_greek_is_cut_where_the_hebrew_is_cut(self):
         """Jer 1,1: EK TON HIEREON belongs beside MIN-HAK-KOHANIM.
 
-        Stipp's Greek panel gives verse 1 four cola where his Hebrew has two,
-        so the four have to be grouped, and matching each Greek colon to the
+        Stipp's Greek panel gives verse 1 four sentences where his Hebrew has two,
+        so the four have to be grouped, and matching each Greek sentence to the
         nearest Hebrew MIDPOINT put the group boundary in the wrong place by a
-        margin of 0.06: EK TON HIEREON went to colon b, where the Hebrew has
+        margin of 0.06: EK TON HIEREON went to sentence b, where the Hebrew has
         no priests at all. Matching the BOUNDARIES instead - the cut after each
-        Hebrew colon falling at the same proportion of the Greek - puts it back
-        with colon a. Over the book that took the verses with Greek beside the
-        wrong colon from 26 to 7, and none of the 7 is badged Gr OK.
+        Hebrew sentence falling at the same proportion of the Greek - puts it back
+        with sentence a. Over the book that took the verses with Greek beside the
+        wrong sentence from 26 to 7, and none of the 7 is badged Gr OK.
         """
         def rows(page, number):
             v = next(v for v in S.pages()[int(page[3:5]) - 1].verses
@@ -908,7 +908,7 @@ class TestBaseline(unittest.TestCase):
         Eight verses were missing until 2026-09-07 - 13,10; 22,12; 22,27;
         23,34; 28,8-9; 44,16; 52,20 - because their number never appeared as a
         clause label. It did appear: Stipp raises a P for Parablepsis on the
-        colon it qualifies and sets it inside the label span, ']_aP_10' at
+        sentence it qualifies and sets it inside the label span, ']_aP_10' at
         13,9, and labelish() rejected the whole label for the capital letter.
         The list is kept, empty, so that a fall shows up as a name.
         """

@@ -140,6 +140,77 @@ class TestVerses(unittest.TestCase):
                 self.assertFalse(v.confirmed() and v.unconfirmed())
 
 
+class TestTheSentenceCount(unittest.TestCase):
+    """Stipp counts his lettered segments as SENTENCES, and so must the page.
+
+    They are not cola. A colon is part of a stichus, a verse line built of two
+    or three of them, and Hebrew prose has no stichometry and therefore no cola
+    at all. The author's instruction, and with it a rule for the arithmetic:
+    a label with a subscript index - a1 a2 a3 - marks the parts of ONE sentence
+    split by an embedded sentence, and counts once.
+    """
+
+    def _by_hand(self, page):
+        """The sentences the page itself shows, counted off the page."""
+        n, seen = 0, set()
+        for v in page.verses:
+            for r in v.rows:
+                if not any(S.HEB.search(w.text) for w in r.mt + r.og):
+                    continue        # a note or an apparatus, not a sentence
+                base = re.sub(r"\d+$", "", r.letter)
+                if not base:
+                    n += 1          # no letter, so it stands on its own
+                elif (v.number, base) not in seen:
+                    seen.add((v.number, base))
+                    n += 1
+        return n
+
+    def test_the_printed_count_is_the_one_the_page_shows(self):
+        for p in S.pages():
+            with self.subTest(page=p.name):
+                self.assertIsNotNone(p.sentences_printed,
+                                     "the page prints no sentence count")
+                self.assertEqual(p.sentences_printed, self._by_hand(p))
+
+    def test_the_indexed_parts_are_counted_once(self):
+        """Jer 1 printed 63 until 2026-09-11 and has 59.
+
+        Two of its labels carry an index and two of its records carry no Hebrew
+        at all. The book as a whole printed 5,326 where it has 5,004.
+        """
+        p = next(x for x in S.pages() if x.name == "jer01.html")
+        self.assertEqual(p.sentences_printed, 59)
+        rows = sum(len(v.rows) for v in p.verses)
+        self.assertGreater(rows, p.sentences_printed,
+                           "no label was merged, so the rule did not fire")
+        # and the indexed labels really are on the page
+        idx = [r.letter for v in S.verses() for r in v.rows
+               if re.search(r"\d$", r.letter)]
+        self.assertGreater(len(idx), 200)
+
+    def test_no_page_calls_a_sentence_a_colon(self):
+        """The German wording lives in build_synopse_pages.py alone, so it can
+        only drift back by an edit to the script. This is the guard."""
+        for p in S.pages():
+            with self.subTest(page=p.name):
+                self.assertNotIn("Kolon", p.html)
+                self.assertNotIn("Kola", p.html)
+
+    def test_the_legend_is_German(self):
+        """It was the last English furniture on the page, under the heading,
+        beside a subtitle and column headers that had always been German."""
+        for p in S.pages():
+            with self.subTest(page=p.name):
+                m = re.search(r'<div class="legend">(.*?)</div>', p.html, re.S)
+                self.assertIsNotNone(m, "the page has no legend")
+                leg = m.group(1)
+                self.assertIn("masoretisches Plus", leg)
+                self.assertIn("qualitative Variante", leg)
+                for w in ("masoretic", "alexandrian", "variant", "marked",
+                          "completed", "abbreviated", "the "):
+                    self.assertNotIn(w, leg)
+
+
 class TestHovers(unittest.TestCase):
 
     def test_every_hover_resolves_into_the_page_pool(self):

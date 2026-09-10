@@ -67,14 +67,14 @@ Synopse. Every verse carries a badge saying whether the two agree.
   and all seventeen now agree with BHSA exactly. At 7,9 the shared letters run
   over three words, more than a bare bar reaches, so Stipp states the reach with
   § … #; that is the only place in the book where he has to.
-- **A notation may close on the next colon, and now it does.** A `§ … #` states
-  the reach of the bar inside it, and the reach is Stipp's, not his colometry's:
-  at 6,6 the § rides on the label of colon d, the bar stands in colon e and the
-  # at its left edge. Read colon by colon the bar was bare, reached one word on
+- **A notation may close on the next sentence, and now it does.** A `§ … #` states
+  the reach of the bar inside it, and the reach is Stipp's, not his sentence division's:
+  at 6,6 the § rides on the label of sentence d, the bar stands in sentence e and the
+  # at its left edge. Read sentence by sentence the bar was bare, reached one word on
   each side, and the surplus of the *alexandrian* reading stayed common — so the
   masoretic column printed HOJ 'IR HA-SHEQER where BHS has only HI' HA-'IR
   HAPQAD. Five verses were wrong that way: 6,6, 20,11, 22,4, 33,2 and 44,12. The
-  reach is bounded by looking at the colon that follows rather than by a
+  reach is bounded by looking at the sentence that follows rather than by a
   threshold, because Stipp's other notation — a marked stretch with *no* bar in
   it, where the two editions have the same consonants and the difference is
   described in the note — must not be carried at all.
@@ -115,7 +115,7 @@ Synopse. Every verse carries a badge saying whether the two agree.
   inside it, the other marks a stretch where the two editions have the *same*
   consonants and the difference is described in the note — a transposition, or
   a matter of pointing. Read as a variant, the second sent its text to the
-  masoretic column alone and emptied the alexandrian cell. 71 colons, 809
+  masoretic column alone and emptied the alexandrian cell. 71 sentences, 809
   consonants. Nothing in the BHSA check could see it, because the masoretic
   column does not change. The evidence is Stipp's own Greek, printed beside 44
   of them: at 1,19 the cell held nothing while the Greek reads
@@ -125,7 +125,7 @@ Synopse. Every verse carries a badge saying whether the two agree.
   apparatus put a span of pure space between the masoretic word and the bar, the
   word was never marked and printed in the alexandrian column as well: 13,16
   read יָשִׁית יֻשָׁת לַעֲרָפֶל there, where only the second word belongs. 20
-  colons. The forward reference has been guarded since 2,36.
+  sentences. The forward reference has been guarded since 2,36.
 - **Where Stipp abbreviates the alexandrian form, the page says so.** The
   abbreviation runs both ways. If the two forms differ in their first letters he
   prints the masoretic head and the alexandrian word in full, and these pages
@@ -168,20 +168,20 @@ Synopse. Every verse carries a badge saying whether the two agree.
   they did. What is left is Stipp's own spelling against Rahlfs — φησί,
   ἐποίησε, ἐλάλησε for ἐποίησεν and ἐλάλησεν, and unaccented Ιερεμίαν.
 - The Greek is placed in the right Rahlfs verse for **90.2%** of its words, and
-  beside the right Hebrew colon by a length alignment rather than by dealing the
-  cola out one per clause. Scored on transliterated proper names — an
+  beside the right Hebrew sentence by a length alignment rather than by dealing the
+  sentences out one to each. Scored on transliterated proper names — an
   independent check, since the placement knows nothing of names — **7 verses of
-  431 still have Greek beside the wrong colon**, down from 47, and none of the 7
-  is badged `Gr ✓`. That badge means one Greek colon to one Hebrew colon all the
+  431 still have Greek beside the wrong sentence**, down from 47, and none of the 7
+  is badged `Gr ✓`. That badge means one Greek sentence to one Hebrew sentence all the
   way down, which is the only case where the pairing is not an inference:
   **696 verses of 1,298**. The rest are `Gr ≈`.
 - Greek versification is Greek: the LXX Jer 32 is the Hebrew Jer 25. A verse
   number in the Greek panel is not an MT verse number.
 - The alexandrian column is a retroversion of the Greek and Stipp's Greek is his
   own. Neither has a ground truth here, and two weaker checks stand in for one.
-  Colon by colon, Stipp's Greek says whether the alexandrian cell should be
-  empty; six colons of the book show a masoretic variant with no alexandrian
-  counterpart, and all six hand the bar to the colon that follows, while none at
+  Sentence by sentence, Stipp's Greek says whether the alexandrian cell should be
+  empty; six sentences of the book show a masoretic variant with no alexandrian
+  counterpart, and all six hand the bar to the sentence that follows, while none at
   all goes the other way. In bulk, the masoretic column holds 84,926 consonants
   against the alexandrian column's 72,719, a ratio of **1.168**, where Janzen's
   estimate for the short edition puts it near 1.14.
@@ -216,11 +216,11 @@ Three groups:
   come from BHSA. A bracket may not break a word: where Stipp brackets a prefix,
   a suffix or one half of a maqqef pair, the page must still set one word, and a
   sof pasuq is written against the word it closes. Nor may the Greek arrive as
-  loose letters: Stipp letter-spaces a short colon to fill its measure, and read
+  loose letters: Stipp letter-spaces a short sentence to fill its measure, and read
   as written that is eight words where there are two.
 - **`test_against_bhsa.py`** — the masoretic column against the database. These
   **skip themselves** where BHSA is not installed, so a bare clone still runs
-  the other 61. They are floors, not targets: the pages are extraction from a
+  the other 65. They are floors, not targets: the pages are extraction from a
   PDF and 24 verses of 1,394 still deviate, so what they guard is a fall.
   One test per fault the pages have actually had, each on the verse that showed
   it, plus a floor on word-for-word agreement — the axis the letter test cannot

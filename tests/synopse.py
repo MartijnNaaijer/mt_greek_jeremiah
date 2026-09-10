@@ -165,6 +165,12 @@ class Page:
         m = re.search(r"<title>(.*?)</title>", self.html, re.S)
         return m.group(1).strip() if m else ""
 
+    @property
+    def sentences_printed(self):
+        """The sentence count the page prints under its heading, or None."""
+        m = re.search(r"(\d+) Verse, (\d+) Sätze", self.html)
+        return int(m.group(2)) if m else None
+
 
 _CACHE = {}
 
