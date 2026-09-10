@@ -47,14 +47,14 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,344 of 1,394 verses (96.4%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.989**.
-  The rest carry `BHSA ?`. Of those, 34 are missing letters and 20 of the 34
-  have them in a margin note, where the text column overflowed; 19 carry letters
-  BHSA does not have in that verse, and most of those are still an alexandrian
-  reading standing in a segment read as common. This README attributed the
-  second group to Stipp's footnote apparatus until 2026-09-10, and that was
-  wrong: the apparatus accounts for hardly any of it.
+- **1,365 of 1,394 verses (97.9%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.996**.
+  The rest carry `BHSA ?`. Of those, 14 are missing letters, half of them in a
+  margin note where the text column overflowed; 16 carry letters BHSA does not
+  have in that verse, and 13 of the 16 are still an alexandrian reading standing
+  in a segment read as common. This README attributed the second group to
+  Stipp's footnote apparatus until 2026-09-10, and that was wrong: the apparatus
+  accounts for hardly any of it.
 - **Where Stipp abbreviates, the word is completed from his own page.** If the
   two forms differ only in their first letter he prints the masoretic head, the
   bar, and the alexandrian word in full, so the letters they share are set once
@@ -92,12 +92,30 @@ Synopse. Every verse carries a badge saying whether the two agree.
   43,6, more than half of all the extra text in the book. It is the only heading
   in the Synopse that names a scroll, and nothing is lost: the same verses stand
   in full on pp. 139–140.
-- Counted by word rather than by letter, **91.8%** of verses match BHSA word for
+- **A plus that opens in the margin is no longer lost.** Stipp brackets a plus
+  that wraps to the left end of a printed line. The closing bracket lands in the
+  text column while the opening bracket and the bracketed word land beyond the
+  margin threshold, so the word was dropped and only its closer survived: at
+  26,11 the line closes at x = 139 and LE'MOR stands at x = 40. The test is
+  structural and uses no geometry, which is why it reaches where the overflow
+  threshold cannot — twelve of these words sit at x = 30.2, the leftmost printed
+  position, where the margin's own cross-reference lemmas also live. 19 printed
+  lines of the book, 17 verses.
+- **A raised glyph no longer keeps the two halves of a split line apart.** A
+  printed line set as two text objects comes back left half first, and the
+  halves are put back by comparing a line with the one after it. A line carrying
+  nothing but a raised index figure, or a raised Q, P or D, has a y of its own
+  and falls between them, so the pair was never compared. At 32,35 the index
+  figure kept the opening formula of 32,36 on the end of the verse before, 28
+  letters on the wrong verse at each end and the largest deviation in the book.
+  Only a raised line may be stepped over; stepping over any line without Hebrew
+  on it costs eleven verses and loses one from the book altogether.
+- Counted by word rather than by letter, **93.2%** of verses match BHSA word for
   word, a further **4.7%** have every letter right and differ only in where the
-  spaces fall, and **3.6%** differ in the letters themselves. The middle group
+  spaces fall, and **2.1%** differ in the letters themselves. The middle group
   is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
   faults that put a space inside a word — or took one out — were fixed in the
-  extraction. The 65 verses that remain there are the source's own, in two
+  extraction. The 66 verses that remain there are the source's own, in two
   kinds: a word broken across a justification gap and left that way on purpose
   (BI-SHLO SH-'ESREH at 1,2, SHALO SH eight times), and a compound proper name
   BHSA writes as one graphical unit while Stipp sets it as two — 'OBED MELEK,

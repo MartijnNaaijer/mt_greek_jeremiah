@@ -311,6 +311,58 @@ class TestTheRightText(unittest.TestCase):
                               "the alexandrian cell was emptied by a notation "
                               "that reached further than its bar")
 
+    def test_a_plus_that_opens_in_the_margin(self):
+        """(31) Stipp brackets a plus that wraps to the left end of a printed
+        line. The closing bracket lands in the text column and the opening
+        bracket and the bracketed word land beyond MARGIN_X, so the word was
+        dropped and only its closer survived. At 26,11 the line closes with a
+        ']' at x = 139 and LE'MOR stands at x = 40 behind a '[' that shares its
+        span with the cross-reference '7'.
+
+        The test is structural and uses no geometry, which is why it reaches
+        where OVERFLOW_X cannot: twelve of these words sit at x = 30.2, the
+        leftmost printed position, where the margin's own lemmas also live.
+        19 printed lines of the book are of that shape, and 43,6 is here as the
+        one where the loss was a patronymic rather than a formula.
+        """
+        want = {("jer26.html", 11): "לאמר",
+                ("jer43.html", 6): "בןשפן",
+                ("jer20.html", 5): "ואתכליקרה",
+                ("jer08.html", 3): "הנשארים"}
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, word in want.items():
+            with self.subTest(verse=key):
+                v = by_ref.get(key)
+                self.assertIsNotNone(v, f"{key} is not on the page")
+                printed = ["".join(S.HEB.findall(w)) for w in v.mt_printed()]
+                self.assertIn(word, printed)
+                self.assertTrue(v.confirmed())
+
+    def test_a_raised_glyph_between_the_halves_of_a_split_line(self):
+        """(32) A printed line set as two text objects comes back left half
+        first, and the halves are put back by comparing a line with the one
+        after it. A line carrying nothing but a RAISED glyph - a
+        Klammerkonstruktion index at 6.36pt, or a raised Q, P or D - has a y of
+        its own and falls between them, so the pair was never compared.
+
+        At 32,35d the index '1' sits at x = 112.9 between the two halves of
+        32,36a, so the left half stayed where it fell and the opening formula
+        of 32,36 ran on into the end of 32,35: 28 letters on the wrong verse at
+        each end, the largest deviation in the book. Only a raised-glyph line
+        may be stepped over. Stepping over any line without Hebrew on it costs
+        eleven verses and loses one from the book altogether, because the
+        margin-only and apparatus-only lines are not halves of anything.
+        """
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        v35, v36 = by_ref[("jer32.html", 35)], by_ref[("jer32.html", 36)]
+        p35 = ["".join(S.HEB.findall(w)) for w in v35.mt_printed()]
+        p36 = ["".join(S.HEB.findall(w)) for w in v36.mt_printed()]
+        self.assertEqual(p35[-1], "אתיהודה", "32,35 runs on past its own end")
+        self.assertNotIn("כהאמר", p35)
+        self.assertEqual(p36[2:8],
+                         ["כהאמר", "יהוה", "אלהי", "ישראל", "אלהעיר", "הזאת"])
+        self.assertTrue(v35.confirmed() and v36.confirmed())
+
     def test_the_word_boundaries_too_where_the_source_sets_them_cleanly(self):
         by_ref = {(v.page, v.number): v for v in S.verses()}
         for key, want in GOLDEN.items():
