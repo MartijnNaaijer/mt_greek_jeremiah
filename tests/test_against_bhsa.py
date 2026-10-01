@@ -319,7 +319,9 @@ class TestTheGreekIsBesideTheRightVerse(unittest.TestCase):
                         if 0 <= j < len(vs) and vs[j].page == v.page                                 and o[j].count(ha) > g[j].count(ga):
                             shifted.append((v.ref, ga))
                             break
-        self.assertLessEqual(len(shifted), 1, shifted)
+        # 0 since (51), the Greek read off the page by position; 27,12, the one
+        # left under the length placement, resolved with it.
+        self.assertLessEqual(len(shifted), 0, shifted)
 
 
 class TestTheVersesThatWereWrong(BHSATest):

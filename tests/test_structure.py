@@ -129,6 +129,16 @@ class TestVerses(unittest.TestCase):
                 with self.subTest(page=p.name, verse=v.ref):
                     self.assertEqual(v.chapter, ch)
 
+    def test_the_greek_is_placed_by_position(self):
+        """(51) Gr ✓ means every Greek line of the verse stands level with the
+        Hebrew sentence it is printed beside, read off the page. 1,312 of the
+        1,313 verses with Greek; the floor keeps it from falling back."""
+        import json as _json
+        base = _json.load(open(os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), "baseline.json"), encoding="utf-8"))
+        n = sum(1 for v in S.verses() if any(t == "Gr ✓" for _, t in v.badges))
+        self.assertGreaterEqual(n, base["greek_by_position_floor"])
+
     def test_every_verse_says_whether_it_agrees_with_bhsa(self):
         # The pages are extraction from a PDF and are not uniformly reliable.
         # A verse that did not say which it was would have to be trusted like
