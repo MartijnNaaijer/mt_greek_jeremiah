@@ -196,7 +196,8 @@ def page_spans(page):
     page.extract_text(visitor_text=lambda t, cm, tm, fd, fs: out.append(
         (round(tm[4], 1), round(tm[5], 1),
          kind(str((fd or {}).get("/BaseFont", ""))), fs, t)))
-    return _true_geometry(_true_spaces(out, page.page_number), page.page_number)
+    out = _true_spaces_greek(_true_spaces(out, page.page_number), page.page_number)
+    return _true_geometry(out, page.page_number)
 
 
 # STEP 4 (2026-10-01): WHERE A SPAN IS, FROM PYMUPDF. pypdf takes a span's
@@ -288,6 +289,66 @@ def _true_geometry(spans, pno):
 # HOW MANY SPACES _true_spaces() TOOK OUT, by reason; parse() prints it.
 FALSE_SPACES = collections.Counter()
 _MU = None
+
+
+GREEK_FALSE_SPACES = collections.Counter()
+
+
+def _true_spaces_greek(spans, pno):
+    """(54) The same as _true_spaces() for Stipp's Greek font: a space pypdf
+    puts between two Greek glyphs that touch, with no space glyph between them
+    in the PDF, is taken out.
+
+    THE GREEK HAD 2,811 OF THEM, against 33,883 real space glyphs and nothing in
+    between. They broke words that lxx_greek.repair() could not put back
+    because the joined form is not in Rahlfs' Jeremiah - EK L EI PS OUSIN for
+    EKLEIPSOUSIN at 51,58, EN EP L ES A for ENEPLESA at 31,25, TRI BOUSI at
+    7,18 - and they are also what made the Greek panel look letter-spaced: the
+    SPERRT setting of fault (11), a space between every character, is pypdf's
+    reading of glyphs that sit hard against each other. A run that contains a
+    NEWLINE is never touched, because greek_clauses() splits the panel's
+    sentences on it.
+    """
+    global _MU
+    if _MU is None:
+        _MU = pymupdf.open(str(SRC))
+    G = []
+    for s_ in _MU[pno].get_texttrace():
+        if "bwgrk" not in s_["font"].lower() or s_["type"] != 0:
+            continue
+        for c in s_["chars"]:
+            if chr(c[0]).isspace():
+                if G:
+                    G[-1][1].append(s_["size"])
+            else:
+                G.append((c[3], []))
+    out, k = [], 0
+    for sp in spans:
+        if sp[2] != "GRK":
+            out.append(sp)
+            continue
+        t, keep, i = sp[4], [], 0
+        while i < len(t):
+            if not t[i].isspace():
+                keep.append(t[i]); k += 1; i += 1
+                continue
+            j = i
+            while j < len(t) and t[j].isspace():
+                j += 1
+            drop = False
+            if chr(10) not in t[i:j] and 0 < k < len(G):
+                (a, follows), (z, _) = G[k - 1], G[k]
+                if follows and all(x < 5 for x in follows):
+                    drop = True
+                elif not follows and abs(a[1] - z[1]) < 2 and                         abs(a[3] - z[3]) < 2 and -1 < z[0] - a[2] < 1.5:
+                    drop = True
+            if drop:
+                GREEK_FALSE_SPACES["removed"] += 1
+            else:
+                keep.append(t[i:j])
+            i = j
+        out.append(sp[:4] + ("".join(keep),))
+    return out
 
 
 def _glyph_trace(pno):
@@ -437,7 +498,27 @@ def lines_of(spans):
             byy[near].append(s_)
         else:
             byy.setdefault(round(s_[1] * 2) / 2, []).append(s_)
-    return [sorted(byy[k], key=lambda s_: s_[0])
+    # (52) A POINT STAYS WITH ITS LETTER. In the font's stream a vowel follows
+    # the letter it belongs to, but its ORIGIN lies a little to the right of
+    # the letter's, and sorted on x alone it can cross a span set between them:
+    # at 41,2 the patah of the line's first waw is at x = 352.6, just right of
+    # the label at 352.5, and at 33,10 the tsere of a mem just right of the
+    # bracket that closes the plus. Read right to left, the mark then fell on
+    # the far side of the label or bracket, detached from its letter, and was
+    # lost: WAYYAMET came out W-YYAMET, U-ME'EN as U-M'EN. A Hebrew span that
+    # is only marks therefore sorts with the Hebrew span before it in the
+    # stream, when the two are within 7 units: a point's origin can sit a full
+    # advance from its letter's - 5.9 at 33,10, against a letter's 5.7.
+    eff, prev = {}, None
+    for s_ in spans:
+        if s_[2] != "HEB":
+            continue
+        t_ = s_[4].strip()
+        if t_ and prev is not None and not any(c in bwfonts.HEB_BASE for c in t_)                 and abs(prev[0] - s_[0]) <= 7.0 and abs(prev[1] - s_[1]) < 6:
+            eff[id(s_)] = (prev[0], 1)
+        elif t_:
+            prev = s_
+    return [sorted(byy[k], key=lambda s_: eff.get(id(s_), (s_[0], 0)))
             for k in sorted(byy, reverse=True)]
 
 
@@ -1929,6 +2010,9 @@ def _widen(row, back, fwd):
     shift(row["og"], "ogvar")
 
 
+DOUBLE_MARK = re.compile(r"([\u0591-\u05c7])\1+")
+
+
 def to_logical(segs):
     """Visual-order ASCII segments -> logical-order Unicode, merged by class.
 
@@ -1958,7 +2042,12 @@ def to_logical(segs):
     rev = list(reversed(groups))
     out, last = [], None
     for i, (c, t) in enumerate(rev):
-        u = bwfonts.to_hebrew(t)
+        # (53) A POINT PRINTED TWICE IS ONE POINT. Stipp's PDF draws a few marks
+        # twice on the same letter, one over the other, invisible on paper:
+        # at 4,16 the raw text is H;; - two patahs on the he of HAZKIRU - and
+        # the page printed both. Two identical points on one letter are never
+        # a reading.
+        u = DOUBLE_MARK.sub(r"\1", bwfonts.to_hebrew(t))
         if not u:
             continue
         seg = {"cls": c, "text": u}
@@ -2429,6 +2518,7 @@ if __name__ == "__main__":
           f"{sum(1 for r in rows for n in r['notes'] if n['kind'] == 'foot')}, "
           f"{len(FOOT_UNMARKED)} placed on their page without their mark "
           f"{FOOT_UNMARKED or ''}")
+    print(f"spaces inside a Greek word     : {GREEK_FALSE_SPACES['removed']:,} removed")
     added = FALSE_SPACES["gap with nothing in it (added)"]
     print(f"spaces inside a Hebrew word    : {sum(FALSE_SPACES.values()) - added:,} removed "
           f"({', '.join(f'{n} {w}' for w, n in sorted(FALSE_SPACES.items()) if 'added' not in w)}); "

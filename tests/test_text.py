@@ -793,6 +793,44 @@ class TestTrueGeometry(unittest.TestCase):
         self.assertIn("להשיב", cons(self.verse("jer29.html", 10).og_words()).split())
 
 
+class TestThePointing(unittest.TestCase):
+
+    def test_a_point_stays_with_its_letter_and_is_printed_once(self):
+        """(52) (53) The pointing check of 2026-10-01: 20,722 words of the
+        masoretic column against BHSA's pointed text. Five words differed
+        because of this pipeline, and each is pinned here. A point whose origin
+        lay past a label or bracket was read on the far side of it and lost
+        (41,2 WAYYAMET, 33,10 U-ME'EN); a point Stipp's PDF draws twice on one
+        letter was printed twice (4,16 HAZKIRU, 11,10 DEBARAJ, 38,15 LO')."""
+        for page, n, word in (("jer41.html", 2, "וַיָּמֶת"),
+                              ("jer33.html", 10, "וּמֵאֵין"),
+                              ("jer04.html", 16, "הַזְכִּירוּ"),
+                              ("jer11.html", 10, "דְּבָרַי"),
+                              ("jer38.html", 15, "לֹא")):
+            with self.subTest(verse=(page, n)):
+                v = next(v for v in S.verses() if v.page == page and v.number == n)
+                # compared in canonical order: the page and this file may write
+                # the points on one letter in a different order
+                nfd = lambda t: unicodedata.normalize("NFD", t)
+                self.assertIn(nfd(word), nfd(" ".join(v.mt_printed())))
+
+
+class TestTheGreekWords(unittest.TestCase):
+
+    def test_a_greek_word_is_not_broken_by_a_space_the_pdf_does_not_set(self):
+        """(54) pypdf put 2,811 spaces between Greek glyphs that touch. Most were
+        repaired downstream against Rahlfs' word list, but not where the whole
+        word is not in Rahlfs' Jeremiah: EK L EI PS OUSIN at 51,58, EN EP L ES A
+        at 31,25, TRI BOUSI at 7,18."""
+        for page, n, word in (("jer51.html", 58, "ἐκλείψουσιν"),
+                              ("jer31.html", 25, "ἐνέπλησα"),
+                              ("jer07.html", 18, "τρίβουσι")):
+            with self.subTest(verse=(page, n)):
+                v = next(v for v in S.verses() if v.page == page and v.number == n)
+                nfc = lambda t: unicodedata.normalize("NFC", t)
+                self.assertIn(nfc(word), [nfc(w.text) for w in v.greek_words()])
+
+
 class TestMarkup(unittest.TestCase):
 
     def test_ketiv_qere_is_marked_in_the_masoretic_column_only(self):

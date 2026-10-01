@@ -168,15 +168,28 @@ Synopse. Every verse carries a badge saying whether the two agree.
   Stipp raises a P for Parablepsis inside the label span (`] aP 10`) and the
   capital letter made the whole label unreadable, so the verse never opened and
   its text ran on into the verse before.
-- The BWHEBB→Unicode map agrees with BHSA on **97.9%** of words. The Greek is
+- The Hebrew font map is measured by the pointing check below, which replaced
+  an earlier figure of 97.9% that no script could reproduce. The Greek is
   scored two ways against Rahlfs, both printed by `parse_synopse.py` on every
   run. **98.2%** of tokens are forms attested somewhere in LXX Jeremiah once
-  accent and breathing are stripped (96.6% before 2026-09-07), and **96.9%**
+  accent and breathing are stripped (96.6% before 2026-09-07), and **97.1%**
   are byte-identical to a Rahlfs form with the marks left on (91.4% before).
   The second figure is the one to watch: the first cannot see a breathing at
   all, which is how four entries of the Greek map stayed wrong for as long as
   they did. What is left is Stipp's own spelling against Rahlfs — φησί,
   ἐποίησε, ἐλάλησε for ἐποίησεν and ἐλάλησεν, and unaccented Ιερεμίαν.
+- **The vowel pointing** of the masoretic column agrees with BHSA's pointed
+  text for **20,708 of 20,722 words** compared, once two encoding conventions are
+  set aside (the divine name without the holam of the perpetual qere; the hiriq
+  of Jerusalem after the final mem). The 14 that differ were each looked up in
+  the PDF and are Stipp's own pointing. Five words that differed because of the
+  extraction — a point lost at a bracket, a point Stipp's PDF draws twice — were
+  fixed on 2026-10-01.
+- **The Greek words**: 2,811 false spaces between Greek glyphs that touch were
+  removed on 2026-10-01, rejoining words such as ἐκλείψουσιν (51,58). Of the
+  521 tokens that are not forms of Rahlfs' Jeremiah, 353 are Stipp's spelling
+  without the movable nu (ἐστι for ἐστιν), and the rest are forms found
+  elsewhere in the LXX, rare words and names; none was found to be a fault.
 - **The Greek is read off the page.** Stipp sets the Greek panel row by row
   beside the Hebrew, and since 2026-10-01 each Greek line is put beside the
   Hebrew sentence it is printed level with: 5,181 of the book's 5,182 lines
@@ -215,7 +228,7 @@ verses it filed under four different headings turned out to be one fault.
 
     python -m unittest discover -s tests -t tests -v
 
-94 tests over the built pages, standard library only — no install, no
+96 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.
