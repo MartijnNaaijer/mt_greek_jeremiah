@@ -52,16 +52,14 @@ Synopse. Every verse carries a badge saying whether the two agree.
   letter BHS has otherwise, or sets a ketiv BHSA encodes differently. Each was
   checked against the PDF; the reason is in the badge's tooltip. `BHSA ?` now
   means only that the extraction may be wrong.
-- **1,384 of 1,394 verses (99.3%)** reproduce BHSA's consonants exactly and in
-  order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.997**.
-  The rest carry `BHSA ?`. Of those, 7 are missing letters, 3 of them in a margin
-  note where the text column overflowed; 4 carry letters BHSA does not have in
-  that verse. Four more did until 2026-10-01 and were Stipp's page-bottom
-  footnotes, whose quoted Hebrew stood in the text after the sof pasuq; the
-  footnotes are now read whole and printed beside the sentence that carries
-  their mark, and the margin is printed line by line as Stipp sets it. This README attributed the second group to
-  Stipp's footnote apparatus until 2026-09-10, and that was wrong: the apparatus
-  accounts for hardly any of it.
+- **1,389 of 1,394 verses (99.6%)** reproduce BHSA's consonants exactly and in
+  order, and carry `BHSA ✓`. **The other five are the `Stipp ≠ BHS` verses
+  above: no verse of the masoretic column carries `BHSA ?` any more.** Since
+  2026-10-01 the page geometry is read with PyMuPDF, which reports where every
+  glyph really stands; pypdf, used before, reported some lines at the page edge
+  or thousands of points off the page, and five verses — and whole sentences of
+  the alexandrian column, and the Greek of 25,25–29 — were placed wrongly
+  because of it.
 - **Where Stipp abbreviates, the word is completed from his own page.** If the
   two forms differ only in their first letter he prints the masoretic head, the
   bar, and the alexandrian word in full, so the letters they share are set once
@@ -149,9 +147,9 @@ Synopse. Every verse carries a badge saying whether the two agree.
   wrapped line, so the closer is at the far right. And the leftward walk used to
   stop dead at an apparatus complete inside its own span, or at a transposition
   star, both of which are set in the column like any other text. Five verses.
-- Counted by word rather than by letter, **97.2%** of verses match BHSA word for
+- Counted by word rather than by letter, **97.6%** of verses match BHSA word for
   word, a further **2.1%** have every letter right and differ only in where the
-  spaces fall, and **0.9%** differ in the letters themselves. The middle group
+  spaces fall, and **0.4%** differ in the letters themselves, all of them `Stipp ≠ BHS`. The middle group
   was 15.4% until 2026-09-07 and 4.8% until 2026-10-01, and **what is left of it
   is now all Stipp's own setting**: compound proper names BHSA writes as one
   graphical unit and he sets as two — 'OBED MELEK, BET LEHEM, BEN HINNOM, NERGAL
@@ -208,7 +206,7 @@ verses it filed under four different headings turned out to be one fault.
 
     python -m unittest discover -s tests -t tests -v
 
-90 tests over the built pages, standard library only — no install, no
+92 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.

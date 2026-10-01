@@ -460,9 +460,13 @@ class TestTheRightText(unittest.TestCase):
                                  "alexandrian column as well")
                 self.assertIn(drop, mt, "and the word lost its pointing or "
                                         "was cut short in its own column")
+        # JEHUDAH, as the docstring says. Until 2026-10-01 this asserted JHWH,
+        # and passed only because the alexandrian column of 36,1 printed both
+        # readings of 36,1b - MEET JHWH as well as DEBAR-JHWH 'ELAJ - a fault
+        # step 4 removed (pypdf had put the bar of that notation on no line).
         og = ["".join(S.HEB.findall(w))
               for w in by_ref[("jer36.html", 1)].og_printed()]
-        self.assertIn(u"יהוה", og)
+        self.assertIn(u"יהודה", og)
 
     def test_an_alexandrian_variant_has_a_masoretic_counterpart(self):
         """The mirror of the invariant above, and it admits no exceptions.
@@ -764,6 +768,29 @@ class TestApparatusOnly(unittest.TestCase):
         v = next(v for v in S.verses() if v.page == "jer31.html" and v.number == 24)
         self.assertIn("בעדר", cons(v.mt_words()).split())
         self.assertIn("בעדר", cons(v.og_words()).split())
+
+
+class TestTrueGeometry(unittest.TestCase):
+    """STEP 4 (2026-10-01): span positions from PyMuPDF. Each of these was
+    wrong under pypdf's coordinates and is right only because of them."""
+
+    def verse(self, page, n):
+        return next(v for v in S.verses() if v.page == page and v.number == n)
+
+    def test_the_verses_pypdf_misplaced(self):
+        """28,11, 40,13 and 46,1 had their left end reported at the frame's edge
+        and read as margin; 29,10 and 36,1 had the head of a line - the sign
+        that resolves a notation in it - reported at y = -4300."""
+        for page, n in (("jer28.html", 11), ("jer29.html", 10), ("jer36.html", 1),
+                        ("jer40.html", 13), ("jer46.html", 1)):
+            with self.subTest(verse=(page, n)):
+                self.assertTrue(self.verse(page, n).confirmed())
+
+    def test_the_alexandrian_column_gets_its_text_back(self):
+        """Losses no BHSA check could see: 25,25 had an EMPTY alexandrian cell,
+        29,10 lacked the whole clause after its plus."""
+        self.assertIn("עילם", cons(self.verse("jer25.html", 25).og_words()).split())
+        self.assertIn("להשיב", cons(self.verse("jer29.html", 10).og_words()).split())
 
 
 class TestMarkup(unittest.TestCase):
