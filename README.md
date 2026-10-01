@@ -14,8 +14,10 @@ Read it here: **https://martijnnaaijer.github.io/mt_greek_jeremiah/**
     docs/index.html      the chapter index — start here
     docs/jer01.html …    Jeremiah 1–52, one page per chapter
     docs/2kings25.html   the three Synopse pages of the parallel
+    scripts/             the code that builds them (see "How the pages are built")
+    tests/               the checks on the built pages
 
-54 files. Each is self-contained: the data is embedded, the CSS is inline,
+54 pages. Each is self-contained: the data is embedded, the CSS is inline,
 nothing is fetched, so a page can be opened from the file system, mailed to
 someone, or served as it stands.
 
@@ -201,7 +203,7 @@ Synopse. Every verse carries a badge saying whether the two agree.
   against the alexandrian column's 72,719, a ratio of **1.168**, where Janzen's
   estimate for the short edition puts it near 1.14.
 
-`scripts/pages_vs_bhsa.py` in the parent project scores these pages against BHSA
+`scripts/pages_vs_bhsa.py` scores these pages against BHSA
 consonant by consonant and writes every deviation to `results/mt_vs_bhsa.csv`,
 saying for each missing run whether it is in the alexandrian column, in a margin
 note, in the parse but not on the page, or nowhere. As of 2026-09-10: 9 verses
@@ -247,17 +249,40 @@ Three groups:
 They are floors and one ceiling, not targets — tighten them as the extraction
 improves, and explain any fall.
 
-## Where it comes from
+## How the pages are built
 
-Output only. Nothing here is hand-edited, and nothing in the pipeline reads back
-from it. The pages are written by
+The pages are output only: nothing in `docs/` is hand-edited, and nothing reads
+back from it. They are built by the scripts in `scripts/`, in this order:
 
-    deuteronomistic/scripts/build_synopse_pages.py
+    lxx_greek.py            Rahlfs LXX Jeremiah -> word list and form index
+    bhsa_lex.py             BHSA -> per-verse words and form index (the hover)
+    parse_synopse.py        Stipp's PDF -> results/synopse.json, one record per sentence
+    check_synopse.py        the masoretic column against BHSA -> the per-verse badge
+    build_synopse_pages.py  -> docs/, all 54 pages in one pass
+    pages_vs_bhsa.py        a diagnostic, not part of the build: every deviation
+                            of the built pages from BHSA -> results/mt_vs_bhsa.csv
 
-in the parent project, from `results/synopse.json` (`parse_synopse.py`), with
-`check_synopse.py` supplying the per-verse badge, `bhsa_lex.py` the Hebrew
-analyses and `lxx_greek.py` the Greek. To change a page, change the script and
-re-run it; the whole folder is regenerated in one pass.
+`bwfonts.py` holds the converters for Stipp's Hebrew and Greek fonts (run it on
+its own for the Hebrew map's self-check); `bwhebb_learn.py` derived the Hebrew
+map from the PDF against BHSA and is kept as the record of how.
+
+**What the build needs, and what this repository does not contain:**
+
+- **Stipp's PDF**, the *Textkritische Synopse zum Jeremiabuch*, 15. korrigierte
+  interne Auflage (April 2021). It is an internal edition and is not
+  distributed here. `scripts/paths.py` looks for it in the research project this
+  repository sits in (`deuteronomistic/paper/books_for paper/`), or wherever the
+  environment variable `SYNOPSE_BOOKS` points.
+- **BHSA 2021 and the Rahlfs LXX** as text-fabric datasets under
+  `~/text-fabric-data` (`etcbc/bhsa`, `CenterBLC/lxx`).
+- **Python packages** `pypdf`, `pymupdf` and `text-fabric`. The positions of the
+  text on the page come from PyMuPDF and the text from pypdf; see the long
+  comments in `parse_synopse.py`.
+
+The intermediate files (`synopse.json`, the word lists, the per-verse check) are
+written to the research project's `deuteronomistic/results/`, where other
+analyses also read them, or to `SYNOPSE_RESULTS` if that is set. To change a
+page, change a script and re-run the chain; the whole of `docs/` is regenerated.
 
 ## License
 
