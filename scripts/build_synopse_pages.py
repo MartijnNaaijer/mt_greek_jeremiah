@@ -121,6 +121,7 @@ body{margin:0;background:var(--bg);color:var(--fg);
 header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--rule);
  padding:.7rem 1.2rem;z-index:5}
 h1{margin:0;font-size:1.15rem;font-weight:600;letter-spacing:.01em}
+h2.oracle{font-size:1rem;font-weight:600;margin:1.6rem 0 .3rem}
 .sub{color:var(--mut);font-size:.8rem;margin-top:.15rem}
 nav{margin-top:.5rem;font-size:.82rem}
 nav a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);margin-right:.7rem}
@@ -128,7 +129,9 @@ nav a:hover{border-color:var(--fg)}
 .toggles{float:right;font-size:.78rem;color:var(--mut)}
 .toggles label{margin-left:.9rem;cursor:pointer;user-select:none}
 main{padding:1rem 1.2rem 4rem;max-width:1400px}
-.v{border-top:1px solid var(--rule);padding:.8rem 0}
+.v{border-top:1px solid var(--rule);padding:.8rem 0;scroll-margin-top:9rem}
+.colhead td{hyphens:auto;overflow-wrap:normal}
+@media(max-width:640px){header{position:static}.v{scroll-margin-top:0}}
 .vh{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.35rem}
 .vn{font-weight:700;font-size:.95rem;min-width:3.2rem}
 .badge{font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;
@@ -172,6 +175,7 @@ sup.ab{font-size:.62em;color:var(--mut);vertical-align:super;padding:0 .1em}
 .hl .scope{border-bottom:1px dotted var(--mark)}
 .notes{font-size:.8rem;color:var(--mut);padding:.1rem .5rem .4rem 1.6rem}
 .notes .n{margin-right:.9rem;display:inline-block;max-width:100%}
+.notes .n.id{font-weight:600}
 .notes .n.foot{display:block;margin:.3rem 0 0;font-style:italic}
 .notes .heb{direction:rtl;unicode-bidi:isolate;font-size:1rem;font-style:normal}
 .hide-notes .notes{display:none}
@@ -557,9 +561,15 @@ def notes_html(notes):
         # every page.
         if t.isdigit() and len(t) <= 3:
             continue
+        if n.get("kind") == "title":
+            continue                # set above the verse, not as a note
         heb = any('א' <= c <= 'ת' for c in t)
         latin = any(c.isalpha() and c.isascii() for c in t)
-        if n.get("kind") == "foot":
+        if n.get("kind") == "id":
+            # (55) Stipp's reference to a section of his idiolect study, set in
+            # bold in the margin, as he sets it.
+            out.append(f'<span class="n id">{esc(t)}</span>')
+        elif n.get("kind") == "foot":
             # A FOOTNOTE is German prose with Hebrew and Greek in it: it reads
             # left to right, on a line of its own, and each Hebrew run is
             # isolated so that it does not turn the sentence round it.
@@ -742,6 +752,12 @@ def build():
                 elif ''.join(got) == ''.join(want):
                     wl[2] += 1
             g = ""
+            # (59) the title of an oracle against the nations stands above the
+            # verse it opens, as Stipp sets it above the sentence
+            for c in cls_:
+                for n in c["notes"]:
+                    if n.get("kind") == "title":
+                        body.append(f'<h2 class="oracle">{esc(n["text"])}</h2>')
             body.append(
                 f'<section class="v" id="v{v}"><div class="vh"><span class="vn">'
                 f'{ch},{v}</span>{badge}{gbadge}'

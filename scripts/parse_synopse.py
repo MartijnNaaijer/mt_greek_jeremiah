@@ -276,12 +276,59 @@ def _true_geometry(spans, pno):
             # tight against its letters stopped looking tight: the abbreviated
             # masoretic word at 3,23, 5,18 and 6,8 was left unfinished.
             x, y = last
-        out.append((x, y, k, fs, t))
+        # (56) ONE PYPDF SPAN CAN COVER TWO PLACES ON THE LINE. At 2,25c it
+        # reads '18,12b (' - the cross-reference at x = 30 and the '(' that
+        # opens the apparatus at x = 251, one text object - so the '(' went to
+        # the margin, the apparatus never opened in the text column, and the
+        # whole of it, Greek, 'via' and Hebrew, was lost. An APP span is cut
+        # where PyMuPDF puts a gap of more than GAP_SPLIT between two of its
+        # glyphs on one baseline AND THE FAR GLYPH IS '('; each piece takes its
+        # own glyph's position. Only there: the same merging puts brackets,
+        # '#' and '<' at the end of margin spans hundreds of times, the margin
+        # reader already applies markup it finds at the end of a span, and
+        # cutting at every gap changed the text of 205 sentences.
+        pieces = []
+        if k == "APP" and n > 1 and i + n <= len(seq):
+            j, cut = 0, 0
+            for ci, c in enumerate(t):
+                if c.isspace():
+                    continue
+                if j:
+                    (px, py), pbox = seq[i + j - 1]
+                    (qx, qy), _ = seq[i + j]
+                    if qx - pbox[2] > GAP_SPLIT and abs(qy - py) < 1 \
+                            and t[ci:].lstrip(OPEN_MARKUP).startswith("("):
+                        pieces.append((cut, ci, j))
+                        cut = ci
+                j += 1
+        if pieces:
+            starts = [0] + [p[1] for p in pieces]
+            ends = [p[1] for p in pieces] + [len(t)]
+            firsts = [0] + [p[2] for p in pieces]
+            for a_, b_, g_ in zip(starts, ends, firsts):
+                piece = t[a_:b_]
+                (ox, oy), _ = seq[i + g_]
+                lead = len(piece) - len(piece.lstrip())
+                out.append((round(ox - lead * 2.5, 1), round(height - oy, 1),
+                            k, fs, piece))
+                SPLIT_SPANS.append((pno, piece))
+        else:
+            out.append((x, y, k, fs, t))
         if k == "HEB":
             kh += n
         else:
             ko += n
     return out
+
+
+GAP_SPLIT = 20.0
+# Markup that can stand hard before an apparatus's "(" in one span: "[(" at
+# 23,18d, where the plus opens on the apparatus, and "» (" at 6,9c.
+OPEN_MARKUP = "[]<>»«"
+APPARATUS_IN_MARGIN = []
+TITLES = {}                         # page -> [(y, oracle title)]
+TITLE = re.compile(r"[A-ZÄÖÜ][\w ]*: Jer ")
+SPLIT_SPANS = []
 
 
 
@@ -701,9 +748,38 @@ def clauses_of(page):
     held together.
     """
     spans, marks = _take_footnotes(page_spans(page))
-    head = [s for s in spans if s[2] == "BOLD"]
+    # (55) THE IDIOLECT REFERENCES ARE BOLD AND ARE NOT THE HEADING. Stipp sets
+    # 'Id 4.23' - a section of his study of the pre-Masoretic idiolect - in the
+    # margin of the line it concerns, in Times-Bold like the running head, and
+    # taking every bold span for the heading dropped all of them: the code
+    # below that files them as notes of kind 'id' never saw one.
+    idio = lambda s: s[2] == "BOLD" and ID.search(s[4])
+    # (59) NOR ARE THE TITLES OF THE ORACLES AGAINST THE NATIONS. 'Ägypten: Jer
+    # 46,2–26 / Jer G 26,2–25' stands in bold at the head of its oracle,
+    # inside the page, eight times in chs 46-51. Read as part of the running
+    # head they were lost, and GHEAD found the title's Greek range before the
+    # page's own, so p. 147 was given G 26,2-25 where its heading says 26,1-9.
+    # A bold span left of the Greek panel and below the running head is a
+    # title; it is kept with its height and filed before the first sentence
+    # beneath it.
+    top = max((s[1] for s in spans if s[2] == "BOLD"), default=0)
+    low = lambda s: (s[2] == "BOLD" and not idio(s) and s[0] < GREEK_X
+                     and s[1] < top - 5 and s[4].strip())
+    rows = collections.defaultdict(list)
+    for s in spans:
+        if low(s):
+            rows[s[1]].append(s[4])
+    # a row is a title only if it reads like one: 'Name: Jer ...'. A stray
+    # bold '[' at p. 111 and the title page's lines are not.
+    rows = {y: ts for y, ts in rows.items() if TITLE.match("".join(ts).strip())}
+    title = lambda s: low(s) and s[1] in rows
+    TITLES[page.page_number] = [
+        (y, re.sub(r"Jer ?G\b", "Jer G", " ".join("".join(ts).split())))
+        for y, ts in sorted(rows.items(), reverse=True)]
+    head = [s for s in spans if s[2] == "BOLD" and not idio(s)
+            and not title(s)]
     greek = [s for s in spans if s[0] >= GREEK_X and s[2] != "BOLD"]
-    body = [s for s in spans if s[0] < GREEK_X and s[2] != "BOLD"]
+    body = [s for s in spans if s[0] < GREEK_X and (s[2] != "BOLD" or idio(s))]
     out, cur = [], []
     for ln in lines_of(body):
         if has_label(ln) and cur:
@@ -775,7 +851,10 @@ def _apparatus_reach(margin, text):
         sp = margin[-1 - take]
         if sp[0] < OVERFLOW_X:
             return 0
-        if sp[2] not in ("HEB", "GRK") and "(" in sp[4]                 and sp[4][:sp[4].index("(")].strip():
+        # Markup may stand before the '(' in its span - '» (' at 6,9c, where
+        # the quotation mark closes Stipp's «αὐτοῦ» - but nothing else may.
+        if sp[2] not in ("HEB", "GRK") and "(" in sp[4] \
+                and sp[4][:sp[4].index("(")].strip(OPEN_MARKUP + " "):
             return 0
         take += 1
         run.insert(0, sp)
@@ -920,6 +999,35 @@ def split_columns(line):
     # the text reaches back at least as far as its '('. See the note above.
     for _ in range(_apparatus_reach(margin, text)):
         text.insert(0, margin.pop())
+
+    # (58) AN APPARATUS CAN LIE WHOLLY IN THE MARGIN ZONE, '(' and ')' both left
+    # of MARGIN_X, and then the text column closes nothing and the reach above
+    # never fires. At 15,18a Stipp sets '(κατισχύουσί μου √ NTsH aram/mhe)'
+    # from x = 58 to x = 165 and the text begins at 198, so the note printed
+    # '3,5b ( κατισχύουσί μου √' and lost the rest. The run from a '(' that
+    # opens its span to the end of the margin goes to the text when it closes
+    # there and stands right of OVERFLOW_X; the '(' test is the reach's own.
+    for j in range(len(margin)):
+        x, y, k, fs, t = margin[j]
+        if k != "APP" or x < OVERFLOW_X or "(" not in t or \
+                t[:t.index("(")].strip(OPEN_MARKUP + " "):
+            continue
+        depth = 0
+        for sp in margin[j:]:
+            if sp[2] in ("HEB", "GRK"):
+                continue
+            depth += sp[4].count("(") - sp[4].count(")")
+        # ... and the ')' must END the margin: a margin note can carry a
+        # parenthesis of its own and go on after it - 'JHWH ≙ (ὁ) θεός 1,2;'
+        # at 1,1a - while an apparatus pushed out of the text is the last
+        # thing before the column.
+        tail = [sp for sp in margin[j:] if sp[4].strip()]
+        if depth == 0 and tail and tail[-1][2] == "APP" and \
+                tail[-1][4].rstrip().endswith(")"):
+            text[:0] = margin[j:]
+            del margin[j:]
+            APPARATUS_IN_MARGIN.append((round(x), t))
+        break
 
     # THE TEXT COLUMN OVERFLOWS ITS LEFT EDGE ON A LONG LINE, and MARGIN_X is a
     # threshold, so the overflow falls into the margin and is lost. Two shapes
@@ -2102,19 +2210,38 @@ def _bind_lone_proclitics(segs):
     return segs
 
 
+# Two glyphs of the SymbolMT font that come through as private-use code
+# points: Stipp's double arrows, 'derived from', in the apparatus.
+SYMBOL = {0xF0DC: "⇐", 0xF0DE: "⇒"}
+
+
 def note_text(n):
     kind_, payload = n
-    if kind_ in ("grk", "id", "margin", "sigla"):
-        return {"kind": kind_, "text": payload}
+    if kind_ in ("grk", "id", "margin", "sigla", "title"):
+        return {"kind": kind_, "text": payload.translate(SYMBOL)}
+    # (57) THE APPARATUS IS READ LEFT TO RIGHT, as Stipp sets it: '(Q HELILU,
+    # AlT = K)' at 48,20c. The parts arrive in the order the line is walked,
+    # right to left, and were printed so: '= K AlT , HELILU Q'. They are put
+    # back in visual order, and a run of spans of one script is joined as one
+    # piece before it is converted - for the Hebrew that is the order its
+    # visual ASCII needs, the leftmost span first.
+    runs = []
+    for k, t in reversed(payload):
+        if runs and runs[-1][0] == k:
+            runs[-1][1] += t
+        else:
+            runs.append([k, t])
     parts = []
-    for k, t in payload:
+    for k, t in runs:
         if k == "heb":
             t = bwfonts.to_hebrew(t)
         elif k == "grk":
             t = bwfonts.to_greek(t)
         if t and t.strip():
             parts.append(t.strip())
-    return {"kind": "app", "text": " ".join(parts)}
+    text = " ".join(parts).translate(SYMBOL)
+    text = re.sub(r"\s+([,;.)])", r"\1", re.sub(r"\(\s+", "(", text))
+    return {"kind": "app", "text": text}
 
 
 def margin_text(spans):
@@ -2213,7 +2340,7 @@ GREEK_NUM_X = 460.0        # a Greek verse number stands at x = 451
 GREEK_GEOMETRIC = []       # (verse key, all lines placed by position?) per verse
 
 
-def place_greek_by_position(rows, row_of, cls_, greek, gys, gch):
+def place_greek_by_position(rows, row_of, cls_, greek, gys, gch, panel=()):
     """(51) Each Greek line goes beside the Hebrew sentence it is printed level
     with - read off the page, not inferred.
 
@@ -2249,7 +2376,11 @@ def place_greek_by_position(rows, row_of, cls_, greek, gys, gch):
             if r is None:
                 continue
             inferred.add(r)
-        placed[r].append((gv, text))
+        # (60) the chapter is the panel's own where it states one: a Greek
+        # line takes the last 'Jer G n' set above it in the panel, and the
+        # heading's first Greek chapter only where there is none
+        heads = [c for hy, c in panel if y is not None and hy > y]
+        placed[r].append((gv, text, heads[-1] if heads else gch))
     verses = collections.OrderedDict()
     for r in sorted({r for _, r in heights}):
         verses.setdefault((rows[r]["book"], rows[r]["ch"], rows[r]["v"]), []).append(r)
@@ -2257,8 +2388,8 @@ def place_greek_by_position(rows, row_of, cls_, greek, gys, gch):
         has = [r for r in rs if placed.get(r)]
         for r in rs:
             if placed.get(r):
-                rows[r]["greek"] = " ".join(t for _, t in placed[r])
-                rows[r]["gverse"] = "%d:%d" % (gch, placed[r][0][0])
+                rows[r]["greek"] = " ".join(t for _, t, _c in placed[r])
+                rows[r]["gverse"] = "%d:%d" % (placed[r][0][2], placed[r][0][0])
         if has:
             exact = not any(r in inferred for r in has)
             for r in rs:
@@ -2386,6 +2517,7 @@ def column(segs, keep, strip_orphan_maqqef=False):
 def parse():
     reader = PdfReader(SRC)
     rows, skipped, supplement = [], [], []
+    titled = set()
     for pno, page in enumerate(reader.pages):
         head_spans, cls_, greek_spans, marks = clauses_of(page)
         fns, placed = footnotes(pno), set()
@@ -2431,6 +2563,14 @@ def parse():
                     if vlo <= n <= vhi and (v is None or n >= v):
                         v = n
                 letter = (lets[0] if lets else "") + index.strip()
+            # (59) an oracle's title goes before the first sentence below it
+            # that has text, not before a run of margin lines
+            ctop = max((sp[1] for sp in cl[0] if sp[4].strip()), default=0)
+            if any(t.strip() for _, t in segs):
+                for ty, tt in TITLES.get(pno, []):
+                    if ctop < ty and (pno, ty) not in titled:
+                        titled.add((pno, ty))
+                        notes.insert(0, ("title", tt))
             if not any(t.strip() for _, t in segs) and not notes:
                 continue
             row_of[ci] = len(rows)
@@ -2459,7 +2599,19 @@ def parse():
                     rows[-1]["notes"].append(dict(
                         kind="foot", text=f"{str(n).translate(SUP)} {fns[n]}"))
                     placed.add(n)
-        place_greek_by_position(rows, row_of, cls_, greek, gys, gch)
+        # (60) THE GREEK PANEL NAMES ITS OWN CHAPTERS. On a page whose Greek
+        # runs over a chapter break Stipp sets 'Jer G 25' in bold in the panel
+        # where the chapter starts - p. 161 has G 30, then 25 and 26 - while
+        # the heading's first range gave every line one chapter.
+        ptop = max((y for x, y, k, fs, t in head_spans), default=0)
+        pch = collections.defaultdict(str)
+        for x, y, k, fs, t in sorted(head_spans, key=lambda s: s[0]):
+            if x >= GREEK_X and y < ptop - 5:
+                pch[y] += t
+        panel = sorted((y, int(m_.group(1))) for y, t in pch.items()
+                       for m_ in [re.fullmatch(r"\s*Jer\s*G\s*(\d+)\s*", t)]
+                       if m_)[::-1]
+        place_greek_by_position(rows, row_of, cls_, greek, gys, gch, panel)
         # A MARK IN THE GREEK PANEL goes with the row that received that Greek.
         here = [r_ for r_ in rows if r_["page"] == pno + 1]
         for n, gi in gmarks:

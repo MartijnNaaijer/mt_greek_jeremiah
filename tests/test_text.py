@@ -1125,6 +1125,67 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
                              f"was {BASELINE['bare_letter_ceiling']}")
 
 
+class TestTheNotes(unittest.TestCase):
+    """The notes checked against the page (2026-10-01): every Latin token
+    PyMuPDF reads outside the Hebrew and Greek fonts, compared page by page
+    with the notes parsed. Each test is a fault that comparison found."""
+
+    def verse(self, page, n):
+        return next(v for v in S.verses() if v.page == page and v.number == n)
+
+    def notes(self, page, n):
+        """Each printed note of the verse as plain text, one per note span."""
+        out = []
+        for h in self.verse(page, n).notes:
+            for part in re.split(r'<span class="n[ "]', h)[1:]:
+                part = re.sub(r"^[^>]*>", "", part)
+                out.append(" ".join(S.unescape(re.sub(r"<[^>]+>", "", part)).split()))
+        return out
+
+    def test_the_idiolect_references_are_printed(self):
+        """(55) 'Id 4.23' is set in bold, and every bold span was taken for the
+        running head: 288 references were dropped."""
+        self.assertIn("Id 4.23", " ".join(self.notes("jer01.html", 11)))
+        self.assertGreaterEqual(
+            sum(len(re.findall(r'class="n id"', p.html)) for p in S.pages()), 288)
+
+    def test_an_apparatus_opened_on_the_margin_span(self):
+        """(56) pypdf read '18,12b (' as one span, the reference at x = 30 and the
+        '(' at x = 251, so the apparatus never opened in the text column."""
+        self.assertIn("ἀνδριοῦμαι via אִישׁ", self.notes("jer02.html", 25))
+
+    def test_the_apparatus_reads_left_to_right(self):
+        """(57) The parts came out in the order the line is walked, right to
+        left: '= K AlT , HELILU Q' for Stipp's '(Q HELILU, AlT = K)'."""
+        self.assertIn("Q הֵילִילוּ, AlT = K", self.notes("jer48.html", 20))
+
+    def test_an_apparatus_pushed_wholly_into_the_margin(self):
+        """(58) '(ἐπεγερθῆναι √ עור)' at 47,7 lies left of MARGIN_X, '(' and ')'
+        both, and printed inside the cross-reference - with the verse's sof
+        pasuq, which had been lost from the column."""
+        self.assertIn("ἐπεγερθῆναι √ עור", self.notes("jer47.html", 7))
+        self.assertTrue(self.verse("jer47.html", 7).mt_text().endswith("׃"))
+
+    def test_the_oracle_titles_stand_above_their_verse(self):
+        """(59) The bold titles of the oracles against the nations were read as
+        the running head: lost, and p. 147's Greek range taken from its title."""
+        titles = [t for p in S.pages()
+                  for t in re.findall(r'<h2 class="oracle">([^<]*)', p.html)]
+        self.assertEqual(len(titles), 9)
+        html = next(p.html for p in S.pages() if p.name == "jer46.html")
+        self.assertLess(html.index("Ägypten: Jer 46,2–26"), html.index('id="v2"'))
+        self.assertGreater(html.index("Ägypten: Jer 46,2–26"), html.index('id="v1"'))
+        self.assertIn("Jer G 26,1-9", self.verse("jer46.html", 1).body)
+
+    def test_the_greek_chapter_is_the_panels_own(self):
+        """(60) Jer 8,23 is G 9,1, as the panel's 'Jer G 9' says; the heading's
+        range put it in G 8 and its words were analysed from the wrong verse."""
+        pool = next(p.pool for p in S.pages() if p.name == "jer08.html")
+        entries = pool.values() if isinstance(pool, dict) else pool
+        self.assertTrue(any(e.get("f") == "λαόν" and e["w"][0]["f"] == "λαόν"
+                            for e in entries))
+
+
 class TestBaseline(unittest.TestCase):
     """Counts recorded when the tests were written.
 

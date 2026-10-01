@@ -185,6 +185,14 @@ Synopse. Every verse carries a badge saying whether the two agree.
   the PDF and are Stipp's own pointing. Five words that differed because of the
   extraction — a point lost at a bracket, a point Stipp's PDF draws twice — were
   fixed on 2026-10-01.
+- **The notes** — margin references, inline apparatus, idiolect references —
+  were checked on 2026-10-01 against the PDF read independently with PyMuPDF
+  (`scripts/notes_vs_pdf.py`). That check found Stipp's 288 idiolect references
+  (`Id 4.23`) missing from the pages, 51 apparatus notes lost, every inline
+  apparatus printed in reverse order, and the eight titles of the oracles
+  against the nations missing; all are fixed. One apparatus is still
+  incomplete (15,18a). The idiolect references print in bold, as Stipp sets
+  them, and the oracle titles stand as headings above their verse.
 - **The Greek words**: 2,811 false spaces between Greek glyphs that touch were
   removed on 2026-10-01, rejoining words such as ἐκλείψουσιν (51,58). Of the
   521 tokens that are not forms of Rahlfs' Jeremiah, 353 are Stipp's spelling
@@ -228,7 +236,7 @@ verses it filed under four different headings turned out to be one fault.
 
     python -m unittest discover -s tests -t tests -v
 
-96 tests over the built pages, standard library only — no install, no
+102 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.
