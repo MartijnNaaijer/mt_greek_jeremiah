@@ -47,11 +47,11 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,370 of 1,394 verses (98.3%)** reproduce BHSA's consonants exactly and in
+- **1,371 of 1,394 verses (98.4%)** reproduce BHSA's consonants exactly and in
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.997**.
   The rest carry `BHSA ?`. Of those, 9 are missing letters, 3 of them in a margin
-  note where the text column overflowed; 16 carry letters BHSA does not have in
-  that verse, and 13 of the 16 are still an alexandrian reading standing in a
+  note where the text column overflowed; 15 carry letters BHSA does not have in
+  that verse, and 12 of the 15 are still an alexandrian reading standing in a
   segment read as common. This README attributed the second group to
   Stipp's footnote apparatus until 2026-09-10, and that was wrong: the apparatus
   accounts for hardly any of it.
@@ -142,17 +142,22 @@ Synopse. Every verse carries a badge saying whether the two agree.
   wrapped line, so the closer is at the far right. And the leftward walk used to
   stop dead at an apparatus complete inside its own span, or at a transposition
   star, both of which are set in the column like any other text. Five verses.
-- Counted by word rather than by letter, **93.5%** of verses match BHSA word for
-  word, a further **4.8%** have every letter right and differ only in where the
-  spaces fall, and **1.7%** differ in the letters themselves. The middle group
-  is what is left of a much larger one: it was 15.4% until 2026-09-07, when six
-  faults that put a space inside a word — or took one out — were fixed in the
-  extraction. The 67 verses that remain there are the source's own, in two
-  kinds: a word broken across a justification gap and left that way on purpose
-  (BI-SHLO SH-'ESREH at 1,2, SHALO SH eight times), and a compound proper name
-  BHSA writes as one graphical unit while Stipp sets it as two — 'OBED MELEK,
-  BET LEHEM, BEN HINNOM, NERGAL SAR 'ESER, QIR HERES. The three figures are
-  printed by `build_synopse_pages.py` on every run.
+- Counted by word rather than by letter, **95.4%** of verses match BHSA word for
+  word, a further **2.9%** have every letter right and differ only in where the
+  spaces fall, and **1.6%** differ in the letters themselves. The middle group
+  was 15.4% until 2026-09-07, when six faults that put a space inside a word — or
+  took one out — were fixed in the extraction, and 4.8% until 2026-10-01. **What
+  went then had been taken for the source's own justification gaps and was not.**
+  BI-SHLO SH-'ESREH at 1,2 is a space glyph set at 1.78pt and 0.2 units wide, a
+  filler, where every word space of the body is 4.1 wide; HA-DAB R at 21,1 has no
+  space glyph at all, only pypdf's guess at a gap between two glyphs that touch.
+  Read glyph by glyph with PyMuPDF, the PDF says so itself, and 41 such spaces
+  are now taken out with no reference to BHSA. Four sentences got back vowel
+  points the false space had cut off their letter. What remains in the middle
+  group is mostly a compound proper name BHSA writes as one graphical unit while
+  Stipp sets it as two — 'OBED MELEK, BET LEHEM, BEN HINNOM, NERGAL SAR 'ESER,
+  QIR HERES — together with ten places where two words run together. The three
+  figures are printed by `build_synopse_pages.py` on every run.
 - **The book is complete: 1,364 verses of 1,364.** Eight were missing until
   2026-09-07 — 13:10, 22:12, 22:27, 23:34, 28:8–9, 44:16, 52:20 — because
   Stipp raises a P for Parablepsis inside the label span (`] aP 10`) and the

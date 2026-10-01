@@ -26,9 +26,9 @@ GOLDEN = {
     ("jer01.html", 1): "דברי ירמיהו בן חלקיהו מן הכהנים אשר בענתות בארץ בנימן",
     # The H that used to open this verse was an orphan glyph at x = 0.
     ("jer01.html", 11): "ויהי דבר יהוה אלי לאמר מה אתה ראה ירמיהו ואמר מקל שקד אני ראה",
-    # A bare backslash marks BN-'AMON against 'AMOTS and nothing else. The page
-    # sets BI-SHLO SH-'ESREH, because the PDF breaks that word across a
-    # justification gap; see test_the_justification_gaps_are_the_source_s_own.
+    # A bare backslash marks BN-'AMON against 'AMOTS and nothing else. The
+    # page set BI-SHLO SH-'ESREH until 2026-10-01; see
+    # test_a_word_is_not_broken_by_a_space_the_source_does_not_set.
     ("jer01.html", 2): ("אשר היה דבר יהוה אליו בימי יאשיהו בן אמון מלך יהודה "
                         "בשלש עשרה שנה למלכו"),
     # The # that closes this notation stands out in the margin at x = 30.
@@ -42,8 +42,9 @@ GOLDEN = {
     ("jer43.html", 8): "ויהי דבר יהוה אל ירמיהו בתחפנחס לאמר",
 }
 
-# Of those, the ones the source itself sets with a broken word.
-JUSTIFIED = {("jer01.html", 2)}
+# Of those, the ones the source itself sets with a broken word. None since
+# 2026-10-01: the one there was, 1,2, was a hair space and not a word space.
+JUSTIFIED = set()
 
 
 def cons(words):
@@ -526,7 +527,9 @@ class TestTheRightText(unittest.TestCase):
         file already applies to a parenthesis: does this run of spans close a
         bracket it never opened?
         """
-        want = {("jer52.html", 29): u"שים",
+        # SHLOSHIM, whole since 2026-10-01; the test used to look for SHIM,
+        # the half of it that a false space had left standing as a word.
+        want = {("jer52.html", 29): u"שלשים",
                 ("jer34.html", 10): u"עוד"}
         by_ref = {(v.page, v.number): v for v in S.verses()}
         for key, word in want.items():
@@ -567,19 +570,22 @@ class TestTheRightText(unittest.TestCase):
             with self.subTest(verse=key):
                 self.assertEqual(cons(by_ref[key].mt_words()), want)
 
-    def test_the_justification_gaps_are_the_source_s_own(self):
-        """Stipp's PDF breaks a word across a justification gap and sets a real
-        space in it, so the word arrives split and there is nothing in the file
-        to say it should not be. Jer 1,2 has BI-SHLO SH-'ESREH for BI-SHLOSH
-        'ESREH. This is pinned rather than fixed: closing the gap would mean
-        guessing, and a guess in the text is worse than a visible seam. About a
-        sixth of the verses have one somewhere.
+    def test_a_word_is_not_broken_by_a_space_the_source_does_not_set(self):
+        """Pinned the other way until 2026-10-01, as a justification gap the
+        source sets and nothing could close. It was never the source's word
+        space, and the PDF says so when it is read glyph by glyph: at 1,2 the
+        space inside BI-SHLOSH is a glyph set at 1.78pt and 0.2 units wide, a
+        filler, where every word space of the body is 4.1; at 21,1 there is no
+        space glyph at all inside HA-DABAR, only pypdf's guess at a gap between
+        two glyphs that touch. parse_synopse._true_spaces() takes both out.
         """
-        v = next(v for v in S.pages()[0].verses if v.number == 2)
-        words = cons(v.mt_words()).split()
-        self.assertIn("בשל", words)
-        self.assertIn("ש", words)
-        self.assertNotIn("בשלש", words)
+        by_ref = {(v.page, v.number): v for v in S.verses()}
+        for key, word, half in ((("jer01.html", 2), "בשלש", "בשל"),
+                                (("jer21.html", 1), "הדבר", "הדב")):
+            with self.subTest(verse=key):
+                words = cons(by_ref[key].mt_words()).split()
+                self.assertIn(word, words)
+                self.assertNotIn(half, words)
 
     def test_the_alexandrian_column_of_jer_1_1(self):
         # The retroversion of tò rhēma toû theoû hò egéneto epì Ieremian: the
