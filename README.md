@@ -47,12 +47,14 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,371 of 1,394 verses (98.4%)** reproduce BHSA's consonants exactly and in
+- **1,375 of 1,394 verses (98.6%)** reproduce BHSA's consonants exactly and in
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.997**.
   The rest carry `BHSA ?`. Of those, 9 are missing letters, 3 of them in a margin
-  note where the text column overflowed; 15 carry letters BHSA does not have in
-  that verse, and 12 of the 15 are still an alexandrian reading standing in a
-  segment read as common. This README attributed the second group to
+  note where the text column overflowed; 11 carry letters BHSA does not have in
+  that verse. Four more did until 2026-10-01 and were Stipp's page-bottom
+  footnotes, whose quoted Hebrew stood in the text after the sof pasuq; the
+  footnotes are now read whole and printed beside the sentence that carries
+  their mark, and the margin is printed line by line as Stipp sets it. This README attributed the second group to
   Stipp's footnote apparatus until 2026-09-10, and that was wrong: the apparatus
   accounts for hardly any of it.
 - **Where Stipp abbreviates, the word is completed from his own page.** If the
@@ -142,9 +144,9 @@ Synopse. Every verse carries a badge saying whether the two agree.
   wrapped line, so the closer is at the far right. And the leftward walk used to
   stop dead at an apparatus complete inside its own span, or at a transposition
   star, both of which are set in the column like any other text. Five verses.
-- Counted by word rather than by letter, **95.4%** of verses match BHSA word for
+- Counted by word rather than by letter, **95.7%** of verses match BHSA word for
   word, a further **2.9%** have every letter right and differ only in where the
-  spaces fall, and **1.6%** differ in the letters themselves. The middle group
+  spaces fall, and **1.4%** differ in the letters themselves. The middle group
   was 15.4% until 2026-09-07, when six faults that put a space inside a word — or
   took one out — were fixed in the extraction, and 4.8% until 2026-10-01. **What
   went then had been taken for the source's own justification gaps and was not.**
@@ -203,7 +205,7 @@ verses it filed under four different headings turned out to be one fault.
 
     python -m unittest discover -s tests -t tests -v
 
-60 tests over the built pages, standard library only — no install, no
+83 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.

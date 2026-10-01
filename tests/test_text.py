@@ -596,6 +596,66 @@ class TestTheRightText(unittest.TestCase):
                          "אשר ישב בענתות בארץ בנימן")
 
 
+def note_items(verse):
+    """Every note item of a verse, as text, in the order the page prints them."""
+    out = []
+    for html in verse.notes:
+        for cls, body in re.findall(r'<span class="(n[^"]*)">(.*?)</span>',
+                                    html, re.S):
+            out.append((cls, S.unescape(re.sub(r"<[^>]+>", "", body))))
+    return out
+
+
+class TestTheMargin(unittest.TestCase):
+    """(39) The margin is printed line by line, as Stipp sets it, and the
+    footnotes are footnotes. Both found 2026-10-01 by putting a rendered crop of
+    the PDF beside the page."""
+
+    def verse(self, page, n):
+        return next(v for v in S.verses() if v.page == page and v.number == n)
+
+    def test_a_margin_line_is_one_note_and_keeps_its_order(self):
+        """At 1,2 Stipp sets '→ 1a' and '25,3a₁; 46,25b' on two lines. The page
+        said '1a → ; 46,25b 25,3a': the last piece of each margin line was handed
+        to the text column by split_columns()'s lookahead and printed first, and
+        the index of 25,3a₁, set at 6.36pt, came out as a line of its own."""
+        texts = [t for _, t in note_items(self.verse("jer01.html", 2))]
+        self.assertIn("→ 1a", texts)
+        self.assertIn("25,3a₁; 46,25b", texts)
+        self.assertLess(texts.index("→ 1a"), texts.index("25,3a₁; 46,25b"))
+
+    def test_the_spaces_and_parentheses_are_the_pdf_s(self):
+        """Joël is set as three spans, Jo + ë + l, and a joiner that adds a space
+        at every seam prints 'Jo ë l'; the parentheses of '(ὁ)' were consumed as
+        apparatus markup and never printed."""
+        texts = " | ".join(t for _, t in note_items(self.verse("jer01.html", 1)))
+        self.assertIn("Joël 1,1", texts)
+        self.assertIn("(ὁ) θεός", texts)
+
+    def test_a_footnote_is_whole_and_beside_its_mark(self):
+        """Footnote 1 came out in nine pieces with Michael Langlois's name in
+        four of them. Footnote 18 is marked in the GREEK panel, after
+        Nabouchodonosor at 27,6, and stood at 27,10c while that mark was read
+        as a verse number."""
+        foot = [t for c, t in note_items(self.verse("jer03.html", 15))
+                if "foot" in c]
+        self.assertTrue(any(t.startswith("¹ Das Manuskript steht") and
+                            "MICHAEL LANGLOIS, The Book of Jeremiah’s" in t
+                            for t in foot), foot)
+        foot = [t for c, t in note_items(self.verse("jer27.html", 6))
+                if "foot" in c]
+        self.assertTrue(any(t.startswith("¹⁸ ") for t in foot), foot)
+
+    def test_a_footnote_is_not_text(self):
+        """The Hebrew a footnote quotes stood in the masoretic column after the
+        sof pasuq - SHMM at 4,17, KI at 15,14 - and four verses carried letters
+        BHSA does not have for that reason alone."""
+        for page, n in (("jer04.html", 17), ("jer15.html", 14),
+                        ("jer09.html", 18), ("jer37.html", 21)):
+            with self.subTest(verse=(page, n)):
+                self.assertTrue(self.verse(page, n).confirmed())
+
+
 class TestMarkup(unittest.TestCase):
 
     def test_ketiv_qere_is_marked_in_the_masoretic_column_only(self):
