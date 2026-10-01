@@ -47,10 +47,15 @@ the only one of the three with a ground truth. It is **checked** against BHSA an
 nothing is **written into it** from BHSA: what stands in the column stands in the
 Synopse. Every verse carries a badge saying whether the two agree.
 
-- **1,375 of 1,394 verses (98.6%)** reproduce BHSA's consonants exactly and in
+- **Four verses carry a third badge, `Stipp ≠ BHS`** (17,26; 18,3; 23,9; 25,18):
+  the page reproduces Stipp faithfully and his printed text has or lacks a
+  letter BHS has otherwise, or sets a ketiv BHSA encodes differently. Each was
+  checked against the PDF; the reason is in the badge's tooltip. `BHSA ?` now
+  means only that the extraction may be wrong.
+- **1,381 of 1,394 verses (99.1%)** reproduce BHSA's consonants exactly and in
   order, and carry `BHSA ✓`. Mean in-order recall over all verses is **0.997**.
   The rest carry `BHSA ?`. Of those, 9 are missing letters, 3 of them in a margin
-  note where the text column overflowed; 11 carry letters BHSA does not have in
+  note where the text column overflowed; 5 carry letters BHSA does not have in
   that verse. Four more did until 2026-10-01 and were Stipp's page-bottom
   footnotes, whose quoted Hebrew stood in the text after the sof pasuq; the
   footnotes are now read whole and printed beside the sentence that carries
@@ -144,22 +149,20 @@ Synopse. Every verse carries a badge saying whether the two agree.
   wrapped line, so the closer is at the far right. And the leftward walk used to
   stop dead at an apparatus complete inside its own span, or at a transposition
   star, both of which are set in the column like any other text. Five verses.
-- Counted by word rather than by letter, **95.7%** of verses match BHSA word for
-  word, a further **2.9%** have every letter right and differ only in where the
-  spaces fall, and **1.4%** differ in the letters themselves. The middle group
-  was 15.4% until 2026-09-07, when six faults that put a space inside a word — or
-  took one out — were fixed in the extraction, and 4.8% until 2026-10-01. **What
-  went then had been taken for the source's own justification gaps and was not.**
-  BI-SHLO SH-'ESREH at 1,2 is a space glyph set at 1.78pt and 0.2 units wide, a
-  filler, where every word space of the body is 4.1 wide; HA-DAB R at 21,1 has no
-  space glyph at all, only pypdf's guess at a gap between two glyphs that touch.
-  Read glyph by glyph with PyMuPDF, the PDF says so itself, and 41 such spaces
-  are now taken out with no reference to BHSA. Four sentences got back vowel
-  points the false space had cut off their letter. What remains in the middle
-  group is mostly a compound proper name BHSA writes as one graphical unit while
-  Stipp sets it as two — 'OBED MELEK, BET LEHEM, BEN HINNOM, NERGAL SAR 'ESER,
-  QIR HERES — together with ten places where two words run together. The three
-  figures are printed by `build_synopse_pages.py` on every run.
+- Counted by word rather than by letter, **97.0%** of verses match BHSA word for
+  word, a further **2.1%** have every letter right and differ only in where the
+  spaces fall, and **0.9%** differ in the letters themselves. The middle group
+  was 15.4% until 2026-09-07 and 4.8% until 2026-10-01, and **what is left of it
+  is now all Stipp's own setting**: compound proper names BHSA writes as one
+  graphical unit and he sets as two — 'OBED MELEK, BET LEHEM, BEN HINNOM, NERGAL
+  SAR 'ESER, QIR HERES — and three ketiv/qere places where BHSA joins two words.
+  What went on 2026-10-01 had been taken for the source's justification gaps and
+  was not: a space pypdf inferred between glyphs that touch, a hair space set at
+  1.78pt, a space that left the masoretic column with the alexandrian text
+  beside it, a proclitic waw set apart by a sign, and a word space drawn as a
+  gap with no glyph in it. Each was decided from the PDF, read glyph by glyph
+  with PyMuPDF, and none from BHSA. The three figures are printed by
+  `build_synopse_pages.py` on every run.
 - **The book is complete: 1,364 verses of 1,364.** Eight were missing until
   2026-09-07 — 13:10, 22:12, 22:27, 23:34, 28:8–9, 44:16, 52:20 — because
   Stipp raises a P for Parablepsis inside the label span (`] aP 10`) and the
@@ -205,7 +208,7 @@ verses it filed under four different headings turned out to be one fault.
 
     python -m unittest discover -s tests -t tests -v
 
-83 tests over the built pages, standard library only — no install, no
+88 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.

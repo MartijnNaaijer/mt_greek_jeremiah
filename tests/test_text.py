@@ -656,6 +656,88 @@ class TestTheMargin(unittest.TestCase):
                 self.assertTrue(self.verse(page, n).confirmed())
 
 
+class TestWordDivision(unittest.TestCase):
+    """(40)-(42), the first case-by-case review: every word pair the masoretic
+    column ran together and every proclitic waw it set apart, each checked
+    against a rendered crop of the PDF on 2026-10-01."""
+
+    def words(self, page, n):
+        """The words AS SET - a glued word is two spans on the page."""
+        v = next(v for v in S.verses() if v.page == page and v.number == n)
+        out = []
+        for w in v.mt_printed():
+            out += [c for c in ("".join(S.HEB.findall(p)) for p in w.split("־")) if c]
+        return out
+
+    def test_removing_the_other_reading_does_not_join_two_words(self):
+        """(40) NKTM<T B->'WNK at 2,22, a plus that straddles the boundary, and
+        XRPT\H <M>N'WRJ at 31,19, a space that followed an alexandrian-only
+        reading: both went out with the text beside them."""
+        for page, n, a, b in (("jer02.html", 22, "נכתם", "עונך"),
+                              ("jer31.html", 19, "חרפת", "נעורי"),
+                              ("jer47.html", 3, "שעטת", "פרסות"),
+                              ("jer02.html", 2, "אחרי", "במדבר")):
+            with self.subTest(verse=(page, n)):
+                w = self.words(page, n)
+                self.assertIn(a, w)
+                self.assertIn(b, w)
+
+    def test_a_single_proclitic_is_not_a_word(self):
+        """(41) WE \ KI GIBBOREHEM at 46,5, WE<HAJAH> | 'IM at 17,27, WE§ QOMAT at
+        52,22: the space was the other reading's or a sign's."""
+        for page, n, word in (("jer46.html", 5, "וגבוריהם"),
+                              ("jer17.html", 27, "ואם"),
+                              ("jer52.html", 22, "וקומת")):
+            with self.subTest(verse=(page, n)):
+                self.assertIn(word, self.words(page, n))
+                self.assertNotIn("ו", self.words(page, n))
+
+    def test_a_word_space_drawn_as_a_gap(self):
+        """(42) HA-'ARETS BIGLAL at 15,4 has no space glyph, only a gap of 2.5
+        units with nothing standing in it."""
+        for page, n, a, b in (("jer15.html", 4, "הארץ", "בגלל"),
+                              ("jer50.html", 40, "יהוה", "לא")):
+            with self.subTest(verse=(page, n)):
+                w = self.words(page, n)
+                self.assertIn(a, w)
+                self.assertIn(b, w)
+
+
+class TestTheMarginLemma(unittest.TestCase):
+
+    def test_a_margin_lemma_is_not_text(self):
+        """(43) A cross-reference that runs past MARGIN_X was handed to the text
+        column, and the overflow walk then took the margin's Hebrew lemma for
+        the column's own text: JEHUDAH at 13,13 ('AlT + JEHUDAH 19,3b; ...'),
+        'AVAD BE- at 30,8, and the 'AZ of 22,15, which was named in this suite
+        as unfixable for a fortnight."""
+        for page, n in (("jer13.html", 13), ("jer30.html", 8)):
+            with self.subTest(verse=(page, n)):
+                v = next(v for v in S.verses() if v.page == page and v.number == n)
+                self.assertTrue(v.confirmed())
+        v = next(v for v in S.verses() if v.page == "jer22.html" and v.number == 15)
+        self.assertFalse(any(w.startswith("׃") for w in v.mt_printed()))
+
+
+class TestWideBars(unittest.TestCase):
+
+    def test_a_named_bar_reaches_its_whole_reading(self):
+        """(44) Four bare bars reach further than Stipp's default one word,
+        listed by name in parse_synopse.WIDE_BARS on the author's decision.
+        Before, the second word of the alexandrian reading stayed in the shared
+        text and was printed in the masoretic column."""
+        def cell(page, n, col):
+            v = next(v for v in S.verses() if v.page == page and v.number == n)
+            return cons(v.mt_words() if col == "mt" else v.og_words()).split()
+        for page, n, og_has, mt_lacks in (
+                ("jer13.html", 12, "העם", "העם"),
+                ("jer22.html", 15, "ישתו", "ישתו"),
+                ("jer38.html", 4, "הנלחמים", "הנלחמים")):
+            with self.subTest(verse=(page, n)):
+                self.assertIn(og_has, cell(page, n, "og"))
+                self.assertNotIn(mt_lacks, cell(page, n, "mt"))
+
+
 class TestMarkup(unittest.TestCase):
 
     def test_ketiv_qere_is_marked_in_the_masoretic_column_only(self):
@@ -745,14 +827,15 @@ class TestABracketDoesNotBreakAWord(unittest.TestCase):
                         alone += 1
                     else:
                         adrift += sum(1 for w in cell if w.startswith("׃"))
-        # ONE IS ALLOWED, AND IT IS NAMED. At Jer 22,15f the margin sets
-        # '; + ' 'AZ ': 16b; 11,15e; 32,2a' - a cross-reference lemma - and
-        # OVERFLOW_X = 45 pulls that 'AZ into the verse, where it lands after
-        # the sof pasuq. Every guard tried against it (require the next span to
-        # belong to the column; require the lemma not to be hemmed by notes on
-        # both sides) blocks the leftward walk on ~18 other lines and costs 23
-        # verses to save this one, because blocking a single pop stops the whole
-        # chain behind it. So it is left, counted, and named here.
+        # NONE IS ALLOWED since (43). One was, until 2026-10-01, and it was
+        # named here: at Jer 22,15f the margin sets '; + ' 'AZ ': 16b; 11,15e;
+        # 32,2a', a cross-reference lemma, and the leftward walk pulled 'AZ into
+        # the verse after the sof pasuq. Every guard tried on the WALK blocked
+        # it on other lines too and cost 23 verses. The fault was not in the
+        # walk: split_columns()'s lookahead had handed the reference after the
+        # lemma to the text column, and the walk then took the lemma for that
+        # reference's overflow. Sending a reference back to the margin before
+        # the walk starts costs nothing.
         self.assertLessEqual(
             adrift, BASELINE["sof_pasuq_adrift_ceiling"],
             f"{adrift} words begin with a sof pasuq")

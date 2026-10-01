@@ -133,10 +133,18 @@ class TestVerses(unittest.TestCase):
         # The pages are extraction from a PDF and are not uniformly reliable.
         # A verse that did not say which it was would have to be trusted like
         # every other, which is the one thing they must not invite.
+        # Since 2026-10-01 there is a third answer, 'Stipp ≠ BHS', for a named
+        # handful of verses the page reproduces faithfully where Stipp's own
+        # text differs from BHS; it is allowed ONLY on those.
+        named = {"17,26", "23,9", "25,18", "18,3"}
         for v in S.verses():
             with self.subTest(page=v.page, verse=v.ref):
-                self.assertTrue(v.confirmed() or v.unconfirmed(),
-                                "neither BHSA ✓ nor BHSA ?")
+                src = any(t == "Stipp ≠ BHS" for _, t in v.badges)
+                self.assertTrue(v.confirmed() or v.unconfirmed() or src,
+                                "neither BHSA ✓ nor BHSA ? nor Stipp ≠ BHS")
+                if src:
+                    self.assertIn(v.ref, named)
+                    self.assertFalse(v.confirmed())
                 self.assertFalse(v.confirmed() and v.unconfirmed())
 
 
