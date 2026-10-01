@@ -35,7 +35,7 @@ KQ = re.compile(r'<sup class="kq"')
 
 
 def chapter_files():
-    """Every page that sets text, in reading order. index.html is not one."""
+    """Every page that sets text, in reading order. index.html and de.html are not."""
     jer = sorted(f for f in os.listdir(DOCS) if re.fullmatch(r"jer\d\d\.html", f))
     return jer + ["2kings25.html"]
 

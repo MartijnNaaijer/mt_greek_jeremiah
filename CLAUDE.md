@@ -1,7 +1,7 @@
 # Stipp's Synopse as readable text
 
 This repository turns Hermann-Josef Stipp, *Textkritische Synopse zum
-Jeremiabuch*, **15. korrigierte interne Auflage**, April 2021, into 54 HTML pages:
+Jeremiabuch*, **15. korrigierte interne Auflage**, April 2021, into 55 HTML pages:
 the masoretic text, Stipp's Hebrew retroversion of the alexandrian (Old Greek)
 text, and his Greek, sentence by sentence, with a hover analysis of every word
 from BHSA and the Rahlfs LXX. Cite the source with that designation wherever the
@@ -13,7 +13,7 @@ CLAUDE.md carries the same record. **This file is the record for this
 repository**; the project's copy of these sections is the older one.
 
 ```
-docs/        the 54 pages (output only; GitHub Pages serves /docs at the site root)
+docs/        the 55 pages (output only; GitHub Pages serves /docs at the site root)
 scripts/     the code that builds them, with its own paths.py
 tests/       the suite over the built pages, and baseline.json
 README.md    the public description and reliability figures
@@ -51,7 +51,7 @@ cp1252 console otherwise):
     bhsa_lex.py             BHSA -> per-verse words and form index (the hover)
     parse_synopse.py        Stipp's PDF -> results/synopse.json, one record per sentence
     check_synopse.py        the masoretic column against BHSA -> the per-verse badge
-    build_synopse_pages.py  -> docs/, all 54 pages in one pass
+    build_synopse_pages.py  -> docs/, all 55 pages in one pass
 
 Diagnostics, not part of the build: `pages_vs_bhsa.py` (every deviation of the
 built masoretic column from BHSA, consonant by consonant, to
@@ -73,8 +73,16 @@ test must read `mt_printed()`.
 
 **The pages are output only.** Nothing in `docs/` is hand-edited; to change a
 page, change a script and rebuild. The German wording (badge titles, subtitles,
-the index note) lives in `build_synopse_pages.py` alone, and every figure the
-index note prints is computed there at the point of writing — never transcribed.
+the overview's note) lives in `build_synopse_pages.py` alone, and every figure
+either index prints is computed there at the point of writing — never transcribed.
+
+**Two indexes, since 2026-10-01, on the author's decision.** `index.html`, the
+site's main page, is an ENGLISH introduction written by `english_index()`: what
+Stipp's synopsis is, why the two editions of Jeremiah matter, how to read a page,
+how far it can be trusted, and the author's credit for the conversion. The German
+overview with its notes on what is checked is `de.html`. Every chapter page links
+to both (`Start`, `Übersicht`). The English text uses no em dash, on the author's
+instruction; keep it that way.
 
 ## Working rules
 
@@ -456,4 +464,4 @@ Each of the 17 verses still off against BHSA was put beside a rendered crop of i
 
 **The suite is 102 tests** (87 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-two exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
 
-**`mt_greek_jeremiah/` is a git repository of its own** (2026-09-05), pushed to https://github.com/MartijnNaaijer/mt_greek_jeremiah and served from GitHub Pages at **https://martijnnaaijer.github.io/mt_greek_jeremiah/**. The 54 pages live in its `docs/` folder, not at its top level, and `paths.MTG()` resolves there — a page written to the old path would land beside the README and outside the index the other pages link into. The folder is named `docs/` because a GitHub Pages branch deployment can serve only the repository root or `/docs`, and serves `/docs` AT the site root, so the bare URL reaches `index.html` with no redirect stub. `README.md` at its root carries the reliability figures above, so the folder can be read on its own.
+**`mt_greek_jeremiah/` is a git repository of its own** (2026-09-05), pushed to https://github.com/MartijnNaaijer/mt_greek_jeremiah and served from GitHub Pages at **https://martijnnaaijer.github.io/mt_greek_jeremiah/**. The 55 pages live in its `docs/` folder, not at its top level, and `paths.MTG()` resolves there — a page written to the old path would land beside the README and outside the index the other pages link into. The folder is named `docs/` because a GitHub Pages branch deployment can serve only the repository root or `/docs`, and serves `/docs` AT the site root, so the bare URL reaches `index.html` with no redirect stub. `README.md` at its root carries the reliability figures above, so the folder can be read on its own.

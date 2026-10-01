@@ -11,13 +11,14 @@ Read it here: **https://martijnnaaijer.github.io/mt_greek_jeremiah/**
 
 ## What is here
 
-    docs/index.html      the chapter index — start here
+    docs/index.html      the main page, an English introduction — start here
+    docs/de.html         the German overview, with notes on what is checked
     docs/jer01.html …    Jeremiah 1–52, one page per chapter
     docs/2kings25.html   the three Synopse pages of the parallel
     scripts/             the code that builds them (see "How the pages are built")
     tests/               the checks on the built pages
 
-54 pages. Each is self-contained: the data is embedded, the CSS is inline,
+55 pages. Each is self-contained: the data is embedded, the CSS is inline,
 nothing is fetched, so a page can be opened from the file system, mailed to
 someone, or served as it stands.
 
@@ -279,7 +280,7 @@ back from it. They are built by the scripts in `scripts/`, in this order:
     bhsa_lex.py             BHSA -> per-verse words and form index (the hover)
     parse_synopse.py        Stipp's PDF -> results/synopse.json, one record per sentence
     check_synopse.py        the masoretic column against BHSA -> the per-verse badge
-    build_synopse_pages.py  -> docs/, all 54 pages in one pass
+    build_synopse_pages.py  -> docs/, all 55 pages in one pass
     pages_vs_bhsa.py        a diagnostic, not part of the build: every deviation
                             of the built pages from BHSA -> results/mt_vs_bhsa.csv
 

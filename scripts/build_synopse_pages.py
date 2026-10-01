@@ -658,7 +658,10 @@ def build():
         title = f"{book} {ch} — Textkritische Synopse"
         prev = f'<a href="{keys[i-1]}.html">&larr; {keys[i-1]}</a>' if i else ""
         nxt = f'<a href="{keys[i+1]}.html">{keys[i+1]} &rarr;</a>' if i + 1 < len(keys) else ""
-        nav = f'<a href="index.html">Übersicht</a>{prev}{nxt}'
+        # The site's main page is the English introduction (index.html);
+        # the German overview with its notes is de.html.
+        nav = (f'<a href="index.html">Start</a>'
+               f'<a href="de.html">Übersicht</a>{prev}{nxt}')
 
         byv = collections.OrderedDict()
         for r in rs:
@@ -868,24 +871,258 @@ Stipp in zwei Wörtern setzt und BHSA als eines schreibt (בן הנם, עבד מ
 Spalte ist eine Rückübersetzung und der griechische Text Stipps eigener — für
 beide gibt es hier keine Prüfinstanz.
 </div>"""
-    open(MTG("index.html"), "w", encoding="utf-8").write(page(
+    open(MTG("de.html"), "w", encoding="utf-8").write(page(
         "Textkritische Synopse zum Jeremiabuch",
         f"Hermann-Josef Stipp, 15. korrigierte interne Auflage, 2021 · "
         f"{len(written)} Kapitelseiten · {total} Verse · {okv} gegen BHSA bestätigt "
-        f"({okv/max(total,1):.0%})",
+        f"({okv/max(total,1):.0%}) · "
+        f'<a href="index.html">English introduction</a>',
         # No nav on the index: it IS the nav. It used to carry a lone link to
         # Jeremia 1, which read as a second, stranger entry beside the Jeremia 1
         # of the chapter list right below it.
         "",
         intro + f'<div class="idx">{links}</div>', legend=False))
 
-    print(f"wrote {len(written)+1} pages to {MTG()}")
+    english_index(rows, written, total, okv, nsrc, wl)
+
+    print(f"wrote {len(written)+2} pages to {MTG()}")
     print(f"  verses {total}, masoretic column confirmed against BHSA "
           f"{okv} ({okv/max(total,1):.1%})")
     n, same, sp = wl
     print(f"  counted by word: {same} word for word ({same/max(n,1):.1%}), "
           f"{sp} right to the letter but spaced differently ({sp/max(n,1):.1%}), "
           f"{n-same-sp} differing in the letters ({(n-same-sp)/max(n,1):.1%})")
+
+
+EN_CSS = """
+:root{--bg:#fbfaf7;--fg:#1a1a1a;--rule:#d8d4cb;--mut:#6b665c;--card:#fff;
+ --plus:#c8102e;--minus:#1d6fb8;--var:#8a6d1f;--accent:#7a3b1d;--wash:#f3efe6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14150f;
+ --fg:#e8e6df;--rule:#39372f;--mut:#9a958a;--card:#1c1d16;--plus:#ff8b8b;
+ --minus:#7cb8f0;--var:#dcc07a;--accent:#e0a47e;--wash:#1f2018}}
+:root[data-theme="dark"]{--bg:#14150f;--fg:#e8e6df;--rule:#39372f;--mut:#9a958a;
+ --card:#1c1d16;--plus:#ff8b8b;--minus:#7cb8f0;--var:#dcc07a;--accent:#e0a47e;
+ --wash:#1f2018}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+ font:17px/1.6 "Iowan Old Style",Palatino,Georgia,serif}
+.wrap{max-width:46rem;margin:0 auto;padding:0 16px}
+.hero{background:var(--wash);border-bottom:1px solid var(--rule);padding:3.2rem 0 2.4rem}
+.kicker{font:600 .75rem/1 system-ui,sans-serif;letter-spacing:.14em;
+ text-transform:uppercase;color:var(--accent)}
+h1{font-size:2.3rem;line-height:1.15;margin:.6rem 0 .8rem;font-weight:600}
+.lede{font-size:1.15rem;color:var(--fg);margin:0 0 1.4rem}
+.cite{font-size:.92rem;color:var(--mut)}
+.heb{font-family:"SBL Hebrew","Ezra SIL","Times New Roman",serif;direction:rtl;
+ unicode-bidi:isolate;font-size:1.15em}
+.cta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem}
+.btn{font:600 .9rem/1 system-ui,sans-serif;padding:.7rem 1rem;border-radius:6px;
+ text-decoration:none;border:1px solid var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--bg)}
+h2{font-size:1.35rem;margin:2.6rem 0 .6rem;font-weight:600}
+p{margin:.6rem 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));
+ gap:.8rem;margin:1.2rem 0}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+ padding:.9rem 1rem}
+.stat b{display:block;font-size:1.6rem;line-height:1.2}
+.stat span{font-size:.85rem;color:var(--mut)}
+.sample{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+ padding:1rem 1.1rem;margin:1rem 0}
+.sample .row{display:grid;grid-template-columns:7.5rem 1fr;gap:.4rem 1rem;
+ align-items:baseline;padding:.25rem 0}
+.sample .lab{font:600 .72rem/1.3 system-ui,sans-serif;letter-spacing:.06em;
+ text-transform:uppercase;color:var(--mut)}
+.p{color:var(--plus)}.m{color:var(--minus)}.v{color:var(--var)}
+ul.keys{padding-left:1.1rem}ul.keys li{margin:.3rem 0}
+.badge{font:600 .72rem/1 system-ui,sans-serif;border:1px solid var(--rule);
+ border-radius:3px;padding:.15rem .35rem;color:var(--mut);white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(6.2rem,1fr));
+ gap:.5rem;margin:1rem 0 0}
+.grid a{display:block;background:var(--card);border:1px solid var(--rule);
+ border-radius:6px;padding:.55rem .6rem;text-decoration:none;color:inherit}
+.grid a:hover{border-color:var(--accent)}
+.grid b{display:block;font-size:1.05rem}
+.grid span{font-size:.75rem;color:var(--mut)}
+footer{margin:3.5rem 0 2.5rem;padding-top:1.2rem;border-top:1px solid var(--rule);
+ font-size:.88rem;color:var(--mut)}
+a{color:var(--accent)}
+@media(max-width:560px){h1{font-size:1.8rem}.sample .row{grid-template-columns:1fr}}
+"""
+
+
+def english_index(rows, written, total, okv, nsrc, wl):
+    """docs/index.html, the site's main page: an English introduction to the
+    pages and to Stipp's work. The German overview is de.html.
+
+    EVERY FIGURE IS COMPUTED HERE, as on the German index, from the same rows
+    the chapter pages are built from.
+    """
+    jer = [r for r in rows if r["book"] == "Jeremiah"]
+    mt_c = sum(len(CONS.findall(s["text"])) for r in jer for s in r["mt"])
+    og_c = sum(len(CONS.findall(s["text"])) for r in jer for s in r["og"])
+    longer = 100.0 * (mt_c - og_c) / max(og_c, 1)
+    def count(rs):
+        # sentences() counts within ONE chapter; the book is the sum
+        by = collections.defaultdict(list)
+        for r in rs:
+            by[r["ch"]].append(r)
+        return sum(sentences(v) for v in by.values())
+
+    n_plus = count([r for r in jer if any(s["cls"] == "plus" for s in r["mt"])])
+    n_var = count([r for r in jer if any(s["cls"] == "mtvar" for s in r["mt"])])
+    n_sent = count(jer)
+    # THE SAMPLE IS JER 1,1a AS THE PAGES HAVE IT, not a transcription
+    r11 = next(r for r in jer if r["ch"] == 1 and r["v"] == 1 and r["clause"] == "a")
+    tone = {"plus": "p", "minus": "m", "mtvar": "v", "ogvar": "v"}
+
+    def sample(segs):
+        return " ".join(f'<span class="{tone.get(s["cls"], "")}">{esc(s["text"])}</span>'
+                        for s in segs if s["text"].strip())
+    n_grk = sum(1 for r in jer if r.get("greek"))
+    n_jer_v = sum(n for k, b, c, n, ok in written if k.startswith("jer"))
+    n_scored, n_word, _ = wl
+
+    cards = "".join(
+        f'<a href="{k}.html"><b>{"Jer" if k.startswith("jer") else "2 Kgs"} {c}</b>'
+        f'<span>{n} verses</span></a>'
+        for k, b, c, n, ok in written)
+
+    def f(x):
+        return "{:,}".format(x)
+
+    body = f"""<div class="hero"><div class="wrap">
+<div class="kicker">Jeremiah · Masoretic Text · Old Greek</div>
+<h1>One book, two editions: side by side, sentence by sentence</h1>
+<p class="lede">A readable, searchable version of Hermann-Josef Stipp's
+<i>Textkritische Synopse zum Jeremiabuch</i>: the Hebrew text of Jeremiah beside
+the Hebrew text that lies behind its ancient Greek translation, with the Greek
+itself and every word linked to its grammatical analysis.</p>
+<p class="cite">Source: Hermann-Josef Stipp, <i>Textkritische Synopse zum
+Jeremiabuch</i>, 15. korrigierte interne Auflage, April 2021. All readings,
+reconstructions and notes on these pages are Stipp's. Conversion for the web
+by Martijn Naaijer.</p>
+<div class="cta"><a class="btn primary" href="jer01.html">Start reading: Jeremiah 1</a>
+<a class="btn" href="#chapters">All chapters</a>
+<a class="btn" href="de.html">Deutsche Übersicht</a></div>
+</div></div>
+
+<div class="wrap">
+<h2>Why Jeremiah is special</h2>
+<p>The book of Jeremiah has come down to us in two versions that differ
+considerably. The Masoretic Text, the Hebrew text of printed Bibles, is
+markedly longer than the text translated into Greek in antiquity, the Old Greek
+of the Septuagint. The Greek also arranges the book differently: its oracles
+against the nations stand in the middle of the book, after 25:13, and in another
+order.</p>
+<p>The shorter edition is not a translator's abridgement. Hebrew fragments of
+Jeremiah from Qumran (4QJer<sup>b</sup> and 4QJer<sup>d</sup>) agree with it, so
+two Hebrew editions of the book were in circulation at once. Many scholars,
+Stipp among them, take the shorter one to preserve an earlier stage of the book,
+and the longer one to show how it was expanded and edited afterwards. That makes
+the gap between the two editions one of the clearest windows we have on how a
+biblical book grew.</p>
+
+<div class="stats">
+<div class="stat"><b>{longer:.0f}%</b><span>more consonants in the masoretic
+edition than in the alexandrian, on Stipp's reading</span></div>
+<div class="stat"><b>{f(n_plus)}</b><span>of {f(n_sent)} sentences carry text
+found only in the masoretic edition</span></div>
+<div class="stat"><b>{f(n_var)}</b><span>sentences where the two editions read
+differently</span></div>
+</div>
+
+<h2>What Stipp's synopsis does</h2>
+<p>To compare the two editions you need them in the same language. Stipp sets
+the Masoretic Text sentence by sentence beside a <b>retroversion</b>: his
+reconstruction of the Hebrew text the Greek translators had in front of them.
+Where the editions agree, the text is shared; where one has more, it is marked
+as a plus; where they differ, both readings stand. Beside them he gives the
+Greek text itself, and in the margin a dense apparatus of cross-references,
+grammatical notes and references to his study of the idiolect of the
+pre-Masoretic text.</p>
+<p>It is the most detailed tool there is for this comparison, and it has
+circulated only as a PDF, set in old BibleWorks fonts that store Hebrew as ASCII
+in visual order. On paper it reads well; on screen it cannot be searched,
+copied or counted.</p>
+
+<h2>What these pages add</h2>
+<ul class="keys">
+<li><b>The text in Unicode</b>, all {f(n_jer_v)} verses of Jeremiah and the
+parallel in 2 Kings 25, so it can be read, searched and copied.</li>
+<li><b>Every Hebrew word linked to its analysis</b> in the ETCBC's BHSA database
+(lexeme, part of speech, verb stem and tense, person, number, gender), shown
+when you point at it. Greek words are linked to the Rahlfs Septuagint.</li>
+<li><b>The differences in colour</b>, and Stipp's notes and Greek kept beside
+the sentence they belong to: the Greek for {f(n_grk)} sentences of Jeremiah.</li>
+</ul>
+
+<div class="sample">
+<div class="row"><span class="lab">Masoretic</span>
+<span class="heb">{sample(r11["mt"])}</span></div>
+<div class="row"><span class="lab">Retroversion</span>
+<span class="heb">{sample(r11["og"])}</span></div>
+<div class="row"><span class="lab">Greek</span>
+<span>{esc(r11["greek"])}</span></div>
+<div class="row"><span class="lab"></span><span class="cite">Jeremiah 1:1a.
+The two editions open differently: “the words of Jeremiah” against “the word
+of God that came to Jeremiah”.</span></div>
+</div>
+
+<h2>How to read a page</h2>
+<p>Each verse is a table: the masoretic text, Stipp's sentence letter, his
+retroversion of the alexandrian text, and his Greek. Hebrew reads from right to
+left.</p>
+<ul class="keys">
+<li><span class="p">Red</span>: a masoretic plus, text the Greek edition does
+not have.</li>
+<li><span class="m">Blue</span>: an alexandrian plus, text only the Greek
+edition has.</li>
+<li><span class="v">Ochre</span>: a qualitative variant: both editions have
+something here, but not the same thing.</li>
+<li>Switches at the top hide or show the colours, the notes and the Greek.</li>
+</ul>
+<p>The chapter pages keep the German labels of the Synopse
+(<i>masoretisch</i>, <i>Rückübersetzung</i>, <i>Griechisch</i>).</p>
+
+<h2>How far you can trust it</h2>
+<p>The pages were made by reading Stipp's PDF, not by retyping it, and nothing
+in them is taken from another edition: every letter stands as Stipp prints it.
+The masoretic column can be checked, against the BHSA database, and is checked
+verse by verse:</p>
+<ul class="keys">
+<li><span class="badge">BHSA ✓</span> means that the verse reproduces BHSA's
+consonants exactly and in order: <b>{f(okv)} of {f(total)} verses</b>
+({100.0 * okv / max(total, 1):.1f}%).
+{f(n_word)} of {f(n_scored)} also divide the words exactly as BHSA does.</li>
+<li><span class="badge">Stipp ≠ BHS</span> marks {f(nsrc)} verses where the page
+is faithful to Stipp and Stipp's text itself differs from BHS; the reason is
+given when you point at the badge.</li>
+<li><span class="badge">Gr ✓</span> means that each Greek line stands beside the Hebrew
+sentence it is printed level with in the Synopse.</li>
+</ul>
+<p>The retroversion and the Greek have no independent text to be checked
+against: they are Stipp's own work, reproduced as carefully as the masoretic
+column but not verified in the same way. For anything you intend to cite, check
+the reading in Stipp's synopsis itself. The full reliability report, and the
+code that builds these pages, are on
+<a href="https://github.com/MartijnNaaijer/mt_greek_jeremiah">GitHub</a>.</p>
+
+<h2 id="chapters">Chapters</h2>
+<div class="grid">{cards}</div>
+
+<footer>Text and notes: Hermann-Josef Stipp, <i>Textkritische Synopse zum
+Jeremiabuch</i>, 15. korrigierte interne Auflage, April 2021. Word analyses:
+BHSA (ETCBC, 2021) and the Rahlfs Septuagint (CenterBLC). Conversion of the
+synopsis for the web (the extraction from the PDF, the word links and the
+checks against BHSA) by Martijn Naaijer. These pages are an aid to reading
+Stipp's synopsis and do not replace it.</footer>
+</div>"""
+    html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jeremiah in Two Editions</title><style>{EN_CSS}</style></head>
+<body>{body}</body></html>"""
+    open(MTG("index.html"), "w", encoding="utf-8").write(html)
 
 
 if __name__ == "__main__":

@@ -20,7 +20,17 @@ class TestFiles(unittest.TestCase):
             self.assertIn(f"jer{ch:02d}.html", names, f"Jeremiah {ch} is missing")
         self.assertIn("2kings25.html", names)
         self.assertIn("index.html", names)
-        self.assertEqual(len(names), 54, "54 pages: 52 chapters, 2 Kings 25, index")
+        self.assertIn("de.html", names)
+        self.assertEqual(len(names), 55,
+                         "55 pages: 52 chapters, 2 Kings 25, the English main "
+                         "page index.html and the German overview de.html")
+
+    def test_the_english_main_page_links_every_chapter(self):
+        html = S.read("index.html")
+        self.assertIn('lang="en"', html)
+        for name in S.chapter_files():
+            self.assertIn(f'href="{name}"', html)
+        self.assertIn('href="de.html"', html)
 
     def test_every_page_has_a_title_and_is_self_contained(self):
         for p in S.pages():
@@ -33,7 +43,7 @@ class TestFiles(unittest.TestCase):
                 self.assertIn("<style>", p.html)
 
     def test_the_index_links_to_every_page_exactly_once(self):
-        idx = S.read("index.html")
+        idx = S.read("de.html")
         for name in S.chapter_files():
             self.assertEqual(idx.count(f'href="{name}"'), 1,
                              f"{name} should be linked once from the index")
@@ -41,7 +51,7 @@ class TestFiles(unittest.TestCase):
     def test_the_index_has_no_navigation_of_its_own(self):
         # It used to carry a lone link to Jeremia 1, which read as a second and
         # stranger entry beside the Jeremia 1 of the chapter list below it.
-        idx = S.read("index.html")
+        idx = S.read("de.html")
         self.assertNotIn("<nav>", idx)
         self.assertEqual(idx.count(">Jeremia 1 "), 1)
 
@@ -51,6 +61,7 @@ class TestFiles(unittest.TestCase):
             with self.subTest(page=p.name):
                 nav = re.search(r"<nav>(.*?)</nav>", p.html, re.S).group(1)
                 self.assertIn('href="index.html"', nav)
+                self.assertIn('href="de.html"', nav)
                 if i:
                     self.assertIn(f'href="{names[i-1]}"', nav)
                 if i + 1 < len(names):

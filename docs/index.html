@@ -1,214 +1,184 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8">
+<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Textkritische Synopse zum Jeremiabuch</title><style>
-:root{--bg:#fbfaf7;--fg:#1a1a1a;--rule:#d8d4cb;--mut:#6b665c;
- --plus:#c8102e;--minus:#1d6fb8;--var:#8a6d1f;--mark:#5b8c5a;--panel:#fff;
- --sup:#7a5ea8}
-@media(prefers-color-scheme:dark){:root{--bg:#14150f;--fg:#e8e6df;--rule:#39372f;
- --mut:#9a958a;--plus:#ff8b8b;--minus:#7cb8f0;--var:#dcc07a;--mark:#93c191;
- --panel:#1c1d16;--sup:#b9a2e0}}
+<title>Jeremiah in Two Editions</title><style>
+:root{--bg:#fbfaf7;--fg:#1a1a1a;--rule:#d8d4cb;--mut:#6b665c;--card:#fff;
+ --plus:#c8102e;--minus:#1d6fb8;--var:#8a6d1f;--accent:#7a3b1d;--wash:#f3efe6}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14150f;
+ --fg:#e8e6df;--rule:#39372f;--mut:#9a958a;--card:#1c1d16;--plus:#ff8b8b;
+ --minus:#7cb8f0;--var:#dcc07a;--accent:#e0a47e;--wash:#1f2018}}
+:root[data-theme="dark"]{--bg:#14150f;--fg:#e8e6df;--rule:#39372f;--mut:#9a958a;
+ --card:#1c1d16;--plus:#ff8b8b;--minus:#7cb8f0;--var:#dcc07a;--accent:#e0a47e;
+ --wash:#1f2018}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);
- font:15px/1.55 "Iowan Old Style",Palatino,Georgia,serif}
-header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--rule);
- padding:.7rem 1.2rem;z-index:5}
-h1{margin:0;font-size:1.15rem;font-weight:600;letter-spacing:.01em}
-h2.oracle{font-size:1rem;font-weight:600;margin:1.6rem 0 .3rem}
-.sub{color:var(--mut);font-size:.8rem;margin-top:.15rem}
-nav{margin-top:.5rem;font-size:.82rem}
-nav a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);margin-right:.7rem}
-nav a:hover{border-color:var(--fg)}
-.toggles{float:right;font-size:.78rem;color:var(--mut)}
-.toggles label{margin-left:.9rem;cursor:pointer;user-select:none}
-main{padding:1rem 1.2rem 4rem;max-width:1400px}
-.v{border-top:1px solid var(--rule);padding:.8rem 0;scroll-margin-top:9rem}
-.colhead td{hyphens:auto;overflow-wrap:normal}
-@media(max-width:640px){header{position:static}.v{scroll-margin-top:0}}
-.vh{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.35rem}
-.vn{font-weight:700;font-size:.95rem;min-width:3.2rem}
-.badge{font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;
- border:1px solid var(--rule);border-radius:2px;padding:.05rem .35rem;color:var(--mut)}
-.badge.ok{color:var(--mark);border-color:var(--mark)}
-.badge.no{color:var(--mut);border-style:dashed}
-.badge.src{color:var(--mut);border-style:dotted}
-/* EVERY VERSE IS ITS OWN TABLE, so the column widths have to be stated rather
-   than computed, or each verse sizes its columns to its own content and the
-   columns wander from verse to verse down the page. Jer 1,1 was the visible
-   case: its Greek is the longest line of the chapter, which widened that column
-   and pushed the masoretic column's right edge - and with it the text, which is
-   set flush right - away from where every other verse of the chapter had it.
-   table-layout:fixed with a colgroup makes all 54 pages align. */
-table{width:100%;border-collapse:collapse;table-layout:fixed}
-col.mt,col.og{width:30%}
-col.cl{width:2.2rem}
-col.grk{width:36%}
-td{vertical-align:top;padding:.18rem .5rem;overflow-wrap:break-word}
-td.heb{direction:rtl;text-align:right;font-size:1.3rem;line-height:1.85;
- font-family:"SBL Hebrew","Ezra SIL","Taamey Frank CLM","Times New Roman",serif}
-td.cl{text-align:center;color:var(--mut);font-size:.75rem;padding-top:.6rem}
-td.grk{font-size:.98rem;line-height:1.6;color:var(--fg);
- border-left:1px solid var(--rule);padding-left:.8rem;
- font-family:"GFS Didot","New Athena Unicode","Palatino Linotype",Georgia,serif}
-td.grk:empty::after{content:"—";color:var(--rule)}
-.hide-grk td.grk{display:none}
-.hide-grk col.grk{width:0}
-.hide-grk col.mt,.hide-grk col.og{width:48%}
-.colhead td{font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;
- color:var(--mut);border-bottom:1px solid var(--rule);padding-bottom:.2rem}
-tr:hover{background:var(--panel)}
-.hl .plus{color:var(--plus)}
-.hl .minus{color:var(--minus)}
-.hl .mtvar,.hl .ogvar{color:var(--var)}
-.mtsup{border-bottom:1px dotted var(--rule)}
-.hl .mtsup{color:var(--var);border-bottom:1px dotted var(--var)}
-.ogabbr{border-bottom:1px dashed var(--rule)}
-.hl .ogabbr{color:var(--var);border-bottom:1px dashed var(--var)}
-sup.ab{font-size:.62em;color:var(--mut);vertical-align:super;padding:0 .1em}
-.hl .scope{border-bottom:1px dotted var(--mark)}
-.notes{font-size:.8rem;color:var(--mut);padding:.1rem .5rem .4rem 1.6rem}
-.notes .n{margin-right:.9rem;display:inline-block;max-width:100%}
-.notes .n.id{font-weight:600}
-.notes .n.foot{display:block;margin:.3rem 0 0;font-style:italic}
-.notes .heb{direction:rtl;unicode-bidi:isolate;font-size:1rem;font-style:normal}
-.hide-notes .notes{display:none}
-.legend{font-size:.75rem;color:var(--mut);margin-top:.5rem}
-.legend b{font-weight:400}
-.idx{columns:4;column-gap:2rem;font-size:.9rem;margin-top:1rem}
-.idx a{display:block;text-decoration:none;color:inherit;padding:.12rem 0}
-.idx a:hover{text-decoration:underline}
-.kq{font-size:.58em;vertical-align:super;color:var(--mut);
- font-family:Georgia,serif;margin:0 .06em;user-select:none;letter-spacing:0}
-#tip .kq2{margin-top:.25rem;font-size:.78rem}
-#tip .kq2 b{font-weight:600;font-size:.7rem;color:var(--mut)}
-#tip .kq2 span{direction:rtl;unicode-bidi:isolate;
- font-family:"SBL Hebrew","Ezra SIL",serif;font-size:1.05rem}
-.w{cursor:help;border-radius:2px}
-.w:hover{background:rgba(127,127,127,.22)}
-.w.nolink{cursor:default}
-#tip{position:fixed;z-index:99;max-width:22rem;display:none;pointer-events:none;
- background:var(--panel);border:1px solid var(--rule);box-shadow:0 2px 10px rgba(0,0,0,.18);
- padding:.5rem .6rem;font-size:.8rem;line-height:1.45;border-radius:3px}
-#tip .hw{font-size:1.15rem;direction:rtl;text-align:right;display:block;
- font-family:"SBL Hebrew","Ezra SIL",serif;margin-bottom:.25rem}
-#tip .r{white-space:nowrap}
-#tip .lx{font-weight:600}
-#tip .cd{color:var(--mut);font-size:.72rem}
-#tip .gl{color:var(--mut);font-size:.75rem;margin:-.1rem 0 .2rem .2rem}
-#tip .hw.gk{direction:ltr;text-align:left;font-family:"GFS Didot","New Athena Unicode",Georgia,serif}
-#tip .lx.gk{font-family:"GFS Didot","New Athena Unicode","Palatino Linotype",Georgia,serif}
-#tip .src{color:var(--mut);font-size:.68rem;margin-top:.3rem;
- border-top:1px solid var(--rule);padding-top:.25rem;font-style:italic}
-.note-b{background:var(--panel);border:1px solid var(--rule);padding:.7rem .9rem;
- font-size:.83rem;color:var(--mut);margin:.8rem 0;line-height:1.5;max-width:60rem}
+ font:17px/1.6 "Iowan Old Style",Palatino,Georgia,serif}
+.wrap{max-width:46rem;margin:0 auto;padding:0 16px}
+.hero{background:var(--wash);border-bottom:1px solid var(--rule);padding:3.2rem 0 2.4rem}
+.kicker{font:600 .75rem/1 system-ui,sans-serif;letter-spacing:.14em;
+ text-transform:uppercase;color:var(--accent)}
+h1{font-size:2.3rem;line-height:1.15;margin:.6rem 0 .8rem;font-weight:600}
+.lede{font-size:1.15rem;color:var(--fg);margin:0 0 1.4rem}
+.cite{font-size:.92rem;color:var(--mut)}
+.heb{font-family:"SBL Hebrew","Ezra SIL","Times New Roman",serif;direction:rtl;
+ unicode-bidi:isolate;font-size:1.15em}
+.cta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem}
+.btn{font:600 .9rem/1 system-ui,sans-serif;padding:.7rem 1rem;border-radius:6px;
+ text-decoration:none;border:1px solid var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--bg)}
+h2{font-size:1.35rem;margin:2.6rem 0 .6rem;font-weight:600}
+p{margin:.6rem 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));
+ gap:.8rem;margin:1.2rem 0}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+ padding:.9rem 1rem}
+.stat b{display:block;font-size:1.6rem;line-height:1.2}
+.stat span{font-size:.85rem;color:var(--mut)}
+.sample{background:var(--card);border:1px solid var(--rule);border-radius:8px;
+ padding:1rem 1.1rem;margin:1rem 0}
+.sample .row{display:grid;grid-template-columns:7.5rem 1fr;gap:.4rem 1rem;
+ align-items:baseline;padding:.25rem 0}
+.sample .lab{font:600 .72rem/1.3 system-ui,sans-serif;letter-spacing:.06em;
+ text-transform:uppercase;color:var(--mut)}
+.p{color:var(--plus)}.m{color:var(--minus)}.v{color:var(--var)}
+ul.keys{padding-left:1.1rem}ul.keys li{margin:.3rem 0}
+.badge{font:600 .72rem/1 system-ui,sans-serif;border:1px solid var(--rule);
+ border-radius:3px;padding:.15rem .35rem;color:var(--mut);white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(6.2rem,1fr));
+ gap:.5rem;margin:1rem 0 0}
+.grid a{display:block;background:var(--card);border:1px solid var(--rule);
+ border-radius:6px;padding:.55rem .6rem;text-decoration:none;color:inherit}
+.grid a:hover{border-color:var(--accent)}
+.grid b{display:block;font-size:1.05rem}
+.grid span{font-size:.75rem;color:var(--mut)}
+footer{margin:3.5rem 0 2.5rem;padding-top:1.2rem;border-top:1px solid var(--rule);
+ font-size:.88rem;color:var(--mut)}
+a{color:var(--accent)}
+@media(max-width:560px){h1{font-size:1.8rem}.sample .row{grid-template-columns:1fr}}
 </style></head>
-<body class="hl">
-<header><div class="toggles">
-<label><input type="checkbox" data-c="hl"> Varianten farbig</label>
-<label><input type="checkbox" data-c="hide-notes"> Apparat</label>
-<label><input type="checkbox" data-c="hide-grk"> Griechisch</label>
-</div>
-<h1>Textkritische Synopse zum Jeremiabuch</h1><div class="sub">Hermann-Josef Stipp, 15. korrigierte interne Auflage, 2021 · 53 Kapitelseiten · 1394 Verse · 1389 gegen BHSA bestätigt (100%)</div>
-</header>
-<main><div class="note-b">
-<b>Was hier steht.</b> Stipps Synopse (<i>Textkritische Synopse zum Jeremiabuch</i>, 15. korrigierte
-interne Auflage, 2021) stellt das Jeremiabuch Satz für Satz in
-zwei Ausgaben nebeneinander: den tiberischen Text und eine Rückübersetzung der
-alexandrinischen Vorlage. Sie ist als PDF in der BibleWorks-Schrift BWHEBB
-gesetzt, in der Hebräisch als ASCII in <i>visueller</i> Reihenfolge kodiert ist;
-diese Seiten geben denselben Text in Unicode.
-<br><br>
-<b>Was geprüft ist — und dass nichts hinzugefügt wird.</b> Die masoretische
-Spalte ist der BHS-Text; sie allein hat eine Prüfinstanz. Auf Versebene trägt
-jeder Vers ein Zeichen: <span class="badge ok">BHSA ✓</span> heißt, dass die
-Spalte die Konsonanten von BHSA vollständig und in der richtigen Reihenfolge
-wiedergibt — <b>1.389 von 1.394 Versen (99,6&nbsp;%)</b>;
-<span class="badge no">BHSA ?</span> heißt, dass sie es nicht tut. Nach
-graphischen Wörtern gezählt stimmen 97,6&nbsp;% der Verse Wort
-für Wort mit BHSA überein und weitere 2,1&nbsp;% in allen
-Buchstaben, nur nicht in den Wortabständen.
-<b>In die Spalte wird nichts aus BHSA geschrieben.</b> Was hier
-steht, steht so in der Synopse; BHSA ist die Kontrolle, nicht die Quelle.
-<br><br>
-<b>Wortinformationen.</b> Jedes hebräische Wort trägt beim Überfahren mit der
-Maus seine BHSA-Analyse: <i>lex, sp, vt, vs, ps, nu, gn</i> und das vokalisierte
-Lexem. Die Einheit ist das graphische Wort, deshalb zeigt הַדָּבָר zwei Einträge,
-הַ als Artikel und דָּבָר als Nomen. In der masoretischen Spalte sind die Wörter
-an einen BHSA-Knoten <i>dieses Verses</i> gebunden; in der
-alexandrinischen gilt das für den gemeinsamen Text, während eine
-eigentliche alexandrinische Lesart keinen Knoten haben kann und, wenn ihre Form
-im ganzen Alten Testament eindeutig ist, aus einem Formenindex gedeutet wird —
-im Fenster entsprechend gekennzeichnet.
-<br><br>
-<b>Ketiv/Qere.</b> Wörter mit abweichender Lesart tragen ein hochgestelltes
-<sup class="kq">K</sup>; das Fenster nennt beide Formen. BHSA verzeichnet 194
-solche Wörter in Jeremia und 2 Könige 25; markiert werden die, die in einem
-zugeordneten Wort stehen. Die Markierung steht nur in der masoretischen Spalte,
-weil das Qere ein Apparat dieses Textes ist — die alexandrinische Spalte ist eine
-Rückübersetzung und kennt keine masoretische Lesetradition.
-<br><br>
-<b>Wo Stipp abkürzt.</b> Unterscheiden sich die beiden Formen nur im ersten
-Buchstaben, druckt er den masoretischen Anfang, den Schrägstrich und das
-alexandrinische Wort vollständig: die gemeinsamen Buchstaben stehen einmal, auf
-der alexandrinischen Seite. Diese Seiten setzen das masoretische Wort aus seiner
-eigenen Vorlage wieder zusammen und unterstreichen die übernommenen Buchstaben
-gepunktet — 17 Stellen, jede gegen BHSA geprüft. Unterscheiden sie sich
-nur am Ende, kürzt er umgekehrt ab: das masoretische Wort steht ganz, von der
-alexandrinischen Form nur der abweichende Schluss. Diese 39 Stellen
-werden <i>nicht</i> ergänzt, sondern gestrichelt unterstrichen und mit einem
-<sup class="ab">†</sup> versehen: wo zu schneiden wäre, ist nicht mechanisch zu
-bestimmen, und für diese Spalte gibt es keine Prüfinstanz, die eine Vermutung
-prüfen könnte.
-<br><br>
-<b>Wo Stipp selbst von BHS abweicht.</b> 5 Verse tragen
-<span class="badge src">Stipp ≠ BHS</span>: die Seite gibt Stipps Druck getreu
-wieder, und dieser hat oder entbehrt einen Buchstaben, den BHS anders hat, oder
-setzt ein Ketiv, das BHSA anders kodiert. Jeder dieser Verse ist einzeln am PDF
-geprüft; der Grund steht im Tooltip des Zeichens.
-<br><br>
-<b>Was noch nicht stimmt.</b> In der masoretischen Spalte trägt kein Vers mehr <span class="badge no">BHSA ?</span>: jeder gibt BHSA genau wieder oder weicht nur dort ab, wo Stipp selbst abweicht. <b>Kein Vers fehlt.</b> Wo nur die Wortabstände abweichen
-und alle Buchstaben stimmen, liegt es meist an zusammengesetzten Eigennamen, die
-Stipp in zwei Wörtern setzt und BHSA als eines schreibt (בן הנם, עבד מלך, בית
-לחם). Die alexandrinische
-Spalte ist eine Rückübersetzung und der griechische Text Stipps eigener — für
-beide gibt es hier keine Prüfinstanz.
-</div><div class="idx"><a href="jer01.html">Jeremia 1 <span style="color:var(--mut)">(19 Verse, 19✓)</span></a><a href="jer02.html">Jeremia 2 <span style="color:var(--mut)">(37 Verse, 37✓)</span></a><a href="jer03.html">Jeremia 3 <span style="color:var(--mut)">(25 Verse, 24✓)</span></a><a href="jer04.html">Jeremia 4 <span style="color:var(--mut)">(31 Verse, 31✓)</span></a><a href="jer05.html">Jeremia 5 <span style="color:var(--mut)">(31 Verse, 31✓)</span></a><a href="jer06.html">Jeremia 6 <span style="color:var(--mut)">(30 Verse, 30✓)</span></a><a href="jer07.html">Jeremia 7 <span style="color:var(--mut)">(34 Verse, 34✓)</span></a><a href="jer08.html">Jeremia 8 <span style="color:var(--mut)">(23 Verse, 23✓)</span></a><a href="jer09.html">Jeremia 9 <span style="color:var(--mut)">(25 Verse, 25✓)</span></a><a href="jer10.html">Jeremia 10 <span style="color:var(--mut)">(25 Verse, 25✓)</span></a><a href="jer11.html">Jeremia 11 <span style="color:var(--mut)">(23 Verse, 23✓)</span></a><a href="jer12.html">Jeremia 12 <span style="color:var(--mut)">(17 Verse, 17✓)</span></a><a href="jer13.html">Jeremia 13 <span style="color:var(--mut)">(27 Verse, 27✓)</span></a><a href="jer14.html">Jeremia 14 <span style="color:var(--mut)">(22 Verse, 22✓)</span></a><a href="jer15.html">Jeremia 15 <span style="color:var(--mut)">(21 Verse, 21✓)</span></a><a href="jer16.html">Jeremia 16 <span style="color:var(--mut)">(21 Verse, 21✓)</span></a><a href="jer17.html">Jeremia 17 <span style="color:var(--mut)">(27 Verse, 26✓)</span></a><a href="jer18.html">Jeremia 18 <span style="color:var(--mut)">(23 Verse, 22✓)</span></a><a href="jer19.html">Jeremia 19 <span style="color:var(--mut)">(15 Verse, 15✓)</span></a><a href="jer20.html">Jeremia 20 <span style="color:var(--mut)">(18 Verse, 18✓)</span></a><a href="jer21.html">Jeremia 21 <span style="color:var(--mut)">(14 Verse, 14✓)</span></a><a href="jer22.html">Jeremia 22 <span style="color:var(--mut)">(30 Verse, 30✓)</span></a><a href="jer23.html">Jeremia 23 <span style="color:var(--mut)">(40 Verse, 39✓)</span></a><a href="jer24.html">Jeremia 24 <span style="color:var(--mut)">(10 Verse, 10✓)</span></a><a href="jer25.html">Jeremia 25 <span style="color:var(--mut)">(38 Verse, 37✓)</span></a><a href="jer26.html">Jeremia 26 <span style="color:var(--mut)">(24 Verse, 24✓)</span></a><a href="jer27.html">Jeremia 27 <span style="color:var(--mut)">(22 Verse, 22✓)</span></a><a href="jer28.html">Jeremia 28 <span style="color:var(--mut)">(17 Verse, 17✓)</span></a><a href="jer29.html">Jeremia 29 <span style="color:var(--mut)">(32 Verse, 32✓)</span></a><a href="jer30.html">Jeremia 30 <span style="color:var(--mut)">(24 Verse, 24✓)</span></a><a href="jer31.html">Jeremia 31 <span style="color:var(--mut)">(40 Verse, 40✓)</span></a><a href="jer32.html">Jeremia 32 <span style="color:var(--mut)">(44 Verse, 44✓)</span></a><a href="jer33.html">Jeremia 33 <span style="color:var(--mut)">(26 Verse, 26✓)</span></a><a href="jer34.html">Jeremia 34 <span style="color:var(--mut)">(22 Verse, 22✓)</span></a><a href="jer35.html">Jeremia 35 <span style="color:var(--mut)">(19 Verse, 19✓)</span></a><a href="jer36.html">Jeremia 36 <span style="color:var(--mut)">(32 Verse, 32✓)</span></a><a href="jer37.html">Jeremia 37 <span style="color:var(--mut)">(21 Verse, 21✓)</span></a><a href="jer38.html">Jeremia 38 <span style="color:var(--mut)">(28 Verse, 28✓)</span></a><a href="jer39.html">Jeremia 39 <span style="color:var(--mut)">(18 Verse, 18✓)</span></a><a href="jer40.html">Jeremia 40 <span style="color:var(--mut)">(16 Verse, 16✓)</span></a><a href="jer41.html">Jeremia 41 <span style="color:var(--mut)">(18 Verse, 18✓)</span></a><a href="jer42.html">Jeremia 42 <span style="color:var(--mut)">(22 Verse, 22✓)</span></a><a href="jer43.html">Jeremia 43 <span style="color:var(--mut)">(13 Verse, 13✓)</span></a><a href="jer44.html">Jeremia 44 <span style="color:var(--mut)">(30 Verse, 30✓)</span></a><a href="jer45.html">Jeremia 45 <span style="color:var(--mut)">(5 Verse, 5✓)</span></a><a href="jer46.html">Jeremia 46 <span style="color:var(--mut)">(28 Verse, 28✓)</span></a><a href="jer47.html">Jeremia 47 <span style="color:var(--mut)">(7 Verse, 7✓)</span></a><a href="jer48.html">Jeremia 48 <span style="color:var(--mut)">(47 Verse, 47✓)</span></a><a href="jer49.html">Jeremia 49 <span style="color:var(--mut)">(39 Verse, 39✓)</span></a><a href="jer50.html">Jeremia 50 <span style="color:var(--mut)">(46 Verse, 46✓)</span></a><a href="jer51.html">Jeremia 51 <span style="color:var(--mut)">(64 Verse, 64✓)</span></a><a href="jer52.html">Jeremia 52 <span style="color:var(--mut)">(34 Verse, 34✓)</span></a><a href="2kings25.html">2 Könige 25 <span style="color:var(--mut)">(30 Verse, 30✓)</span></a></div></main>
-<script>window.__A=[];</script>
-<script>
-var A=window.__A||[];
-var TIP=document.createElement('div');TIP.id='tip';document.body.appendChild(TIP);
-var LBL={sp:'',vs:'',vt:'',ps:'',nu:'',gn:''};
-function fmt(i,approx){var u=A[i];if(!u)return'';
- var h='<span class="hw'+(u.g?' gk':'')+'">'+u.f+'</span>';
- u.w.forEach(function(w){
-  var bits=[];
-  ['sp','vs','vt','case','tense','voice','mood','ps','nu','gn','degree']
-    .forEach(function(k){if(w[k])bits.push(w[k])});
-  h+='<div class="r"><span class="lx'+(u.g?' gk':'')+'">'+(w.vlex||w.lex||'')+'</span> '+
-     (w.vlex?'<span class="cd">'+(w.lex||'')+'</span>':'')+
-     (bits.length?' &middot; '+bits.join(' &middot; '):'')+'</div>';
-  if(w.gloss)h+='<div class="gl">'+w.gloss+'</div>';
-  if(w.q)h+='<div class="kq2"><b>K</b> <span>'+w.k+'</span> &nbsp;<b>Q</b> <span>'+w.q+'</span></div>';});
- if(approx)h+='<div class="src">aus dem Formenindex (nicht aus diesem Vers)</div>';
- return h;}
-document.addEventListener('mouseover',function(e){
- var t=e.target;if(!t.classList||!t.classList.contains('w'))return;
- var i=t.getAttribute('data-a');if(i===null)return;
- TIP.innerHTML=fmt(+i,t.hasAttribute('data-x'));TIP.style.display='block';
- var r=t.getBoundingClientRect();
- var x=Math.min(r.left,window.innerWidth-TIP.offsetWidth-12);
- var y=r.bottom+6;if(y+TIP.offsetHeight>window.innerHeight)y=r.top-TIP.offsetHeight-6;
- TIP.style.left=Math.max(6,x)+'px';TIP.style.top=Math.max(6,y)+'px';});
-document.addEventListener('mouseout',function(e){
- if(e.target.classList&&e.target.classList.contains('w'))TIP.style.display='none';});
+<body><div class="hero"><div class="wrap">
+<div class="kicker">Jeremiah · Masoretic Text · Old Greek</div>
+<h1>One book, two editions: side by side, sentence by sentence</h1>
+<p class="lede">A readable, searchable version of Hermann-Josef Stipp's
+<i>Textkritische Synopse zum Jeremiabuch</i>: the Hebrew text of Jeremiah beside
+the Hebrew text that lies behind its ancient Greek translation, with the Greek
+itself and every word linked to its grammatical analysis.</p>
+<p class="cite">Source: Hermann-Josef Stipp, <i>Textkritische Synopse zum
+Jeremiabuch</i>, 15. korrigierte interne Auflage, April 2021. All readings,
+reconstructions and notes on these pages are Stipp's. Conversion for the web
+by Martijn Naaijer.</p>
+<div class="cta"><a class="btn primary" href="jer01.html">Start reading: Jeremiah 1</a>
+<a class="btn" href="#chapters">All chapters</a>
+<a class="btn" href="de.html">Deutsche Übersicht</a></div>
+</div></div>
 
-function t(k,c){var b=document.body;b.classList.toggle(c);
- try{localStorage.setItem(k,b.classList.contains(c)?'1':'0')}catch(e){}}
-['hl','hide-notes','hide-grk'].forEach(function(c){
- try{var v=localStorage.getItem(c);
-  if(v==='1')document.body.classList.add(c);
-  if(v==='0')document.body.classList.remove(c);}catch(e){}});
-document.querySelectorAll('input[data-c]').forEach(function(i){
- var c=i.dataset.c;i.checked=(c==='hl')?document.body.classList.contains(c)
-   :!document.body.classList.contains(c);
- i.onchange=function(){t(c,c)};});
-</script></body></html>
+<div class="wrap">
+<h2>Why Jeremiah is special</h2>
+<p>The book of Jeremiah has come down to us in two versions that differ
+considerably. The Masoretic Text, the Hebrew text of printed Bibles, is
+markedly longer than the text translated into Greek in antiquity, the Old Greek
+of the Septuagint. The Greek also arranges the book differently: its oracles
+against the nations stand in the middle of the book, after 25:13, and in another
+order.</p>
+<p>The shorter edition is not a translator's abridgement. Hebrew fragments of
+Jeremiah from Qumran (4QJer<sup>b</sup> and 4QJer<sup>d</sup>) agree with it, so
+two Hebrew editions of the book were in circulation at once. Many scholars,
+Stipp among them, take the shorter one to preserve an earlier stage of the book,
+and the longer one to show how it was expanded and edited afterwards. That makes
+the gap between the two editions one of the clearest windows we have on how a
+biblical book grew.</p>
+
+<div class="stats">
+<div class="stat"><b>17%</b><span>more consonants in the masoretic
+edition than in the alexandrian, on Stipp's reading</span></div>
+<div class="stat"><b>1,392</b><span>of 4,916 sentences carry text
+found only in the masoretic edition</span></div>
+<div class="stat"><b>757</b><span>sentences where the two editions read
+differently</span></div>
+</div>
+
+<h2>What Stipp's synopsis does</h2>
+<p>To compare the two editions you need them in the same language. Stipp sets
+the Masoretic Text sentence by sentence beside a <b>retroversion</b>: his
+reconstruction of the Hebrew text the Greek translators had in front of them.
+Where the editions agree, the text is shared; where one has more, it is marked
+as a plus; where they differ, both readings stand. Beside them he gives the
+Greek text itself, and in the margin a dense apparatus of cross-references,
+grammatical notes and references to his study of the idiolect of the
+pre-Masoretic text.</p>
+<p>It is the most detailed tool there is for this comparison, and it has
+circulated only as a PDF, set in old BibleWorks fonts that store Hebrew as ASCII
+in visual order. On paper it reads well; on screen it cannot be searched,
+copied or counted.</p>
+
+<h2>What these pages add</h2>
+<ul class="keys">
+<li><b>The text in Unicode</b>, all 1,364 verses of Jeremiah and the
+parallel in 2 Kings 25, so it can be read, searched and copied.</li>
+<li><b>Every Hebrew word linked to its analysis</b> in the ETCBC's BHSA database
+(lexeme, part of speech, verb stem and tense, person, number, gender), shown
+when you point at it. Greek words are linked to the Rahlfs Septuagint.</li>
+<li><b>The differences in colour</b>, and Stipp's notes and Greek kept beside
+the sentence they belong to: the Greek for 4,599 sentences of Jeremiah.</li>
+</ul>
+
+<div class="sample">
+<div class="row"><span class="lab">Masoretic</span>
+<span class="heb"><span class="v">דִּבְרֵי</span> <span class="">יִרְמְיָהוּ בֶּן־חִלְקִיָּהוּ מִן־הַכֹּהֲנִים</span></span></div>
+<div class="row"><span class="lab">Retroversion</span>
+<span class="heb"><span class="v">דְּבַר־יְהוָה אֲשֶׁר הָיָה עַל</span> <span class="">יִרְמְיָהוּ בֶּן־חִלְקִיָּהוּ מִן־הַכֹּהֲנִים</span></span></div>
+<div class="row"><span class="lab">Greek</span>
+<span>τὸ ῥῆμα τοῦ θεοῦ ὅ ἐγένετο ἐπὶ Ιερεμίαν τὸν τοῦ Χελκίου ἐκ τῶν ἱερέων</span></div>
+<div class="row"><span class="lab"></span><span class="cite">Jeremiah 1:1a.
+The two editions open differently: “the words of Jeremiah” against “the word
+of God that came to Jeremiah”.</span></div>
+</div>
+
+<h2>How to read a page</h2>
+<p>Each verse is a table: the masoretic text, Stipp's sentence letter, his
+retroversion of the alexandrian text, and his Greek. Hebrew reads from right to
+left.</p>
+<ul class="keys">
+<li><span class="p">Red</span>: a masoretic plus, text the Greek edition does
+not have.</li>
+<li><span class="m">Blue</span>: an alexandrian plus, text only the Greek
+edition has.</li>
+<li><span class="v">Ochre</span>: a qualitative variant: both editions have
+something here, but not the same thing.</li>
+<li>Switches at the top hide or show the colours, the notes and the Greek.</li>
+</ul>
+<p>The chapter pages keep the German labels of the Synopse
+(<i>masoretisch</i>, <i>Rückübersetzung</i>, <i>Griechisch</i>).</p>
+
+<h2>How far you can trust it</h2>
+<p>The pages were made by reading Stipp's PDF, not by retyping it, and nothing
+in them is taken from another edition: every letter stands as Stipp prints it.
+The masoretic column can be checked, against the BHSA database, and is checked
+verse by verse:</p>
+<ul class="keys">
+<li><span class="badge">BHSA ✓</span> means that the verse reproduces BHSA's
+consonants exactly and in order: <b>1,389 of 1,394 verses</b>
+(99.6%).
+1,360 of 1,394 also divide the words exactly as BHSA does.</li>
+<li><span class="badge">Stipp ≠ BHS</span> marks 5 verses where the page
+is faithful to Stipp and Stipp's text itself differs from BHS; the reason is
+given when you point at the badge.</li>
+<li><span class="badge">Gr ✓</span> means that each Greek line stands beside the Hebrew
+sentence it is printed level with in the Synopse.</li>
+</ul>
+<p>The retroversion and the Greek have no independent text to be checked
+against: they are Stipp's own work, reproduced as carefully as the masoretic
+column but not verified in the same way. For anything you intend to cite, check
+the reading in Stipp's synopsis itself. The full reliability report, and the
+code that builds these pages, are on
+<a href="https://github.com/MartijnNaaijer/mt_greek_jeremiah">GitHub</a>.</p>
+
+<h2 id="chapters">Chapters</h2>
+<div class="grid"><a href="jer01.html"><b>Jer 1</b><span>19 verses</span></a><a href="jer02.html"><b>Jer 2</b><span>37 verses</span></a><a href="jer03.html"><b>Jer 3</b><span>25 verses</span></a><a href="jer04.html"><b>Jer 4</b><span>31 verses</span></a><a href="jer05.html"><b>Jer 5</b><span>31 verses</span></a><a href="jer06.html"><b>Jer 6</b><span>30 verses</span></a><a href="jer07.html"><b>Jer 7</b><span>34 verses</span></a><a href="jer08.html"><b>Jer 8</b><span>23 verses</span></a><a href="jer09.html"><b>Jer 9</b><span>25 verses</span></a><a href="jer10.html"><b>Jer 10</b><span>25 verses</span></a><a href="jer11.html"><b>Jer 11</b><span>23 verses</span></a><a href="jer12.html"><b>Jer 12</b><span>17 verses</span></a><a href="jer13.html"><b>Jer 13</b><span>27 verses</span></a><a href="jer14.html"><b>Jer 14</b><span>22 verses</span></a><a href="jer15.html"><b>Jer 15</b><span>21 verses</span></a><a href="jer16.html"><b>Jer 16</b><span>21 verses</span></a><a href="jer17.html"><b>Jer 17</b><span>27 verses</span></a><a href="jer18.html"><b>Jer 18</b><span>23 verses</span></a><a href="jer19.html"><b>Jer 19</b><span>15 verses</span></a><a href="jer20.html"><b>Jer 20</b><span>18 verses</span></a><a href="jer21.html"><b>Jer 21</b><span>14 verses</span></a><a href="jer22.html"><b>Jer 22</b><span>30 verses</span></a><a href="jer23.html"><b>Jer 23</b><span>40 verses</span></a><a href="jer24.html"><b>Jer 24</b><span>10 verses</span></a><a href="jer25.html"><b>Jer 25</b><span>38 verses</span></a><a href="jer26.html"><b>Jer 26</b><span>24 verses</span></a><a href="jer27.html"><b>Jer 27</b><span>22 verses</span></a><a href="jer28.html"><b>Jer 28</b><span>17 verses</span></a><a href="jer29.html"><b>Jer 29</b><span>32 verses</span></a><a href="jer30.html"><b>Jer 30</b><span>24 verses</span></a><a href="jer31.html"><b>Jer 31</b><span>40 verses</span></a><a href="jer32.html"><b>Jer 32</b><span>44 verses</span></a><a href="jer33.html"><b>Jer 33</b><span>26 verses</span></a><a href="jer34.html"><b>Jer 34</b><span>22 verses</span></a><a href="jer35.html"><b>Jer 35</b><span>19 verses</span></a><a href="jer36.html"><b>Jer 36</b><span>32 verses</span></a><a href="jer37.html"><b>Jer 37</b><span>21 verses</span></a><a href="jer38.html"><b>Jer 38</b><span>28 verses</span></a><a href="jer39.html"><b>Jer 39</b><span>18 verses</span></a><a href="jer40.html"><b>Jer 40</b><span>16 verses</span></a><a href="jer41.html"><b>Jer 41</b><span>18 verses</span></a><a href="jer42.html"><b>Jer 42</b><span>22 verses</span></a><a href="jer43.html"><b>Jer 43</b><span>13 verses</span></a><a href="jer44.html"><b>Jer 44</b><span>30 verses</span></a><a href="jer45.html"><b>Jer 45</b><span>5 verses</span></a><a href="jer46.html"><b>Jer 46</b><span>28 verses</span></a><a href="jer47.html"><b>Jer 47</b><span>7 verses</span></a><a href="jer48.html"><b>Jer 48</b><span>47 verses</span></a><a href="jer49.html"><b>Jer 49</b><span>39 verses</span></a><a href="jer50.html"><b>Jer 50</b><span>46 verses</span></a><a href="jer51.html"><b>Jer 51</b><span>64 verses</span></a><a href="jer52.html"><b>Jer 52</b><span>34 verses</span></a><a href="2kings25.html"><b>2 Kgs 25</b><span>30 verses</span></a></div>
+
+<footer>Text and notes: Hermann-Josef Stipp, <i>Textkritische Synopse zum
+Jeremiabuch</i>, 15. korrigierte interne Auflage, April 2021. Word analyses:
+BHSA (ETCBC, 2021) and the Rahlfs Septuagint (CenterBLC). Conversion of the
+synopsis for the web (the extraction from the PDF, the word links and the
+checks against BHSA) by Martijn Naaijer. These pages are an aid to reading
+Stipp's synopsis and do not replace it.</footer>
+</div></body></html>
