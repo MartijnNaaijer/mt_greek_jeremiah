@@ -175,14 +175,22 @@ Synopse. Every verse carries a badge saying whether the two agree.
   all, which is how four entries of the Greek map stayed wrong for as long as
   they did. What is left is Stipp's own spelling against Rahlfs — φησί,
   ἐποίησε, ἐλάλησε for ἐποίησεν and ἐλάλησεν, and unaccented Ιερεμίαν.
-- The Greek is placed in the right Rahlfs verse for **90.2%** of its words, and
+- The Greek was placed in the right Rahlfs verse for **90.2%** of its words when
+  last measured, before 2026-10-01 (no script in the project prints this figure), and
   beside the right Hebrew sentence by a length alignment rather than by dealing the
   sentences out one to each. Scored on transliterated proper names — an
   independent check, since the placement knows nothing of names — **7 verses of
   431 still have Greek beside the wrong sentence**, down from 47, and none of the 7
   is badged `Gr ✓`. That badge means one Greek sentence to one Hebrew sentence all the
   way down, which is the only case where the pairing is not an inference:
-  **696 verses of 1,298**. The rest are `Gr ≈`.
+  **747 verses of 1,313** (696 of 1,298 before 2026-10-01). The rest are `Gr ≈`.
+- **The Greek VERSES are aligned to the Hebrew ones, by length**, since
+  2026-10-01. Where the Greek numbers its verses differently, they used to be
+  dealt out in order, and a page whose ranges did not match put every verse one
+  off (32,22–30) or gave a verse the Greek of another oracle (49,27). Checked by
+  names across verses, 11 such cases fell to 1, which is not a fault, and 1,147
+  characters of Stipp's Greek that had been dropped or misplaced now stand beside
+  their verse.
 - Greek versification is Greek: the LXX Jer 32 is the Hebrew Jer 25. A verse
   number in the Greek panel is not an MT verse number.
 - The alexandrian column is a retroversion of the Greek and Stipp's Greek is his
@@ -206,7 +214,7 @@ verses it filed under four different headings turned out to be one fault.
 
     python -m unittest discover -s tests -t tests -v
 
-92 tests over the built pages, standard library only — no install, no
+93 tests over the built pages, standard library only — no install, no
 requirements file. They are a check on the generator: the pages are output, so
 what the suite asserts is that the last build still holds together and still
 says the right thing.

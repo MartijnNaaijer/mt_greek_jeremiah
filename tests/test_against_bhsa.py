@@ -283,6 +283,45 @@ class TestTheGreekIsBesideTheRightSentence(unittest.TestCase):
             f"sentence; the ceiling is {base['greek_misplaced_ceiling']}")
 
 
+class TestTheGreekIsBesideTheRightVerse(unittest.TestCase):
+    """(48)-(50) The Greek beside the right VERSE, which the test above cannot
+    see: it compares names within a verse. Here a Greek name counts against a
+    verse whose alexandrian column lacks it while a neighbour's has it more
+    often than its own Greek - the shape of a verse-numbering shift. Before
+    2026-10-01 there were 11, in 32,22-30, 49,27-36 and at 16,1; the one left,
+    27,12, was checked on the page and is not a fault: the line KAI
+    ERGASASTHE TO BASILEI BABYLONOS is the Greek of 27,12 and Stipp brackets
+    the Hebrew it renders as a masoretic plus."""
+
+    ANCH = TestTheGreekIsBesideTheRightSentence.ANCHORS + [
+        ("δαμασκ", "דמשק"), ("αιλαμ", "עילם"), ("φαραω", "פרעה"),
+        ("γοδολι", "גדליה"), ("ισμαηλ", "ישמעאל"), ("βαρουχ", "ברוך"),
+        ("ιωακιμ", "יהויקים")]
+
+    @staticmethod
+    def _gk(t):
+        import unicodedata
+        d = unicodedata.normalize("NFD", (t or "").lower())
+        d = "".join(c for c in d if unicodedata.category(c) != "Mn")
+        return "".join(c if "α" <= c <= "ω" else " " for c in d.replace("ς", "σ"))
+
+    def test_the_greek_is_not_beside_the_wrong_verse(self):
+        vs = [v for v in S.verses()]
+        g = [self._gk(" ".join(w.text for w in v.greek_words())) for v in vs]
+        o = ["".join(S.HEB.findall(" ".join(w.text for w in v.og_words())))
+             for v in vs]
+        shifted = []
+        for i, v in enumerate(vs):
+            for ga, ha in self.ANCH:
+                n = g[i].count(ga)
+                if n and o[i].count(ha) < n:
+                    for j in (i - 2, i - 1, i + 1, i + 2):
+                        if 0 <= j < len(vs) and vs[j].page == v.page                                 and o[j].count(ha) > g[j].count(ga):
+                            shifted.append((v.ref, ga))
+                            break
+        self.assertLessEqual(len(shifted), 1, shifted)
+
+
 class TestTheVersesThatWereWrong(BHSATest):
     """One test per fault found on 2026-09-05, each on the verse that showed it.
 
