@@ -136,7 +136,7 @@ class TestVerses(unittest.TestCase):
         # Since 2026-10-01 there is a third answer, 'Stipp ≠ BHS', for a named
         # handful of verses the page reproduces faithfully where Stipp's own
         # text differs from BHS; it is allowed ONLY on those.
-        named = {"17,26", "23,9", "25,18", "18,3"}
+        named = {"17,26", "23,9", "25,18", "18,3", "3,25"}
         for v in S.verses():
             with self.subTest(page=v.page, verse=v.ref):
                 src = any(t == "Stipp ≠ BHS" for _, t in v.badges)

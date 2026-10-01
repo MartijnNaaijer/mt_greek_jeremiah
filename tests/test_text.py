@@ -414,7 +414,10 @@ class TestTheRightText(unittest.TestCase):
         """
         odd = [(v.page, v.number, r.letter) for v in S.verses() for r in v.rows
                if any("mtvar" in w.cls for w in r.mt)
-               and not any("ogvar" in w.cls or "ogabbr" in w.cls for w in r.og)]
+               and not any("ogvar" in w.cls or "ogabbr" in w.cls for w in r.og)
+               # parse_synopse.APPARATUS_ONLY: the other side is an apparatus,
+               # Greek and root, with no Hebrew - one-sided by the author's word
+               and (v.page, v.number, r.letter) != ("jer31.html", 24, "b")]
         self.assertLessEqual(len(odd), BASELINE["one_sided_variant_ceiling"],
                              "sentences showing one side of a bar only: %s" % (odd,))
 
@@ -732,10 +735,35 @@ class TestWideBars(unittest.TestCase):
         for page, n, og_has, mt_lacks in (
                 ("jer13.html", 12, "העם", "העם"),
                 ("jer22.html", 15, "ישתו", "ישתו"),
-                ("jer38.html", 4, "הנלחמים", "הנלחמים")):
+                ("jer38.html", 4, "הנלחמים", "הנלחמים"),
+                # the reversed pair, given its reach by name
+                ("jer21.html", 8, "נתתי", "נתתי")):
             with self.subTest(verse=(page, n)):
                 self.assertIn(og_has, cell(page, n, "og"))
                 self.assertNotIn(mt_lacks, cell(page, n, "mt"))
+
+
+class TestTheStroke(unittest.TestCase):
+
+    def test_the_walk_steps_over_a_stroke(self):
+        """(46) Stipp's stroke '|' is an in-line sign like the star, and the
+        leftward walk stopped dead at it: at 9,5a it stands at x = 162 between
+        the column and MIRMAH, the last word of the line, which was left in the
+        margin."""
+        v = next(v for v in S.verses() if v.page == "jer09.html" and v.number == 5)
+        self.assertTrue(v.confirmed())
+        self.assertIn("מרמה", cons(v.og_words()).split())
+
+
+class TestApparatusOnly(unittest.TestCase):
+
+    def test_a_bar_whose_alternative_is_an_apparatus(self):
+        """31,24b WE-NAS'U \ (KAI ARTHESETAI √ NS') BA-'EDER: the alexandrian
+        side is the Greek and its root, and BA-'EDER is shared; read as the
+        alternative it was lost from the masoretic column."""
+        v = next(v for v in S.verses() if v.page == "jer31.html" and v.number == 24)
+        self.assertIn("בעדר", cons(v.mt_words()).split())
+        self.assertIn("בעדר", cons(v.og_words()).split())
 
 
 class TestMarkup(unittest.TestCase):
