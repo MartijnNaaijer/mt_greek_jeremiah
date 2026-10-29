@@ -88,6 +88,7 @@ Output: results/synopse.json - one record per clause, in reading order:
 import json
 import re
 import collections
+import difflib
 
 from paths import BOOKS, R
 from pypdf import PdfReader
@@ -2139,6 +2140,40 @@ def _apparatus_only(row):
     row["og"][i]["cls"] = "common"
     m = next(k for k, s_ in enumerate(row["mt"]) if s_["cls"] == "mtvar")
     row["mt"].insert(m + 1, {"cls": "common", "text": shared})
+    # (66) and that apparatus IS the alexandrian side of the bar, so it opens
+    # the retroversion column, before the shared word - not the masoretic
+    # one after WE-NAS'U, where the stream put it
+    for n in row["notes"]:
+        if n["kind"] == "app" and n.get("at", [None])[0] == "mt":
+            n["at"] = ["og", 0]
+
+
+def _col_cons(segs):
+    return "".join(HEBCONS.findall("".join(s_["text"] for s_ in segs)))
+
+
+def _remap(row, change, *args):
+    """(66) Apply a named re-division to a row and carry its inline notes over.
+
+    _widen() and _apparatus_only() move words between the columns AFTER the
+    notes' points were mapped onto them (64), so a note behind a moved word
+    stood that many letters out: '(4Q72 korr =)' at 21,8c landed inside
+    LIFNEJKEM where Stipp sets it after NATATTI. Each column's consonants are
+    aligned before and after the change, and a note keeps its place against
+    the letters that did not move.
+    """
+    before = {c: _col_cons(row[c]) for c in ("mt", "og")}
+    change(row, *args)
+    for n in row["notes"]:
+        at = n.get("at")
+        if not at or at[0] not in before:
+            continue
+        col, k = at
+        sm = difflib.SequenceMatcher(None, before[col], _col_cons(row[col]),
+                                     autojunk=False)
+        n["at"] = [col, max((j + min(k, i + size) - i
+                             for i, j, size in sm.get_matching_blocks()
+                             if size and i < k), default=0)]
 
 
 WIDENED = []
@@ -2856,11 +2891,11 @@ def parse():
                 greek="", galign="", gverse=""))
             _anchor(rows[-1]["notes"], segs)
             if (book, ch, rows[-1]["v"], letter) in APPARATUS_ONLY:
-                _apparatus_only(rows[-1])
+                _remap(rows[-1], _apparatus_only)
                 WIDENED.append((ch, rows[-1]["v"], letter))
             wide = WIDE_BARS.get((book, ch, rows[-1]["v"], letter))
             if wide:
-                _widen(rows[-1], *wide)
+                _remap(rows[-1], _widen, *wide)
                 WIDENED.append((ch, rows[-1]["v"], letter))
             # A FOOTNOTE GOES WITH THE SENTENCE THAT CARRIES ITS MARK.
             for n in sorted({marks[id(s_)] for ln in cl for s_ in ln

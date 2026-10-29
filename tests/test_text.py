@@ -1232,6 +1232,22 @@ class TestTheNotes(unittest.TestCase):
         self.assertTrue(re.match(r'<bdi class="inl"[^>]*>\(vgl\. V\. 5!\)</bdi> ',
                                  grk), grk[:80])
 
+    def test_a_named_re_division_carries_its_notes(self):
+        """(66) WIDE_BARS and APPARATUS_ONLY move words between the columns
+        after the notes' points were mapped: '(4Q72 korr =)' at 21,8c landed
+        inside LIFNEJKEM, where Stipp sets it after NATATTI. And at 31,24b the
+        apparatus is the alexandrian side of the bar, so it opens that column."""
+        cell = self.verse("jer21.html", 8).rows[2].raw[2][1]
+        seq = ["W" if m.group().startswith("<span") else
+               S.unescape(re.sub(r"<[^>]+>", "", m.group()))
+               for m in re.finditer(r'<span class="w[^>]*>.*?</span>|'
+                                    r'<bdi class="inl"[^>]*>.*?</bdi>', cell)]
+        # HINNEH 'ANI NATATTI (4Q72 korr =) LIFNEJKEM ...
+        self.assertEqual(seq[:5], ["W", "W", "W", "(4Q72 korr =)", "W"])
+        r = self.verse("jer31.html", 24).rows[1]
+        self.assertEqual(r.inline(0), [])
+        self.assertTrue(r.raw[2][1].startswith('<bdi class="inl"'), r.raw[2][1][:60])
+
     def test_the_idiolect_references_are_printed(self):
         """(55) 'Id 4.23' is set in bold, and every bold span was taken for the
         running head: 288 references were dropped."""
