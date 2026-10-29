@@ -1144,7 +1144,7 @@ class TestTheNotes(unittest.TestCase):
                 part = re.sub(r"^[^>]*>", "", part)
                 out.append(" ".join(S.unescape(re.sub(r"<[^>]+>", "", part)).split()))
         for r in v.rows:
-            for t in r.inline(0) + r.inline(2):
+            for t in r.inline(0) + r.inline(2) + r.inline(3):
                 out.append(t[1:-1] if t[:1] == "(" and t[-1:] == ")" else t)
         return out
 
@@ -1216,6 +1216,21 @@ class TestTheNotes(unittest.TestCase):
                                     r'<bdi class="inl"[^>]*>.*?</bdi>', cell)]
         self.assertEqual(seq[-5:], ["*", "W", "(4Q71 = AlT)", "W", "(Aor)"])
         self.assertIn("(Pass)", self.verse("jer10.html", 4).rows[2].inline(2))
+
+    def test_what_the_margin_hands_back_ends_its_line(self):
+        """(65) The left end of a printed line is where a right-to-left line
+        finishes. pypdf set the star of 10,3a in one span with the reference
+        beside it, 'keine Sgr *', and it stood at the end of a margin note; a
+        quoted word that lay wholly in the margin, '«αὐτόν»' at 22,3c, had no
+        place in the line either. And Stipp's pointer '(vgl. V. 5!)' opens the
+        Greek of 10,9a1, not the Hebrew."""
+        r = self.verse("jer10.html", 3).rows[0]
+        self.assertEqual(r.inline(2), ["|", "*"])
+        self.assertNotIn("keine Sgr *", self.notes("jer10.html", 3))
+        self.assertIn("«αὐτόν»", self.verse("jer22.html", 3).rows[2].inline(2))
+        grk = self.verse("jer10.html", 9).rows[0].raw[3][1]
+        self.assertTrue(re.match(r'<bdi class="inl"[^>]*>\(vgl\. V\. 5!\)</bdi> ',
+                                 grk), grk[:80])
 
     def test_the_idiolect_references_are_printed(self):
         """(55) 'Id 4.23' is set in bold, and every bold span was taken for the

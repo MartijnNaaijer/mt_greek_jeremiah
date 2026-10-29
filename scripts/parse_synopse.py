@@ -1457,7 +1457,7 @@ def _margin_lines(pieces):
         # '≙ (' + 'ὁ' + ')' two lines further down.
         s = s.rstrip("( ")
         if s:
-            out.append(("margin", s))
+            out.append(("margin", s, key))
     return out
 
 
@@ -1545,6 +1545,8 @@ def read_clause(lines, carry=(0, False)):
         if scope > 0:
             return "scope"
         return "common"
+
+    ends = {}                           # (65) line -> here() at its end
 
     def here():
         """(64) Where an inline note stands: the consonants read before it.
@@ -1909,6 +1911,7 @@ def read_clause(lines, carry=(0, False)):
             if note_buf:
                 notes.append(("app", note_buf, here()))
             paren = 0
+        ends[li] = here()               # (65) the point at the end of this line
 
     # A BAR WITH NOTHING AFTER IT IN THE SENTENCE MARKS NOTHING BEFORE IT. The
     # backward reference is only warranted once the forward one has been
@@ -1974,7 +1977,21 @@ def read_clause(lines, carry=(0, False)):
     # in the book inherit a notation at all and none inherits it twice, so a
     # ceiling has nothing to bound and the book's one reversed pair, at 21,8c,
     # is stopped by the lookahead instead.
-    notes.extend(_margin_lines(marg))
+    # (65) WHAT THE MARGIN HANDS BACK STANDS AT THE END OF ITS LINE. The left
+    # end of a printed line is where a right-to-left line finishes, so a sign
+    # or a quoted word that ran past the column into the margin follows the
+    # last word read on that line. pypdf sets the star of 10,3a in one span
+    # with the reference beside it, 'keine Sgr *', and the stroke of 1,1a with
+    # 'Am 1,1 |': ten signs ended a margin note, where they say nothing. One
+    # that is part of a siglum - 4Q70*, G* - has no space before it and stays.
+    for kind_, s_, li_ in _margin_lines(marg):
+        m = TRAILING_SIGN.search(s_)
+        if m:
+            s_ = s_[:m.start()].rstrip()
+        if s_:
+            notes.append((kind_, s_, ends.get(li_)))
+        if m:
+            notes.append(("sigla", m.group(1), ends.get(li_)))
     return segs, notes, label, index, (scope, bar) if scope and not bar else (0, False)
 
 
@@ -2414,8 +2431,22 @@ def _quote_notes(notes):
                       if closer(out[j]) is not None), None)
             if j is not None:
                 rest = closer(out[j])
+                # (65) a sign behind the guillemet now ends the note: the
+                # stroke of '→ 4,2d | «' at 5,18
+                m = TRAILING_SIGN.search(rest) if out[j]["kind"] == "margin" \
+                    else None
+                sign = None
+                if m:
+                    sign = dict(kind="sigla", text=m.group(1))
+                    if "k" in out[j]:
+                        sign["k"] = out[j]["k"]
+                    rest = rest[:m.start()].rstrip()
                 if rest:
                     out[j] = dict(out[j], text=rest)
+                    if sign:
+                        out.insert(j + 1, sign)
+                elif sign:
+                    out[j] = sign
                 else:
                     del out[j]
                 q = dict(kind="grk", text=f"«{out[i + 1]['text'].strip()}»")
@@ -2433,12 +2464,15 @@ def _quote_notes(notes):
         if m:
             rest = (n["text"][:m.start()] + " " + n["text"][m.end():]).strip()
             q = dict(kind="grk", text=f"«{m.group(1).strip()}»")
+            if "k" in n:
+                q["k"] = n["k"]         # (65) its margin line's end
             out[i:i + 1] = ([dict(n, text=rest)] if rest else []) + [q]
             QUOTED.append(q["text"])
     return out
 
 
 QUOTE_IN = re.compile(r"«\s*([^«»]+?)\s*»")
+TRAILING_SIGN = re.compile(r"(?<=\S)\s+([*|])$")
 
 
 QUOTED = []                         # every '«…»' joined, for the summary
@@ -2868,6 +2902,8 @@ def parse():
             note = dict(kind=kind_, text=text)
             if kind_ == "order":
                 note["col"] = "grk"
+            else:
+                note["at"] = ["grk", 0]     # (65) before the Greek it opens
             hit[0]["notes"].append(note)
         # (63) THE MARK ITSELF IS NOT A NOTE. Where it stands in the Hebrew line
         # the walk filed it as a sign, so 7,16b carried a bare '8' beside the

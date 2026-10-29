@@ -63,7 +63,7 @@ Hebrew map's own check, 82.30% on a strict byte-for-byte test);
 `bwhebb_learn.py` derived the Hebrew map and is kept as the record of how.
 
 **Tests**: from the repository root, `python -m unittest discover -s tests`,
-standard library only. **108 tests** (93 of them without BHSA). Sixty-seven exist
+standard library only. **109 tests** (94 of them without BHSA). Sixty-eight exist
 because of a numbered fault below — one per fault, on the verse that showed it —
 and the rest are floors and ceilings in `tests/baseline.json`, whose `_` key
 records for every figure what it was and why it moved. **A floor that moves must
@@ -441,7 +441,14 @@ The author asked whether the small notes - references, exclamation marks, signs 
 - `read_clause.here()` records each note's point as the number of consonants read before it, over the whole stream, because the segments are re-classed into the two columns only later and split as the bar is resolved, while the letters do not move. `_anchor()` maps it onto a column when the row is built, as `at: [column, consonants]`; the letters (26) completes are inserted after the line is read, so they do not count towards the point.
 - `spans_html(inline=…)` puts the note after the display word whose last consonant reaches the count, small and grey, as `<bdi class="inl" dir="ltr">` (left to right, as Stipp's apparatus reads, its Hebrew isolated); `notes_html()` no longer lists it; the `Apparat` toggle hides it.
 - **A note in the line is not text**: `tests/synopse.py` and `pages_vs_bhsa.py` drop `INLINE` before reading a column, with the space before it, or the sof pasuq after `(Pass)` reads as the start of a word.
-- **1,413 notes placed**, 1,309 in the retroversion column and 104 in the masoretic; 609 sentences no longer need a note strip. Ten stay under the sentence: the nine quotations lifted from the margin and one apparatus with no point. **Checked**: the words of all three columns of all 1,394 verses identical before and after, notes removed; 10,3–5 read against the crop, every note after the word Stipp sets it after. **Not reached**: the star of 10,3a, which stands at the far left of its line and is still glued to the margin note `keine Sgr *`; the positions in the five rows `WIDE_BARS` and `APPARATUS_ONLY` re-divide after the anchors are computed.
+- **1,413 notes placed**, 1,309 in the retroversion column and 104 in the masoretic; 609 sentences no longer need a note strip. **Checked**: the words of all three columns of all 1,394 verses identical before and after, notes removed; 10,3–5 read against the crop, every note after the word Stipp sets it after. **Not reached**: the positions in the six rows `WIDE_BARS` and `APPARATUS_ONLY` re-divide after the anchors are computed, so a note there can be a word out.
+
+(65) **What the margin hands back stands at the END OF ITS LINE.** Ten notes were left under their sentence by (64) and ten signs ended a margin note. Both are things that ran past the left edge of the column, and the left end of a printed line is where a right-to-left line finishes, so they follow the last word read on that line. `read_clause()` records `here()` at the end of every line (`ends`), `_margin_lines()` returns each note with its line, and a note lifted out of the margin carries that point.
+- **Ten signs**: pypdf set the star of 10,3a in one span with the reference beside it, `keine Sgr *`, and the strokes of 1,1a, 5,18, 15,12, 19,1c, 30,23a, 34,21, 48,18b and the stars of 33,6b and 49,9a the same way. `TRAILING_SIGN` takes a lone `*` or `|` with a space before it off the end of a margin line; one that is part of a siglum, `4Q70*` or `G*`, has none and stays. At 5,18 the stroke stood behind a `«` (`→ 4,2d | «`) and is taken when `_quote_notes()` has taken that.
+- **Nine quotations** that lay wholly in the margin zone (6,9c; 8,5c; 13,13c; 19,2a; 20,8e; 22,3c; 47,3b; 51,2d; 51,13).
+- **`(vgl. V. 5!)` at 10,9a₁** is Stipp's pointer in the GREEK panel and now opens the Greek cell, `at: ["grk", 0]`.
+
+Every inline note of the book now has a place in the line. Checked against the crop at 1,1a (`דְּבַר־יְהוָה (τοῦ θεοῦ) |`), 15,12, 13,13c and 33,6b–c; no word of any column moved.
 
 ### What is still wrong
 
@@ -495,6 +502,6 @@ Each of the 17 verses still off against BHSA was put beside a rendered crop of i
 
 **Every verse carries a badge saying which it is**; do not quote a figure off these pages without it.
 
-**The suite is 108 tests** (93 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-seven exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
+**The suite is 109 tests** (94 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-eight exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
 
 **`mt_greek_jeremiah/` is a git repository of its own** (2026-09-05), pushed to https://github.com/MartijnNaaijer/mt_greek_jeremiah and served from GitHub Pages at **https://martijnnaaijer.github.io/mt_greek_jeremiah/**. The 55 pages live in its `docs/` folder, not at its top level, and `paths.MTG()` resolves there — a page written to the old path would land beside the README and outside the index the other pages link into. The folder is named `docs/` because a GitHub Pages branch deployment can serve only the repository root or `/docs`, and serves `/docs` AT the site root, so the bare URL reaches `index.html` with no redirect stub. `README.md` at its root carries the reliability figures above, so the folder can be read on its own.

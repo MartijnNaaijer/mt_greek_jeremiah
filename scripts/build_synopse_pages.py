@@ -776,6 +776,11 @@ def build():
                                 inline=at("og"))
                 gk = greek_html(c.get("greek"), lxx_verse(lwords, c.get("gverse")),
                                 pool, lindex)
+                # (65) Stipp's pointer in the Greek panel, '(vgl. V. 5!)' at
+                # 10,9a1, stands before the Greek it opens
+                gk = " ".join([inline_html(n) for n in c["notes"]
+                               if n.get("at", [None])[0] == "grk"] +
+                              ([gk] if gk else []))
                 nt = notes_html(c["notes"]) if c["notes"] else ""
                 if mt.strip() or og.strip() or gk.strip():
                     trs.append(
