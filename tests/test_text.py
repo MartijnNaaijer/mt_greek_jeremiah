@@ -1169,6 +1169,35 @@ class TestTheNotes(unittest.TestCase):
             with self.subTest(verse=(page, n)):
                 self.assertIn('<tr class="order">', self.verse(page, n).body)
 
+    def test_fehlt_in_survives_the_text_column(self):
+        """(62) The last piece of a margin line is handed to the text column,
+        whose walk read its '>' as the close of an alexandrian plus: '10 > 4Q71'
+        printed '10 4Q71', and '> 38,8' printed '38,8' - six in the book."""
+        self.assertIn("10 > 4Q71", self.notes("jer10.html", 10))
+        self.assertIn("> 38,8", self.notes("jer52.html", 14))
+        self.assertTrue(any("6–8 > 4Q71" in n for n in self.notes("jer10.html", 6)))
+
+    def test_a_quoted_greek_word_is_one_note(self):
+        """(63) '«ὑμᾶς»' after LE'EKOL at 2,7a came out as three notes, '»',
+        'ὑμᾶς', '«', and where the guillemet rode on the label the sentence
+        was lost: 8,8b '«ὅτι» ḤAKAMIM 'ANAḤNU' ran into 8,8a."""
+        self.assertIn("«ὑμᾶς»", self.notes("jer02.html", 7))
+        self.assertNotIn("»", self.notes("jer02.html", 7))
+        for page, n, letter in (("jer08.html", 8, "b"), ("jer02.html", 31, "f"),
+                                ("jer37.html", 19, "c")):
+            with self.subTest(verse=(page, n)):
+                self.assertIn(f'<td class="cl">{letter}</td>',
+                              self.verse(page, n).body)
+
+    def test_the_sof_pasuq_is_not_a_margin_note(self):
+        """(63) A line that ends in a quoted Greek word pushes the verse-end
+        sign past the column into the margin: '׃ «αὐτοῦ»' at 6,9c printed as a
+        note, and the verse had none. Seven verses; no figure counts it."""
+        for page, n in (("jer06.html", 9), ("jer09.html", 11), ("jer26.html", 23)):
+            with self.subTest(verse=(page, n)):
+                self.assertTrue(self.verse(page, n).mt_text().endswith("׃"))
+                self.assertFalse(any("׃" in t for t in self.notes(page, n)))
+
     def test_the_idiolect_references_are_printed(self):
         """(55) 'Id 4.23' is set in bold, and every bold span was taken for the
         running head: 288 references were dropped."""

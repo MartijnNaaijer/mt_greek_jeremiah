@@ -63,7 +63,7 @@ Hebrew map's own check, 82.30% on a strict byte-for-byte test);
 `bwhebb_learn.py` derived the Hebrew map and is kept as the record of how.
 
 **Tests**: from the repository root, `python -m unittest discover -s tests`,
-standard library only. **104 tests** (89 of them without BHSA). Sixty-three exist
+standard library only. **107 tests** (92 of them without BHSA). Sixty-six exist
 because of a numbered fault below — one per fault, on the verse that showed it —
 and the rest are floors and ceilings in `tests/baseline.json`, whose `_` key
 records for every figure what it was and why it moved. **A floor that moves must
@@ -140,7 +140,9 @@ not yet done.
 **A label with a subscript index — a₁ a₂ a₃ — marks the parts of ONE sentence**
 split by an embedded sentence, and counts once (the author's instruction; it
 also confirms (5,23) below). Records with no Hebrew, only a note, are not
-sentences. The book has **5,004** sentences; the count lives in
+sentences. The pages print **4,919** sentences with text (5,004 was recorded
+here on 2026-09-11 and was no longer what they printed by 2026-10-29, when it
+was 4,916; (63) gave back three); the count lives in
 `build_synopse_pages.sentences()`. Twelve verses repeat a letter with NO index —
 where a raised P or D rides on the label and one sentence is set in two pieces —
 and they collapse too.
@@ -421,6 +423,22 @@ Three faults, all at Jer 10, and the placement of the Greek beside the Hebrew wa
 
 An `order` note renders as a separator row between the two sentences, the Hebrew side's text under the Hebrew columns and the panel's under the Greek. **Checked byte for byte**: every text column of `synopse.json` identical; the only changes are the notes of 10,5b, 10,9a₁, 23,6e, 23,40b, 31,34e and 31,37e and the `gverse` of 10,5c–g and 10,9; no page beyond Jer 10, 23 and 31 changed except for the CSS. `pool_entries` 31,135 → 31,139. **Not done**: `AlT` is italic in the source and plain here.
 
+### The small notes, checked (2026-10-29)
+
+The author asked whether the small notes - references, exclamation marks, signs - stand where they belong. **At the level of the sentence they do**: every note was found on the sentence whose printed line carries it. The check that found what follows counts PUNCTUATION per page, `> ; * | → + = ! ?`, in the PDF's margin zone and in the notes; `notes_vs_pdf.py` compares word tokens only and so could see none of it.
+
+(62) **`>` is Stipp's siglum for "fehlt in" wherever it lands.** The lookahead in `split_columns()` hands the last piece of a margin line to the text column (39), and the text column's walk read its `>` as the close of an alexandrian plus. Six notes lost it and with it their meaning: `6–8 > 4Q71` at 10,6a, `10 > 4Q71` at 10,10a, `> 38,8` at 52,14b, `> 2 Kön 25,17` at 52,21c, `> Jer 39,8` at 2 Kgs 25,10b, `22–26 > Jer 52` at 2 Kgs 25,22a. The walk now applies the margin's own rule from (17) to a span left of `MARGIN_X`: a `>` with more text after it in its span is the siglum.
+
+(63) **A Greek word Stipp quotes in the Hebrew line, `«ὑμᾶς»`, is one thing**, set where the retroversion has nothing for it. 131 in the book. Four faults turned on it:
+- it came out as three notes, `»`, `ὑμᾶς`, `«` - the guillemets are Times, the word is Greek, and the walk meets the right-hand `»` first; in 31 the `«` ran into the margin, alone or at the end of a reference pypdf set in one span with it (`36,30c «`), and 9 lay wholly in the margin zone (`21,12c « αὐτόν »`). `_quote_notes()` joins them, wherever the pieces landed;
+- **three sentences were lost**: where a sentence opens with the quotation, pypdf sets the `»` in one span with the label, `'» b '`, and `labelish()` refused it, so 8,8b `«ὅτι» חֲכָמִים אֲנַחְנוּ` ran into 8,8a, and 2,31f and 37,19c likewise. The guillemet may now ride on the label, as a raised P or D does (22), and is filed as a sign;
+- **seven verses had no sof pasuq** (6,9; 9,11; 18,14; 20,8; 26,23; 47,3; 51,2): a line ending in a quotation or an apparatus pushed it past the column, and it was printed as a margin note (`׃ «αὐτοῦ»`). A margin span that is nothing but the sof pasuq is now text, added last. The overflow walk also steps over a guillemet. **No figure could see this**: the badge counts consonants. 5,24c still has none, and that is Stipp's own text;
+- the footnote marks 2–23 in the Hebrew line were filed as signs beside the footnote that carries them. The pages never printed them, because `notes_html()` hides a bare number, so this is a correction to `synopse.json` only.
+
+**Checked against a run of the same code**: no letter of either Hebrew column moved except the seven sof pasuqs; the Greek of every verse unchanged; 2,31, 8,8 and 37,19 have their sentence back (records 5,148 → 5,151); 133 verses' notes changed. Masoretic column still 1,389 exact.
+
+**Not done, and the larger matter**: the signs and the inline apparatus are set by Stipp AT A POINT in the Hebrew line - `(!)`, `(Pass)`, `(κεκαλλωπισμένα ἐστίν)` after the word they qualify, the transposition star `*`, the stroke `|`, a raised P or D, a quoted Greek word - and on these pages every one of them is taken out of the line and listed under the sentence. The sentence is right; which word they belong to is lost. 1,026 apparatus notes, 131 quotations, 90 strokes, 79 stars, 63 raised sigla.
+
 ### What is still wrong
 
 Of the 1,394 verses of Jeremiah and 2 Kings 25, **1,389 (99.6%) reproduce BHSA's consonants exactly and in order, and the other five are the named `Stipp ≠ BHS` verses (3,25; 17,26; 18,3; 23,9; 25,18). Since step 4 no verse of the masoretic column carries `BHSA ?`**: every deviation left is Stipp's own text, not the extraction. The tables below record how the residue was worked down and are history now. **Four of the thirteen are not faults**: they carry the badge `Stipp ≠ BHS` (see below). **Every one of the 17 was read against a rendered crop on 2026-10-01; see "The residue, read case by case" below**, which supersedes the attributions in this section where they differ.
@@ -473,6 +491,6 @@ Each of the 17 verses still off against BHSA was put beside a rendered crop of i
 
 **Every verse carries a badge saying which it is**; do not quote a figure off these pages without it.
 
-**The suite is 104 tests** (89 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-three exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
+**The suite is 107 tests** (92 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-six exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
 
 **`mt_greek_jeremiah/` is a git repository of its own** (2026-09-05), pushed to https://github.com/MartijnNaaijer/mt_greek_jeremiah and served from GitHub Pages at **https://martijnnaaijer.github.io/mt_greek_jeremiah/**. The 55 pages live in its `docs/` folder, not at its top level, and `paths.MTG()` resolves there — a page written to the old path would land beside the README and outside the index the other pages link into. The folder is named `docs/` because a GitHub Pages branch deployment can serve only the repository root or `/docs`, and serves `/docs` AT the site root, so the bare URL reaches `index.html` with no redirect stub. `README.md` at its root carries the reliability figures above, so the folder can be read on its own.

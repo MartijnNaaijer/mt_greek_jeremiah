@@ -132,6 +132,8 @@ BAR = chr(0x5c)                 # the qualitative-variant bar
 TIGHT_LOG = []                  # every bar set hard against the text, and
                                 # what the abbreviation rule made of it
 SIGLA = re.compile(r"[«»→√≈≙*|~–’…]")
+QUOTES = "«»"                   # around a Greek word quoted in the Hebrew line
+SOF_PASUQ = "׃"
 
 MARGIN_X = 170.0
 # The text column is set flush right at x = 400 and normally starts after
@@ -585,7 +587,11 @@ def labelish(t):
     alone, on a line of its own, and admitting it would open a clause where
     there is none.
     """
-    flat = "".join(c for c in t if c not in MARKUP)
+    # (63) SO CAN THE GUILLEMET OF A QUOTED GREEK WORD. Where a sentence opens
+    # with Greek that has no Hebrew - '«ὅτι» ḤAKAMIM 'ANAḤNU' at 8,8b - pypdf
+    # sets the closing '»' in one span with the label, '» b ', and refusing it
+    # ran the sentence into the one before: 2,31f, 8,8b and 37,19c.
+    flat = "".join(c for c in t if c not in MARKUP and c not in QUOTES)
     if not flat.strip():
         return False
     if LABEL.match(flat):
@@ -1061,6 +1067,10 @@ def split_columns(line):
         if not (sp[2] == "HEB" or not t or set(t) <= MARKUP
                 or (len(t) > 1 and t.startswith("(") and t.endswith(")"))
                 or set(t) == {"*"} or set(t) == {"|"}
+                # (63) and the guillemet of a quoted Greek word: at 9,11f
+                # '«αὐτήν»' ends the line at x = 158, and the sof pasuq beyond
+                # it was left in the margin note
+                or set(t) <= set(QUOTES)
                 # a raised siglum - P, D, Q at 6.36pt - rides on its line under
                 # true geometry, and at 2,13 it stood between the column and
                 # NISHBARIM [BO'ROT], which the walk then left in the margin
@@ -1356,6 +1366,7 @@ SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
 # '25,1b; Hos 1,1; Jo' runs from x = 30.2 to the e-diaeresis at 102.5.
 W_APP = 4.0
 SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+UNSUP = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹", "0123456789")
 
 
 def _margin_lines(pieces):
@@ -1703,8 +1714,23 @@ def read_clause(lines, carry=(0, False)):
             # 73 verses across the book that go that way.
             islabel = id(sp) in labsps
             buf = ""
+            # (62) '>' IS STIPP'S SIGLUM FOR "FEHLT IN" HERE TOO. The lookahead in
+            # split_columns() hands the last piece of a margin line to the text
+            # column (39), and this walk read its '>' as the close of an
+            # alexandrian plus: '10 > 4Q71' at 10,10 printed '10 4Q71', '> 38,8'
+            # at 52,14 printed '38,8', six in the book. The margin loop's own
+            # rule from (17) decides it: markup has nothing after it in its
+            # span, a siglum has its reference.
+            siglum = set()
+            if not islabel and x < MARGIN_X:
+                siglum = {i for i, c in enumerate(t) if c == ">" and
+                          any(not d.isspace() and d not in MARKUP
+                              for d in t[i + 1:])}
             for ci in range(len(t) - 1, -1, -1):
                 c = t[ci]
+                if ci in siglum:
+                    buf += c
+                    continue
                 if paren:
                     if c == "(":
                         paren -= 1
@@ -1746,6 +1772,8 @@ def read_clause(lines, carry=(0, False)):
                     if not scope:
                         bar = False
                         notation = 0
+                elif islabel and c in QUOTES:
+                    notes.append(("sigla", c))      # (63) it rides on the label
                 else:
                     buf += c
             if paren:
@@ -1785,6 +1813,14 @@ def read_clause(lines, carry=(0, False)):
         # next line, so R'SHIT TBW'TH was read as alexandrian and the masoretic
         # column lost it.
         for x, y, k, fs, t in margin:
+            if k == "HEB" and bwfonts.to_hebrew(t).strip() == SOF_PASUQ:
+                # (63) THE VERSE-END SIGN IS TEXT WHEREVER IT LANDS. A line that
+                # ends in a quoted Greek word or an apparatus can push it past
+                # the left edge of the column - '׃ «αὐτοῦ»' at 6,9c - where it
+                # was printed as a margin note and the verse had none. It is
+                # the last sign of a right-to-left line, so it goes last.
+                add(t)
+                continue
             if k in ("HEB", "GRK"):
                 marg.append((li, y, x, fs, k, t))
                 continue
@@ -2284,6 +2320,64 @@ def _order_notes(notes):
     return out
 
 
+def _quote_notes(notes):
+    """(63) '«ὑμᾶς»' is ONE note: a Greek word Stipp quotes in the Hebrew line
+    where the retroversion has nothing for it, after LE'EKOL at 2,7a.
+
+    It arrived as three - '»', 'ὑμᾶς', '«' - because the guillemets are Times
+    and the word is Greek, and the walk meets the right-hand '»' first. In 17
+    of the 122 the '«' runs past the left edge of the column into the margin,
+    and comes back as a margin note of its own or, where pypdf set it in one
+    span with the reference before it ('36,30c «' at 26,23d, 14 times), at the
+    END of one; it is taken from there.
+    """
+    def closer(n):
+        t = n["text"].strip()
+        if n["kind"] == "sigla" and t.startswith("«"):
+            return t[1:].strip()
+        if n["kind"] == "margin" and t.startswith("«"):
+            return t[1:].strip()
+        if n["kind"] == "margin" and t.endswith("«"):
+            return t[:-1].strip()
+        return None
+
+    out, i = list(notes), 0
+    while i < len(out):
+        n = out[i]
+        if n["kind"] == "sigla" and n["text"].strip() == "»" and \
+                i + 1 < len(out) and out[i + 1]["kind"] == "grk":
+            j = next((j for j in range(i + 2, len(out))
+                      if closer(out[j]) is not None), None)
+            if j is not None:
+                rest = closer(out[j])
+                if rest:
+                    out[j] = dict(out[j], text=rest)
+                else:
+                    del out[j]
+                out[i:i + 2] = [dict(kind="grk",
+                                     text=f"«{out[i + 1]['text'].strip()}»")]
+                QUOTED.append(out[i]["text"])
+        i += 1
+    # A quotation that lies wholly past the left edge of the column is read with
+    # the margin line it shares: '21,12c « αὐτόν »' at 22,3c. It is lifted out,
+    # so that it reads as what it is and the reference as a reference.
+    for i in range(len(out) - 1, -1, -1):
+        n = out[i]
+        m = QUOTE_IN.search(n["text"]) if n["kind"] == "margin" else None
+        if m:
+            rest = (n["text"][:m.start()] + " " + n["text"][m.end():]).strip()
+            q = dict(kind="grk", text=f"«{m.group(1).strip()}»")
+            out[i:i + 1] = ([dict(n, text=rest)] if rest else []) + [q]
+            QUOTED.append(q["text"])
+    return out
+
+
+QUOTE_IN = re.compile(r"«\s*([^«»]+?)\s*»")
+
+
+QUOTED = []                         # every '«…»' joined, for the summary
+
+
 def margin_text(spans):
     parts = []
     for x, y, k, fs, t in spans:
@@ -2656,8 +2750,9 @@ def parse():
                 og=to_logical(list(reversed(column(
                     segs, ("common", "minus", "ogvar", "ogabbr", "scope"),
                     True)))),
-                notes=_order_notes([n for n in (note_text(x) for x in notes)
-                                    if (n["text"] or "").strip()]),
+                notes=_quote_notes(_order_notes(
+                    [n for n in (note_text(x) for x in notes)
+                     if (n["text"] or "").strip()])),
                 greek="", galign="", gverse=""))
             if (book, ch, rows[-1]["v"], letter) in APPARATUS_ONLY:
                 _apparatus_only(rows[-1])
@@ -2707,6 +2802,18 @@ def parse():
             if kind_ == "order":
                 note["col"] = "grk"
             hit[0]["notes"].append(note)
+        # (63) THE MARK ITSELF IS NOT A NOTE. Where it stands in the Hebrew line
+        # the walk filed it as a sign, so 7,16b carried a bare '8' beside the
+        # footnote that already opens with ⁸ - fifteen sentences. The pages
+        # never printed it (notes_html() hides a bare number as a page number),
+        # but synopse.json is read by other scripts. It is dropped only where a
+        # footnote of that number is on the same sentence.
+        for r_ in here:
+            feet = {n["text"].split(" ")[0].translate(UNSUP)
+                    for n in r_["notes"] if n["kind"] == "foot"}
+            r_["notes"] = [n for n in r_["notes"]
+                           if not (n["kind"] == "sigla"
+                                   and n["text"].strip() in feet)]
         # A footnote whose mark was not found stays on the page, with the last
         # sentence, which is where it used to land in pieces.
         for n in sorted(set(fns) - placed):
@@ -2759,6 +2866,8 @@ if __name__ == "__main__":
     print(f"relocation markers (61)        : "
           f"{sum(1 for r in rows for n in r['notes'] if n['kind'] == 'order')}"
           f", {len(GNOTE_LOST)} from the Greek panel with no row {GNOTE_LOST or ''}")
+    print(f"quoted Greek words (63)        : {len(QUOTED)}; guillemets left over "
+          f"{sum(1 for r in rows for n in r['notes'] if n['kind'] == 'sigla' and n['text'].strip() in QUOTES)}")
     print(f"spaces inside a Greek word     : {GREEK_FALSE_SPACES['removed']:,} removed")
     added = FALSE_SPACES["gap with nothing in it (added)"]
     print(f"spaces inside a Hebrew word    : {sum(FALSE_SPACES.values()) - added:,} removed "
