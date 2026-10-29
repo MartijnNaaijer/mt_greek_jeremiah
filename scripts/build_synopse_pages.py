@@ -182,6 +182,13 @@ sup.ab{font-size:.62em;color:var(--mut);vertical-align:super;padding:0 .1em}
 .inl{font-size:.72rem;color:var(--mut);font-family:Georgia,serif;unicode-bidi:isolate}
 sup.inl{font-size:.6rem}
 .hide-notes .inl{display:none}
+.key{font-size:.82rem;color:var(--mut);margin:.2rem 0 1rem;max-width:60rem}
+.key summary{cursor:pointer;color:var(--fg)}
+.key h2{font-size:1rem;color:var(--fg);margin:1.5rem 0 .3rem}
+.key p{margin:.4rem 0}
+table.keytab{width:auto;table-layout:auto}
+table.keytab td{padding:.08rem .9rem .08rem 0;font-size:.82rem}
+table.keytab td:first-child{white-space:nowrap;color:var(--fg);font-family:Georgia,serif}
 tr.order td{text-align:center;color:var(--mut);font-size:.85rem;padding:.35rem .5rem}
 .legend{font-size:.75rem;color:var(--mut);margin-top:.5rem}
 .legend b{font-weight:400}
@@ -631,7 +638,95 @@ def notes_html(notes):
     return f'<div class="notes">{"".join(out)}</div>' if out else ""
 
 
-def page(title, sub, nav, body, legend=True, pool=None):
+# (68) STIPP'S SIGNS AND ABBREVIATIONS, AS HIS EINLEITUNG DEFINES THEM. The
+# definitions are his Zeichenerklärung (the last two pages of the Einleitung),
+# and for 'keine Sgr' and '|' his section on sentence boundaries; the longer
+# ones are compressed, never extended. The author's decision, 2026-10-29: what
+# the Einleitung does NOT define is not explained - the margin '>', '||',
+# 'korr' and '⇐' are used in the Synopse and left out here on purpose. Each
+# entry is printed only where its sign occurs on the pages; the pattern finds it
+# in the notes.
+KEY_SIGNS = [
+    ("(…)", "zusätzliche Hinweise, z. B. auf den Wortlaut der griechischen "
+            "Übersetzung oder Ketib/Qere", r"."),
+    ("(!)", "ungewöhnliche Übersetzung", r"^!$"),
+    ("*", "Drehachse: die so getrennten Passagen stehen im alexandrinischen "
+          "Text in umgekehrter Reihenfolge", r"^\*$"),
+    ("(*)", "Drehachse: die so getrennten Passagen stehen in JerG* in "
+            "umgekehrter Reihenfolge", r"\(\*\)"),
+    ("|", "Satzgrenze im alexandrinischen Text: die Vorlage von JerG* hat "
+          "hier eine dem tiberischen Text fremde Satzgrenze", r"^\|$"),
+    ("«…»", "Überhänge von JerG*, die nicht auf die Vorlage zurückzuführen "
+            "sind", r"^«[^»]+»$"),
+    ("D", "hochgestellt: wahrscheinlich Dittographie in der Texttradition, "
+          "die den Überschuss hat", r"^D$"),
+    ("P", "hochgestellt: wahrscheinlich Textverlust durch Parablepsis in der "
+          "Texttradition, der der Überschuss fehlt", r"^P$"),
+    ("=", "ist gleich", r"="),
+    ("≙", "entspricht (d. h. steht an der Stelle von)", r"≙"),
+    ("√", "Wurzel", r"√"),
+    ("⇒", "verschrieben zu", r"⇒"),
+    ("via", "Etymon", r"\bvia\b"),
+    ("→", "mit Stellenangabe: an der angegebenen Stelle ist eine Liste von "
+          "Parallelfällen aufgeführt", r"→"),
+]
+KEY_ABBR = [
+    ("abs", "absolutus"), ("Adj", "Adjektiv"), ("Akt", "Aktiv"),
+    ("AlT", "alexandrinischer Text"), ("Aor", "Aorist"), ("aram", "aramäisch"),
+    ("CATSS", "Computer Assisted Tools for Septuagint Studies"),
+    ("ePP", "enklitisches Personalpronomen"), ("f", "feminin"),
+    ("fin", "finit"), ("Fut", "Futur"),
+    ("G*", "ursprüngliche griechische Übersetzung"),
+    ("Gram!", "ungrammatische Vorlage oder ungrammatische Fehlinterpretation "
+              "der Vorlage"),
+    ("Id", "Idiolekt: fett gesetzt, verweist auf ein Merkmal des "
+           "prämasoretischen Idiolekts"),
+    ("Imp", "Imperativ"), ("Impf", "Imperfekt"), ("Inf", "Infinitiv"),
+    ("JE12", "die Bücher Jer, Ez und Dodekapropheton"), ("K", "Ketib"),
+    ("keine Sgr", "keine Satzgrenze: die Vorlage von JerG* kennt die "
+                  "tiberische Satzgrenze nicht"),
+    ("Kon", "H.-J. Stipp, Deuterojeremianische Konkordanz (ATSAT 63), "
+            "St. Ottilien 1998; mit Seitenangabe"),
+    ("m", "maskulin"), ("Med", "Medium"), ("mhe", "mittelhebräisch"),
+    ("MT", "masoretischer Text"), ("N", "N-Stamm (Nif‘al)"),
+    ("Pass", "Passiv"), ("Perf", "Perfekt"), ("Pl", "Plural"),
+    ("PP", "Personalpronomen"), ("Präs", "Präsens"), ("Ps", "Person"),
+    ("Ptz", "Partizip"), ("Q", "Qere"), ("Sg", "Singular"),
+    ("Sgr", "Satzgrenze"), ("sPP", "selbstständiges Personalpronomen"),
+    ("Sub", "Substantiv"), ("syr", "syrisch"), ("TT", "tiberischer Text"),
+    ("Vb", "Verb"), ("Vb fin", "Verbum finitum"),
+]
+
+
+def key_html(rows, collapsed=True):
+    """(68) The key to Stipp's signs and abbreviations that occur on the pages."""
+    texts = [n["text"] for r in rows for n in r["notes"]
+             if n.get("kind") not in ("foot", "title", "order")]
+    inline = [n["text"].strip() for r in rows for n in r["notes"]
+              if "at" in n]
+    used = []
+    for sign, meaning, pat in KEY_SIGNS:
+        pool = inline if pat.startswith("^") or sign == "(…)" else texts
+        if any(re.search(pat, t) for t in pool):
+            used.append((sign, meaning))
+    for ab, meaning in KEY_ABBR:
+        pat = r"(?<![\w*])" + re.escape(ab) + (r"(?![\w])" if ab[-1].isalnum()
+                                                else "")
+        if any(re.search(pat, t) for t in texts):
+            used.append((ab, meaning))
+    trs = "".join(f"<tr><td>{esc(s)}</td><td>{esc(m)}</td></tr>"
+                  for s, m in used)
+    head = ("Zeichen und Abkürzungen in Stipps Apparat und Rand, nach seiner "
+            "Einleitung. Was die Einleitung nicht erklärt, bleibt hier "
+            "unerklärt.")
+    inner = f'<p>{head}</p><table class="keytab">{trs}</table>'
+    if collapsed:
+        return (f'<details class="key"><summary>Zeichen und Abkürzungen'
+                f'</summary>{inner}</details>')
+    return f'<section class="key" id="zeichen"><h2>Zeichen und Abkürzungen</h2>{inner}</section>'
+
+
+def page(title, sub, nav, body, legend=True, pool=None, key=""):
     leg = ('<div class="legend"><b><span style="color:var(--plus)">masoretisches Plus</span> · '
            '<span style="color:var(--minus)">alexandrinisches Plus</span> · '
            '<span style="color:var(--var)">qualitative Variante</span> · '
@@ -655,7 +750,7 @@ def page(title, sub, nav, body, legend=True, pool=None):
 </div>
 <h1>{esc(title)}</h1><div class="sub">{sub}</div>
 {f"<nav>{nav}</nav>" if nav else ""}{leg}</header>
-<main>{body}</main>
+<main>{key}{body}</main>
 <script>window.__A={json.dumps(pool.items if pool else [], ensure_ascii=False)};</script>
 <script>{JS}</script></body></html>"""
 
@@ -693,6 +788,7 @@ def build():
     keys.sort(key=lambda k: (0, int(k[3:])) if k.startswith("jer") else (1, 0))
 
     os.makedirs(MTG(), exist_ok=True)
+    key_c = key_html(rows)              # (68) on every chapter page, folded
     written = []
     nsrc = 0
     wl = [0, 0, 0]                      # verses scored, word-exact, spacing-only
@@ -839,7 +935,7 @@ def build():
                f'{len(byv)} Verse, {sentences(rs)} Sätze'
                f' &nbsp;·&nbsp; masoretisch · hebräische Rückübersetzung (Stipp) · griechisch')
         open(MTG(f"{key}.html"), "w", encoding="utf-8").write(
-            page(title, sub, nav, "".join(body), pool=pool))
+            page(title, sub, nav, "".join(body), pool=pool, key=key_c))
         written.append((key, book, ch, len(byv), nok))
 
     links = "".join(
@@ -947,7 +1043,8 @@ beide gibt es hier keine Prüfinstanz.
         # Jeremia 1, which read as a second, stranger entry beside the Jeremia 1
         # of the chapter list right below it.
         "",
-        intro + f'<div class="idx">{links}</div>', legend=False))
+        intro + f'<div class="idx">{links}</div>' + key_html(rows, False),
+        legend=False))
 
     english_index(rows, written, total, okv, nsrc, wl)
 

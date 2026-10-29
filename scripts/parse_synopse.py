@@ -921,7 +921,7 @@ def _bracket_reach(margin, text):
     threshold separates them. A bracket does. The text column must OPEN with
     the closer, and the margin must yield the matching opener at the END of one
     of its spans - the same positional guard fault (17) needs, since a '>' with
-    a reference after it is Stipp's siglum for "fehlt in" and not a bracket -
+    a reference after it is a siglum (read as "fehlt in") and not a bracket -
     with Hebrew between the two and nothing but markup or space besides.
 
     19 printed lines in the book are of that shape and every one is a real
@@ -1729,7 +1729,8 @@ def read_clause(lines, carry=(0, False)):
             # 73 verses across the book that go that way.
             islabel = id(sp) in labsps
             buf = ""
-            # (62) '>' IS STIPP'S SIGLUM FOR "FEHLT IN" HERE TOO. The lookahead in
+            # (62) THE MARGIN '>' IS A SIGLUM HERE TOO (read as "fehlt in"; the
+            # Einleitung does not define it). The lookahead in
             # split_columns() hands the last piece of a margin line to the text
             # column (39), and this walk read its '>' as the close of an
             # alexandrian plus: '10 > 4Q71' at 10,10 printed '10 4Q71', '> 38,8'
@@ -1846,7 +1847,7 @@ def read_clause(lines, carry=(0, False)):
             # A BRACKET IN THE MARGIN IS ONLY MARKUP AT THE END OF THE SPAN.
             # The margin holds Stipp's own sigla as well as the line's markup,
             # and '>' is both: between the readings it opens an alexandrian
-            # plus, but in a margin note it means "fehlt in" and is followed by
+            # plus, but in a margin note it is a siglum (read as "fehlt in") and is followed by
             # the witness - '7,30-8,3 > 4Q70* (4QJer a*)' at Jer 8,1, where
             # reading it as a bracket opened a plus that never closed and
             # handed the whole of 8,1b to the alexandrian column, 89 letters,
@@ -2312,7 +2313,9 @@ def _bind_lone_proclitics(segs):
 
 
 # Two glyphs of the SymbolMT font that come through as private-use code
-# points: Stipp's double arrows, 'derived from', in the apparatus.
+# points: Stipp's double arrows in the apparatus. His Zeichenerklärung gives
+# '⇒' as "verschrieben zu" (the key's own glyph is U+F0DE, rendered and
+# checked 2026-10-29); '⇐' is not in the key and is left unexplained.
 SYMBOL = {0xF0DC: "⇐", 0xF0DE: "⇒"}
 
 
@@ -2387,6 +2390,14 @@ def _anchor(notes, segs):
         else:
             end = read[k - 1]
             col = "og" if seq[end][0] in OG_KEEP else "mt"
+            # (67) THE STROKE AND THE STAR ARE SIGNS OF THE ALEXANDRIAN TEXT.
+            # Stipp's key: '|' is "Satzgrenze im alexandrinischen Text", '*'
+            # the pivot of passages that stand "im alexandrinischen Text in
+            # umgekehrter Reihenfolge". Behind a masoretic-only word - 33,6c
+            # 'ATERET \ | WE-'ASITI - the sign still marks a point in the
+            # alexandrian text, after the alexandrian words read so far.
+            if n["kind"] == "sigla" and n["text"].strip() in ("|", "*"):
+                col = "og"
             if col == "mt":
                 while end + 1 < len(seq) and seq[end + 1][1]:
                     end += 1

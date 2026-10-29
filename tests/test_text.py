@@ -1248,6 +1248,32 @@ class TestTheNotes(unittest.TestCase):
         self.assertEqual(r.inline(0), [])
         self.assertTrue(r.raw[2][1].startswith('<bdi class="inl"'), r.raw[2][1][:60])
 
+    def test_the_stroke_is_a_sign_of_the_alexandrian_text(self):
+        """(67) Stipp's key: '|' is "Satzgrenze im alexandrinischen Text". At
+        33,6c it stands between the masoretic 'ATERET and the alexandrian
+        WE-'ASITI and was placed in the masoretic column; 22 strokes and a star
+        were. They go in the retroversion column."""
+        for v in S.verses():
+            for r in v.rows:
+                with self.subTest(verse=(v.page, v.number)):
+                    self.assertFalse({"|", "*"} & set(r.inline(0)))
+        self.assertIn("|", self.verse("jer33.html", 6).rows[2].inline(2))
+
+    def test_the_key_explains_only_what_stipp_defines(self):
+        """(68) A key to Stipp's signs and abbreviations, after his Einleitung,
+        on the overview and folded on every chapter page. The author's decision:
+        what the Einleitung does not define - the margin '>', '||', 'korr',
+        '⇐' - is not explained."""
+        de = S.read("de.html")
+        key = re.search(r'<section class="key".*?</section>', de, re.S).group()
+        signs = [S.unescape(s) for s in re.findall(r"<tr><td>(.*?)</td>", key)]
+        for s in ("|", "*", "«…»", "⇒", "keine Sgr", "Kon", "Id", "AlT"):
+            self.assertIn(s, signs)
+        for s in (">", "||", "korr", "⇐"):
+            self.assertNotIn(s, signs)
+        self.assertIn("verschrieben zu", key)
+        self.assertIn('<details class="key">', S.read("jer10.html"))
+
     def test_the_idiolect_references_are_printed(self):
         """(55) 'Id 4.23' is set in bold, and every bold span was taken for the
         running head: 288 references were dropped."""
