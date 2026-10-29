@@ -32,6 +32,9 @@ CELL = re.compile(r'<td([^>]*)>(.*?)</td>', re.S)
 WORD = re.compile(r'<span class="w ?([^"]*)"([^>]*)>(.*?)</span>')
 POOL = re.compile(r'window\.__A=(\[.*?\]);', re.S)
 KQ = re.compile(r'<sup class="kq"')
+# (64) A note Stipp sets in the line is printed in it, and is not text.
+INLINE = re.compile(r' ?<bdi class="inl"[^>]*>(?:<bdi[^>]*>.*?</bdi>|.)*?</bdi>'
+                    r'| ?<sup class="inl">.*?</sup>', re.S)
 
 
 def chapter_files():
@@ -90,12 +93,18 @@ class Row:
         the page says WE-NISHBA'TA, so the only way to test what a reader sees
         is to take the cell's text and split it on whitespace.
         """
-        t = WORD.sub(lambda m: unescape(m.group(3)), self.raw[i][1])
+        t = INLINE.sub("", self.raw[i][1])
+        t = WORD.sub(lambda m: unescape(m.group(3)), t)
         t = re.sub(r"<[^>]+>", "", t)
         return t.split()
 
     def mt_printed(self):
         return self.printed(0)
+
+    def inline(self, i):
+        """(64) The notes set in the line of cell `i`, as plain text."""
+        return [" ".join(unescape(re.sub(r"<[^>]+>", "", m.group())).split())
+                for m in INLINE.finditer(self.raw[i][1])]
 
     def og_printed(self):
         return self.printed(2)

@@ -1546,6 +1546,18 @@ def read_clause(lines, carry=(0, False)):
             return "scope"
         return "common"
 
+    def here():
+        """(64) Where an inline note stands: the consonants read before it.
+
+        Stipp sets his apparatus, his signs and a quoted Greek word AT A POINT
+        in the Hebrew line, after the word they concern, and the page listed
+        them under the sentence. The point is counted in consonants of the
+        whole stream, because the segments are re-classed into the two columns
+        only later (split_variant) and split as the bar is resolved, while the
+        letters themselves do not move. _anchor() maps it onto a column.
+        """
+        return sum(len(HEBCONS.findall(bwfonts.to_hebrew(s_[1]))) for s_ in segs)
+
     def add(t):
         """Append one Hebrew span as a segment, in reading order.
 
@@ -1698,7 +1710,7 @@ def read_clause(lines, carry=(0, False)):
                 elif k == "HEB":
                     add(t)
                 else:
-                    notes.append(("grk", bwfonts.to_greek(unspace(t))))
+                    notes.append(("grk", bwfonts.to_greek(unspace(t)), here()))
                 continue
             if k == "BOLD":
                 for m in ID.findall(t):
@@ -1737,7 +1749,7 @@ def read_clause(lines, carry=(0, False)):
                         if not paren:
                             note_buf.append(("txt", buf[::-1]))
                             buf = ""
-                            notes.append(("app", note_buf))
+                            notes.append(("app", note_buf, here()))
                             note_buf = []
                         continue
                     if c == ")":
@@ -1773,7 +1785,7 @@ def read_clause(lines, carry=(0, False)):
                         bar = False
                         notation = 0
                 elif islabel and c in QUOTES:
-                    notes.append(("sigla", c))      # (63) it rides on the label
+                    notes.append(("sigla", c, here()))  # (63) on the label
                 else:
                     buf += c
             if paren:
@@ -1801,7 +1813,7 @@ def read_clause(lines, carry=(0, False)):
                 # text column; see _margin_lines().
                 marg.append((li, y, x, fs, "APP", buf[::-1]))
             elif buf.strip():
-                notes.append(("sigla", buf[::-1].strip()))
+                notes.append(("sigla", buf[::-1].strip(), here()))
         # THE MARGIN IS READ LAST, BECAUSE IT IS ON THE LEFT. Its text is
         # German and Latin and stays in its own direction, but the markup in it
         # is the line's markup and has to be applied, at the point in the
@@ -1895,7 +1907,7 @@ def read_clause(lines, carry=(0, False)):
         if paren:                       # an apparatus that never closed
             note_buf = [n for n in note_buf if n[1] and n[1].strip()]
             if note_buf:
-                notes.append(("app", note_buf))
+                notes.append(("app", note_buf, here()))
             paren = 0
 
     # A BAR WITH NOTHING AFTER IT IN THE SENTENCE MARKS NOTHING BEFORE IT. The
@@ -2253,6 +2265,14 @@ SYMBOL = {0xF0DC: "⇐", 0xF0DE: "⇒"}
 
 
 def note_text(n):
+    """A note as read -> {kind, text}, and `k`, its point in the line (64)."""
+    out = _note_text(n[:2])
+    if len(n) > 2:
+        out["k"] = n[2]
+    return out
+
+
+def _note_text(n):
     kind_, payload = n
     if kind_ in ("grk", "id", "margin", "sigla", "title"):
         return {"kind": kind_, "text": payload.translate(SYMBOL)}
@@ -2279,6 +2299,50 @@ def note_text(n):
     text = " ".join(parts).translate(SYMBOL)
     text = re.sub(r"\s+([,;.)])", r"\1", re.sub(r"\(\s+", "(", text))
     return {"kind": "app", "text": text}
+
+
+MT_KEEP = ("common", "plus", "mtvar", "mtsup", "scope")
+OG_KEEP = ("common", "minus", "ogvar", "ogabbr", "scope")
+
+
+def _anchor(notes, segs):
+    """(64) An inline note's point in the line -> `at`: [column, consonants].
+
+    The note goes after the word it follows, in the ALEXANDRIAN column wherever
+    that word stands there - the shared text and the alexandrian readings, and
+    most of the apparatus records the Greek's evidence - and in the masoretic
+    column only where the word is the masoretic text's own (a plus, or the
+    masoretic side of a variant). The author's decision, 2026-10-29. The count
+    is the number of that column's consonants before the note.
+
+    The letters (26) completes are inserted after the line is read, so they do
+    not count towards the point, but they do stand in the masoretic column, and
+    a note there goes after them when they finish the word it follows.
+    """
+    seq = []                    # (class, completed?) per consonant, in order
+    for s_ in segs:
+        n = len(HEBCONS.findall(bwfonts.to_hebrew(s_[1])))
+        seq += [(s_[0], s_[0] == "mtsup")] * n
+    read = [i for i, (_, sup) in enumerate(seq) if not sup]
+    for n in notes:
+        k = n.pop("k", None)
+        if k is None or n["kind"] not in INLINE:
+            continue
+        k = min(k, len(read))
+        if k == 0:
+            first = seq[read[0]][0] if read else "common"
+            col, end = ("og" if first in OG_KEEP else "mt"), -1
+        else:
+            end = read[k - 1]
+            col = "og" if seq[end][0] in OG_KEEP else "mt"
+            if col == "mt":
+                while end + 1 < len(seq) and seq[end + 1][1]:
+                    end += 1
+        keep = OG_KEEP if col == "og" else MT_KEEP
+        n["at"] = [col, sum(1 for c, _ in seq[:end + 1] if c in keep)]
+
+
+INLINE = ("app", "grk", "sigla")
 
 
 RULE = "–––"
@@ -2354,8 +2418,10 @@ def _quote_notes(notes):
                     out[j] = dict(out[j], text=rest)
                 else:
                     del out[j]
-                out[i:i + 2] = [dict(kind="grk",
-                                     text=f"«{out[i + 1]['text'].strip()}»")]
+                q = dict(kind="grk", text=f"«{out[i + 1]['text'].strip()}»")
+                if "k" in out[i + 1]:
+                    q["k"] = out[i + 1]["k"]
+                out[i:i + 2] = [q]
                 QUOTED.append(out[i]["text"])
         i += 1
     # A quotation that lies wholly past the left edge of the column is read with
@@ -2754,6 +2820,7 @@ def parse():
                     [n for n in (note_text(x) for x in notes)
                      if (n["text"] or "").strip()])),
                 greek="", galign="", gverse=""))
+            _anchor(rows[-1]["notes"], segs)
             if (book, ch, rows[-1]["v"], letter) in APPARATUS_ONLY:
                 _apparatus_only(rows[-1])
                 WIDENED.append((ch, rows[-1]["v"], letter))

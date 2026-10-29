@@ -1134,12 +1134,18 @@ class TestTheNotes(unittest.TestCase):
         return next(v for v in S.verses() if v.page == page and v.number == n)
 
     def notes(self, page, n):
-        """Each printed note of the verse as plain text, one per note span."""
+        """Each printed note of the verse as plain text, one per note span -
+        and since (64) the notes set in the line too, the apparatus without the
+        parentheses it is printed in there."""
         out = []
-        for h in self.verse(page, n).notes:
+        v = self.verse(page, n)
+        for h in v.notes:
             for part in re.split(r'<span class="n[ "]', h)[1:]:
                 part = re.sub(r"^[^>]*>", "", part)
                 out.append(" ".join(S.unescape(re.sub(r"<[^>]+>", "", part)).split()))
+        for r in v.rows:
+            for t in r.inline(0) + r.inline(2):
+                out.append(t[1:-1] if t[:1] == "(" and t[-1:] == ")" else t)
         return out
 
     def test_a_relocation_marker_is_a_rule_line_and_not_a_verse_number(self):
@@ -1197,6 +1203,19 @@ class TestTheNotes(unittest.TestCase):
             with self.subTest(verse=(page, n)):
                 self.assertTrue(self.verse(page, n).mt_text().endswith("׃"))
                 self.assertFalse(any("׃" in t for t in self.notes(page, n)))
+
+    def test_a_note_set_in_the_line_stays_in_the_line(self):
+        """(64) Stipp sets his apparatus and signs after the word they concern:
+        '<WU>BE-MASMEROT * [WU]BE-MAQQABOT (4Q71 = AlT) JEHAZZEQUM (Aor)' at
+        10,4b. Every one was listed under the sentence, and which word it
+        belonged to was lost. They go in the retroversion column."""
+        cell = self.verse("jer10.html", 4).rows[1].raw[2][1]
+        seq = ["W" if m.group().startswith("<span") else
+               S.unescape(re.sub(r"<[^>]+>", "", m.group()))
+               for m in re.finditer(r'<span class="w[^>]*>.*?</span>|'
+                                    r'<bdi class="inl"[^>]*>.*?</bdi>', cell)]
+        self.assertEqual(seq[-5:], ["*", "W", "(4Q71 = AlT)", "W", "(Aor)"])
+        self.assertIn("(Pass)", self.verse("jer10.html", 4).rows[2].inline(2))
 
     def test_the_idiolect_references_are_printed(self):
         """(55) 'Id 4.23' is set in bold, and every bold span was taken for the

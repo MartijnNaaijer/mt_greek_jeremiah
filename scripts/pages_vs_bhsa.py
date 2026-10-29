@@ -84,6 +84,8 @@ NOTE = re.compile(r'<tr><td colspan="4">(.*?)</td></tr>', re.S)
 SPAN = re.compile(r'<span class="w[^"]*"[^>]*>(.*?)</span>')
 SUP = re.compile(r'<sup.*?</sup>', re.S)
 TAG = re.compile(r'<[^>]+>')
+INLINE = re.compile(r' ?<bdi class="inl"[^>]*>(?:<bdi[^>]*>.*?</bdi>|.)*?</bdi>'
+                    r'| ?<sup class="inl">.*?</sup>', re.S)
 
 
 def cons(t):
@@ -93,6 +95,7 @@ def cons(t):
 
 
 def _cell(cell):
+    cell = INLINE.sub("", cell)         # (64) a note set in the line is not text
     cell = SUP.sub("", cell)
     cell = SPAN.sub(lambda m: html.unescape(m.group(1)), cell)
     return TAG.sub("", cell)

@@ -179,6 +179,9 @@ sup.ab{font-size:.62em;color:var(--mut);vertical-align:super;padding:0 .1em}
 .notes .n.foot{display:block;margin:.3rem 0 0;font-style:italic}
 .notes .heb{direction:rtl;unicode-bidi:isolate;font-size:1rem;font-style:normal}
 .hide-notes .notes{display:none}
+.inl{font-size:.72rem;color:var(--mut);font-family:Georgia,serif;unicode-bidi:isolate}
+sup.inl{font-size:.6rem}
+.hide-notes .inl{display:none}
 tr.order td{text-align:center;color:var(--mut);font-size:.85rem;padding:.35rem .5rem}
 .legend{font-size:.75rem;color:var(--mut);margin-top:.5rem}
 .legend b{font-weight:400}
@@ -488,11 +491,16 @@ def printed_words(seglists):
     return out
 
 
-def spans_html(segs, units, pool, form_index, eligible=VERSE_OK, qere=False):
-    """Render one column, wrapping every word in a hoverable span."""
+def spans_html(segs, units, pool, form_index, eligible=VERSE_OK, qere=False,
+               inline=()):
+    """Render one column, wrapping every word in a hoverable span.
+
+    `inline` is [(consonants, html)]: (64) a note Stipp sets in the line, put
+    after the word whose last consonant is the n-th of the column.
+    """
     toks = tokenise(segs)
     if not toks:
-        return ""
+        return " ".join(h for _, h in inline)
     # Alignment units: tokens glued mid-word are one word for BHSA, so
     # MISHPEH + O + T is looked up as MISHPEHOT and each of the three pieces
     # gets that analysis. Maqqef glue does NOT merge, because BHSA splits there.
@@ -515,7 +523,14 @@ def spans_html(segs, units, pool, form_index, eligible=VERSE_OK, qere=False):
     lastof = {}
     for g in groups:
         lastof[g[-1]] = g
-    out = []
+    # (64) the consonants read by the end of each display word
+    upto, n_ = {}, 0
+    for g in groups:
+        n_ += sum(len(CONS.findall(toks[i][0])) for i in g)
+        upto[g[-1]] = n_
+    pending = sorted(inline, key=lambda p: p[0])
+    out = [h for n, h in pending if n <= 0]
+    pending = [p for p in pending if p[0] > 0]
     for i, (w, cls_, glue, mid) in enumerate(toks):
         src, ap = per[i], False
         if src is None:
@@ -547,7 +562,22 @@ def spans_html(segs, units, pool, form_index, eligible=VERSE_OK, qere=False):
         if out and not glue:
             out.append(' ')
         out.append(span)
+        if i in upto:
+            while pending and pending[0][0] <= upto[i]:
+                out.append(' ' + pending.pop(0)[1])
+    out += [' ' + h for _, h in pending]       # past the column's end
     return ''.join(out)
+
+
+def inline_html(n):
+    """(64) A note set in the line: the apparatus in its parentheses, as
+    Stipp prints it, a raised P or D raised, everything else as it stands."""
+    t = n["text"].strip()
+    if n["kind"] == "sigla" and t in ("P", "D", "Q"):
+        return f'<sup class="inl">{esc(t)}</sup>'
+    if n["kind"] == "app":
+        t = f"({t})"
+    return f'<bdi class="inl" dir="ltr">{heb_runs(t)}</bdi>'
 
 
 HEB_RUN = re.compile(r"[֐-׿][֐-׿\s]*[֐-׿]|[֐-׿]")
@@ -576,8 +606,8 @@ def notes_html(notes):
         # every page.
         if t.isdigit() and len(t) <= 3:
             continue
-        if n.get("kind") in ("title", "order"):
-            continue                # set above the verse / as a rule line
+        if n.get("kind") in ("title", "order") or "at" in n:
+            continue                # above the verse / a rule line / in the line
         heb = any('א' <= c <= 'ת' for c in t)
         latin = any(c.isalpha() and c.isascii() for c in t)
         if n.get("kind") == "id":
@@ -737,8 +767,13 @@ def build():
                 # output: spans_html gives back a lone space for a clause whose
                 # only segment is Stipp's own spacing, and nine rows of the book
                 # are that.
-                mt = spans_html(c["mt"], vunits, pool, findex, qere=True)
-                og = spans_html(c["og"], vunits, pool, findex, VERSE_OK_OG)
+                at = lambda col: [(n["at"][1], inline_html(n))
+                                  for n in c["notes"]
+                                  if n.get("at", [None])[0] == col]
+                mt = spans_html(c["mt"], vunits, pool, findex, qere=True,
+                                inline=at("mt"))
+                og = spans_html(c["og"], vunits, pool, findex, VERSE_OK_OG,
+                                inline=at("og"))
                 gk = greek_html(c.get("greek"), lxx_verse(lwords, c.get("gverse")),
                                 pool, lindex)
                 nt = notes_html(c["notes"]) if c["notes"] else ""
