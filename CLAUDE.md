@@ -63,7 +63,7 @@ Hebrew map's own check, 82.30% on a strict byte-for-byte test);
 `bwhebb_learn.py` derived the Hebrew map and is kept as the record of how.
 
 **Tests**: from the repository root, `python -m unittest discover -s tests`,
-standard library only. **102 tests** (87 of them without BHSA). Sixty-two exist
+standard library only. **104 tests** (89 of them without BHSA). Sixty-three exist
 because of a numbered fault below — one per fault, on the verse that showed it —
 and the rest are floors and ceilings in `tests/baseline.json`, whose `_` key
 records for every figure what it was and why it moved. **A floor that moves must
@@ -410,6 +410,17 @@ Scored on transliterated proper names — an independent check, since the placem
 
 **It was found by asking what the extra letters had in common**, not by reading the page. Seven of the thirty verses carrying text BHSA does not have were consecutive, and each carried its own words twice — a shape no misread siglum produces. Sort the deviations by size before looking for a cause in the notation.
 
+### Relocation markers (2026-10-29)
+
+(61) **A relocation marker is a rule line, not a verse number.** Where the Greek sets a passage elsewhere, Stipp keeps the page synoptic, with the Greek beside the Hebrew it renders, and draws a rule line between two sentences saying where the Greek really has it. The book has five: `––– 7–8 in AlT hinter 40 –––` after 23,6e and `––– hier 7–8 in AlT –––` after 23,40b (margin and Greek panel, same wording), `––– hier 37 in AlT –––` after 31,34e and `––– hier 35–36 in AlT –––` after 31,37e (margin only), and at Jer 10,5, between b and c, `––– hier in AlT (= 4Q71) 9a–c –––` in the HEBREW TEXT COLUMN beside `––– hier V. 9 –––` in the Greek panel. At 10,9a₁ the Greek opens `(vgl. V. 5!)`. The question was the author's.
+
+Three faults, all at Jer 10, and the placement of the Greek beside the Hebrew was right throughout:
+- `greek_clauses()` read every in-range digit of a Times span in the panel as a Greek verse number, so `hier V. 9` filed 10,5c–g as G 10,9 and `vgl. V. 5` filed 10,9 as G 10,5. **The panel's marker and pointer were thrown away**, the only signs on the Greek side that its order differs. The marker is now gathered to its closing rule (it can run over several spans, as at 23,40) and goes with the Greek line above it; the `vgl.` pointer is an apparatus note on the line after it.
+- **The Hebrew-column marker came out as four notes in reverse** (`9a–c –––`, `= 4Q71`, `AlT`, `––– hier in`), walked right to left like the apparatus of (57). `_order_notes()` puts it back in visual order, and turns every marker into one note of kind `order`.
+- **The hover**: with the wrong verse key every Greek word of 10,5 and 10,9 fell back to the book-wide form index, and πορεύσονται had no analysis at all. The keys are now Stipp's (G 10,5 and G 10,9), and because the CenterBLC LXX divides the same words differently (its `9` runs from 5a to 9c, its `5` is 5c–g alone) both keys look up both, by name in `build_synopse_pages.LXX_VERSES_MERGED`.
+
+An `order` note renders as a separator row between the two sentences, the Hebrew side's text under the Hebrew columns and the panel's under the Greek. **Checked byte for byte**: every text column of `synopse.json` identical; the only changes are the notes of 10,5b, 10,9a₁, 23,6e, 23,40b, 31,34e and 31,37e and the `gverse` of 10,5c–g and 10,9; no page beyond Jer 10, 23 and 31 changed except for the CSS. `pool_entries` 31,135 → 31,139. **Not done**: `AlT` is italic in the source and plain here.
+
 ### What is still wrong
 
 Of the 1,394 verses of Jeremiah and 2 Kings 25, **1,389 (99.6%) reproduce BHSA's consonants exactly and in order, and the other five are the named `Stipp ≠ BHS` verses (3,25; 17,26; 18,3; 23,9; 25,18). Since step 4 no verse of the masoretic column carries `BHSA ?`**: every deviation left is Stipp's own text, not the extraction. The tables below record how the residue was worked down and are history now. **Four of the thirteen are not faults**: they carry the badge `Stipp ≠ BHS` (see below). **Every one of the 17 was read against a rendered crop on 2026-10-01; see "The residue, read case by case" below**, which supersedes the attributions in this section where they differ.
@@ -462,6 +473,6 @@ Each of the 17 verses still off against BHSA was put beside a rendered crop of i
 
 **Every verse carries a badge saying which it is**; do not quote a figure off these pages without it.
 
-**The suite is 102 tests** (87 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-two exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
+**The suite is 104 tests** (89 of them without BHSA), standard library only, run from `mt_greek_jeremiah/`. Sixty-three exist because of a fault above — one per fault, on the verse that showed it, and two for (30), whose second half no figure can see — and the rest are floors in `tests/baseline.json`, which records for each figure what it was and why it moved. Jer 1,1 and 28,1 are each pinned end to end: between them they took five faults to clear, each invisible while the others stood, and all five were found by reading two verses rather than by any measure in this file.
 
 **`mt_greek_jeremiah/` is a git repository of its own** (2026-09-05), pushed to https://github.com/MartijnNaaijer/mt_greek_jeremiah and served from GitHub Pages at **https://martijnnaaijer.github.io/mt_greek_jeremiah/**. The 55 pages live in its `docs/` folder, not at its top level, and `paths.MTG()` resolves there — a page written to the old path would land beside the README and outside the index the other pages link into. The folder is named `docs/` because a GitHub Pages branch deployment can serve only the repository root or `/docs`, and serves `/docs` AT the site root, so the bare URL reaches `index.html` with no redirect stub. `README.md` at its root carries the reliability figures above, so the folder can be read on its own.

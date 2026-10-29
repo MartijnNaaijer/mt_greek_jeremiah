@@ -647,6 +647,7 @@ def has_label(line):
 FOOT_SIZES = (8.48, 6.70, 5.64)     # body, small capitals, number
 FOOT_HEB = 11.32                    # the Hebrew a footnote quotes
 FOOT_UNMARKED = []                  # (page, n) placed without finding the mark
+GNOTE_LOST = []                     # (page, text) Greek-panel notes with no row (61)
 
 
 def _is_size(fs, sizes):
@@ -2244,6 +2245,45 @@ def note_text(n):
     return {"kind": "app", "text": text}
 
 
+RULE = "–––"
+
+
+def _order_notes(notes):
+    """(61) Stipp's relocation markers become one note of kind 'order'.
+
+    He draws a rule line between two sentences where the Greek sets a passage
+    elsewhere: '––– 7–8 in AlT hinter 40 –––' at 23,6, '––– hier 37 in AlT –––'
+    at 31,34. Four of the book's five stand in the margin and arrive whole, as a
+    margin note. The fifth, '––– hier in AlT (= 4Q71) 9a–c –––' at 10,5b, stands
+    in the TEXT column, where it was walked right to left and came out as four
+    notes in reverse - '9a–c –––', '= 4Q71', 'AlT', '––– hier in'. The run from
+    the piece that closes the rule to the piece that opens it is put back in
+    visual order, the apparatus in its parentheses.
+    """
+    out, i = [], 0
+    while i < len(notes):
+        n, t = notes[i], notes[i]["text"].strip()
+        if n["kind"] == "margin" and t.startswith(RULE) and t.endswith(RULE):
+            out.append(dict(kind="order", text=t))
+        elif n["kind"] == "sigla" and t.endswith(RULE) and \
+                not t.startswith(RULE):
+            j = next((j for j in range(i + 1, len(notes))
+                      if notes[j]["kind"] not in ("sigla", "app")
+                      or notes[j]["text"].strip().startswith(RULE)), None)
+            if j is None or notes[j]["kind"] != "sigla":
+                out.append(n)
+                i += 1
+                continue
+            parts = [f'({m["text"].strip()})' if m["kind"] == "app"
+                     else m["text"].strip() for m in notes[i:j + 1]]
+            out.append(dict(kind="order", text=" ".join(reversed(parts))))
+            i = j
+        else:
+            out.append(n)
+        i += 1
+    return out
+
+
 def margin_text(spans):
     parts = []
     for x, y, k, fs, t in spans:
@@ -2256,7 +2296,8 @@ def margin_text(spans):
     return " ".join(parts)
 
 
-def greek_clauses(spans, glo, ghi, marks=None, gmarks=None, ys=None):
+def greek_clauses(spans, glo, ghi, marks=None, gmarks=None, ys=None,
+                  gnotes=None):
     """The Greek panel -> [(verse, clause)], one clause per printed line.
 
     `glo/ghi` is the verse range the panel's own numbers belong to: the Greek one
@@ -2268,10 +2309,15 @@ def greek_clauses(spans, glo, ghi, marks=None, gmarks=None, ys=None):
     number of the next Greek verse. They are recognised by _take_footnotes(),
     skipped here, and recorded in `gmarks` as (footnote, index of the clause that
     carries it), so that parse() can put the footnote beside that Greek.
+
+    `gnotes` receives what the panel says in Times that is not a number, as
+    (kind, text, index of the clause it goes with): Stipp's relocation markers
+    and his '(vgl. V. n!)' pointers (61).
     """
     marks = marks or {}
     out = []
     gv, buf, buf_y = None, "", None
+    order = None
 
     def flush():
         # `ys`, if given, receives the height of each clause's printed line, in
@@ -2314,9 +2360,30 @@ def greek_clauses(spans, glo, ghi, marks=None, gmarks=None, ys=None):
             if gmarks is not None:
                 gmarks.append((marks[id(sp)],
                                len(out) if buf.strip() else len(out) - 1))
+        elif order is not None or "–––" in t:
+            # (61) A RELOCATION MARKER IS NOT A VERSE NUMBER. Where the Greek
+            # sets a passage elsewhere, Stipp keeps the page synoptic and draws
+            # a rule line between two sentences saying so - '––– hier V. 9 –––'
+            # in the panel at Jer 10,5, between 5b and 5c. Its digit was read
+            # as the next Greek verse, so 10,5c-g were filed as G 10,9, and the
+            # marker itself was thrown away. A marker can come as several spans
+            # ('––– hier 7–8 in ', 'AlT', ' –––' at 23,40); it is gathered to
+            # its closing rule and goes with the Greek line above it.
+            order = (order or "") + t
+            if order.count("–––") >= 2:
+                flush()
+                if gnotes is not None:
+                    gnotes.append(("order", " ".join(order.split()),
+                                   len(out) - 1))
+                order = None
         else:
             if chr(10) in t:
                 flush()
+            # '(vgl. V. 5!)' after the number of G 10,9 is Stipp's pointer to
+            # where its Greek stands, not a second verse number; it goes with
+            # the Greek line that follows it.
+            refs = VGL.findall(t)
+            t = VGL.sub(" ", t)
             for n in re.findall(r"\d+", t):
                 n = int(n)
                 if glo <= n <= ghi:
@@ -2330,8 +2397,14 @@ def greek_clauses(spans, glo, ghi, marks=None, gmarks=None, ys=None):
                     # Kedar's camels. The numbers stand at x = 451: 1,316 in
                     # range, 32 out of it; the page numbers sit at x = 794-804.
                     flush(); gv = n
+            if gnotes is not None:
+                gnotes.extend(("app", r.strip("()").strip(), len(out))
+                              for r in refs)
     flush()
     return out
+
+
+VGL = re.compile(r"\(vgl\.[^)]*\)")
 
 
 GREEK_NUM_X = 460.0        # a Greek verse number stands at x = 451
@@ -2539,8 +2612,9 @@ def parse():
             gch, glo, ghi = int(g.group(1)), int(g.group(2)), int(g.group(3))
         else:
             gch, glo, ghi = ch, vlo, vhi
-        gmarks, gys = [], []
-        greek = greek_clauses(greek_spans, glo, ghi, marks, gmarks, gys)
+        gmarks, gys, gnotes = [], [], []
+        greek = greek_clauses(greek_spans, glo, ghi, marks, gmarks, gys,
+                              gnotes)
         row_of = {}                 # clause index -> the row it became
 
         v = None
@@ -2582,8 +2656,8 @@ def parse():
                 og=to_logical(list(reversed(column(
                     segs, ("common", "minus", "ogvar", "ogabbr", "scope"),
                     True)))),
-                notes=[n for n in (note_text(x) for x in notes)
-                       if (n["text"] or "").strip()],
+                notes=_order_notes([n for n in (note_text(x) for x in notes)
+                                    if (n["text"] or "").strip()]),
                 greek="", galign="", gverse=""))
             if (book, ch, rows[-1]["v"], letter) in APPARATUS_ONLY:
                 _apparatus_only(rows[-1])
@@ -2621,6 +2695,18 @@ def parse():
                     hit[0]["notes"].append(dict(
                         kind="foot", text=f"{str(n).translate(SUP)} {fns[n]}"))
                     placed.add(n)
+        # (61) what the panel says that is not a number goes with the row that
+        # received the Greek it stands beside
+        for kind_, text, gi in gnotes:
+            hit = ([r_ for r_ in here if greek[gi][1] in r_["greek"]]
+                   if 0 <= gi < len(greek) else [])
+            if not hit:
+                GNOTE_LOST.append((pno + 1, text))
+                continue
+            note = dict(kind=kind_, text=text)
+            if kind_ == "order":
+                note["col"] = "grk"
+            hit[0]["notes"].append(note)
         # A footnote whose mark was not found stays on the page, with the last
         # sentence, which is where it used to land in pieces.
         for n in sorted(set(fns) - placed):
@@ -2670,6 +2756,9 @@ if __name__ == "__main__":
           f"{sum(1 for r in rows for n in r['notes'] if n['kind'] == 'foot')}, "
           f"{len(FOOT_UNMARKED)} placed on their page without their mark "
           f"{FOOT_UNMARKED or ''}")
+    print(f"relocation markers (61)        : "
+          f"{sum(1 for r in rows for n in r['notes'] if n['kind'] == 'order')}"
+          f", {len(GNOTE_LOST)} from the Greek panel with no row {GNOTE_LOST or ''}")
     print(f"spaces inside a Greek word     : {GREEK_FALSE_SPACES['removed']:,} removed")
     added = FALSE_SPACES["gap with nothing in it (added)"]
     print(f"spaces inside a Hebrew word    : {sum(FALSE_SPACES.values()) - added:,} removed "

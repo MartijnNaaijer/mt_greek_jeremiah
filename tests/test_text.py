@@ -1142,6 +1142,33 @@ class TestTheNotes(unittest.TestCase):
                 out.append(" ".join(S.unescape(re.sub(r"<[^>]+>", "", part)).split()))
         return out
 
+    def test_a_relocation_marker_is_a_rule_line_and_not_a_verse_number(self):
+        """(61) At Jer 10,5 the Greek sets MT 9a-c after 5b, and Stipp draws a
+        rule line there: '––– hier in AlT (= 4Q71) 9a–c –––' under the Hebrew,
+        '––– hier V. 9 –––' in the Greek panel. The first came out as four notes
+        in reverse, the second was dropped and its 9 read as a Greek verse
+        number, so every Greek word of 10,5c-g and of 10,9 lost its own
+        verse's analysis."""
+        body = self.verse("jer10.html", 5).body
+        rule = re.search(r'<tr class="order">(.*?)</tr>', body)
+        self.assertIsNotNone(rule)
+        text = S.unescape(re.sub(r"<[^>]+>", " ", rule.group(1)))
+        self.assertIn("––– hier in AlT (= 4Q71) 9a–c –––", text)
+        self.assertIn("––– hier V. 9 –––", text)
+        # between 5b and 5c, where Stipp draws it
+        self.assertLess(body.index('<td class="cl">b</td>'), rule.start())
+        self.assertLess(rule.start(), body.index('<td class="cl">c</td>'))
+        self.assertIn("vgl. V. 5!", self.notes("jer10.html", 9))
+        for n in (5, 9):
+            with self.subTest(verse=n):
+                grk = re.findall(r'<td class="grk">(.*?)</td>',
+                                 self.verse("jer10.html", n).body)
+                self.assertNotIn("data-x", "".join(grk))
+        for page, n in (("jer23.html", 6), ("jer23.html", 40),
+                        ("jer31.html", 34), ("jer31.html", 37)):
+            with self.subTest(verse=(page, n)):
+                self.assertIn('<tr class="order">', self.verse(page, n).body)
+
     def test_the_idiolect_references_are_printed(self):
         """(55) 'Id 4.23' is set in bold, and every bold span was taken for the
         running head: 288 references were dropped."""

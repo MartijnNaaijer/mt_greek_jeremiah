@@ -179,6 +179,7 @@ sup.ab{font-size:.62em;color:var(--mut);vertical-align:super;padding:0 .1em}
 .notes .n.foot{display:block;margin:.3rem 0 0;font-style:italic}
 .notes .heb{direction:rtl;unicode-bidi:isolate;font-size:1rem;font-style:normal}
 .hide-notes .notes{display:none}
+tr.order td{text-align:center;color:var(--mut);font-size:.85rem;padding:.35rem .5rem}
 .legend{font-size:.75rem;color:var(--mut);margin-top:.5rem}
 .legend b{font-weight:400}
 .idx{columns:4;column-gap:2rem;font-size:.9rem;margin-top:1rem}
@@ -372,6 +373,20 @@ def gnorm(t):
     return t.replace('\u03c2', '\u03c3').replace('\u03f2', '\u03c3')
 
 
+# (61) WHERE RAHLFS' VERSES ARE NOT STIPP'S. In Jer 10 the Greek sets MT 9a-c
+# inside verse 5, after 5b, and Stipp numbers that Greek as he finds it: 5a-g as
+# G 10,5, 9a-c as G 10,9. The CenterBLC LXX files the same words otherwise - its
+# verse '9' runs from ARGURION TOREUTON (5a) to the end of 9c, its verse '5' is
+# 5c-g alone - so neither key holds all of either. Both keys look up both.
+LXX_VERSES_MERGED = {"10:5": ("10:9", "10:5"), "10:9": ("10:9", "10:5")}
+
+
+def lxx_verse(lwords, key):
+    """The Rahlfs words the hover aligns a Greek cell against."""
+    return [w for k in LXX_VERSES_MERGED.get(key, (key,))
+            for w in lwords.get(k, [])]
+
+
 def greek_html(text, verse_words, pool, form_index):
     """Render the Greek cell, wrapping every word in a hoverable span."""
     if not text:
@@ -561,8 +576,8 @@ def notes_html(notes):
         # every page.
         if t.isdigit() and len(t) <= 3:
             continue
-        if n.get("kind") == "title":
-            continue                # set above the verse, not as a note
+        if n.get("kind") in ("title", "order"):
+            continue                # set above the verse / as a rule line
         heb = any('א' <= c <= 'ת' for c in t)
         latin = any(c.isalpha() and c.isascii() for c in t)
         if n.get("kind") == "id":
@@ -724,8 +739,8 @@ def build():
                 # are that.
                 mt = spans_html(c["mt"], vunits, pool, findex, qere=True)
                 og = spans_html(c["og"], vunits, pool, findex, VERSE_OK_OG)
-                gk = greek_html(c.get("greek"),
-                                lwords.get(c.get("gverse"), []), pool, lindex)
+                gk = greek_html(c.get("greek"), lxx_verse(lwords, c.get("gverse")),
+                                pool, lindex)
                 nt = notes_html(c["notes"]) if c["notes"] else ""
                 if mt.strip() or og.strip() or gk.strip():
                     trs.append(
@@ -739,6 +754,17 @@ def build():
                     # 51,41; 52,12 - and then the note stands on its own rather
                     # than under an empty row of three empty columns.
                     trs.append(f'<tr><td colspan="4">{nt}</td></tr>')
+                # (61) A RELOCATION MARKER is a rule line between two
+                # sentences, as Stipp draws it: what the Hebrew side says under
+                # the Hebrew columns, what the Greek panel says under the Greek.
+                order = [n for n in c["notes"] if n["kind"] == "order"]
+                if order:
+                    heb_ = " ".join(esc(n["text"]) for n in order
+                                    if n.get("col") != "grk")
+                    grk_ = " ".join(esc(n["text"]) for n in order
+                                    if n.get("col") == "grk")
+                    trs.append(f'<tr class="order"><td colspan="3">{heb_}</td>'
+                               f'<td class="grk">{grk_}</td></tr>')
             # THE WORD-LEVEL SCORE, alongside the letter-level badge. Same
             # column, same ground truth, different unit: the badge asks whether
             # the consonants are right and in order, this asks whether they are
